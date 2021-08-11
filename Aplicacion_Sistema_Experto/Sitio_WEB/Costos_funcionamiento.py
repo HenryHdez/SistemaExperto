@@ -87,11 +87,18 @@ def Generar_reporte_financiero(D1, D2, D3, D4, D5, D6):
                     canvas.setFillColorRGB(0,0,0)
                     canvas.setFont('Helvetica-Bold', 9)
                     if(j>1):
-                        Texto=Formato_Moneda(float(Texto), "$", 2)
+                        try:
+                            Texto=Formato_Moneda(float(Texto), "$", 2)
+                        except:
+                            print('Error '+Texto)
                 else:
                     canvas.setFont('Helvetica', 9)
                     if(j>0):
-                        Texto=Formato_Moneda(float(Texto), "$", 2)
+                        try:
+                            Texto=Formato_Moneda(float(Texto), "$", 2)
+                        except:
+                            print('Error '+Texto)
+                        
                 canvas.drawString(puntero_h, puntero_v, Texto) 
                 puntero_h=puntero_h+80
             puntero_v=puntero_v-15
@@ -236,30 +243,38 @@ def Generar_reporte_financiero(D1, D2, D3, D4, D5, D6):
     canvas.drawImage('static/Graficas/RI_Anos.png', 330, 190, width=280, height=200)                         
     canvas.save()
     
-def Variables(Capacidad, Horas, semana, moliendas, Cana_estimada):
+def Variables(Capacidad, Horas, semana, moliendas, Cana_estimada, cana_hora):
     global Capacidad_hornilla
     global Horas_trabajo_al_dia
     global Dias_trabajo_semana
     global Toneladas_cana_a_moler
     global numero_moliendas
+    global Cana_molida_hora
     Capacidad_hornilla=Capacidad
     Horas_trabajo_al_dia=Horas
     Dias_trabajo_semana=semana
     Toneladas_cana_a_moler=Cana_estimada
     numero_moliendas=moliendas
+    Cana_molida_hora=cana_hora
     
 def estimar_total(vector):
     acumulado=[]
     for i in vector:
         acumulado.append(i[2])
     return sum(acumulado)
-   
+
+def cantidad_parr(canti):
+    global parrillas
+    parrillas=canti
+    
 def costos():
     global Capacidad_hornilla
     global Horas_trabajo_al_dia
     global Dias_trabajo_semana
     global Toneladas_cana_a_moler
     global numero_moliendas
+    global parrillas
+    global Cana_molida_hora
     Archivo_Temporal=xlrd.open_workbook('static/Temp/Temp2.xlsx')
     libro = Archivo_Temporal.sheet_by_index(0)
     Tipo_de_Pailas=[]
@@ -296,34 +311,54 @@ def costos():
             Valor_Hornilla.append([Cantidad_pailas[pun_i], a, a*Cantidad_pailas[pun_i]])  
             Etiquetas_Hornilla.append(Pailas_disponibles_2[pun_i])
     
+    #Revisar cantidad de valvulas
     #>>>>>>>>>>Otros accesorios de la hornilla<<<<<<<<<<<<<#
-    Accesorios_disponibles=['Prelimpiador', 'Ladrillos refractarios', 'Pegante', 'Tubo sanitario de 3 pulgadas',
-                        'Codos sanitarios de 3 pulgadas','Válvula de bola de 2 y 1/2 pulgadas', 'Férula sanitaria de 3 pulgadas',
+    Accesorios_disponibles=['Prelimpiador 1', 'Prelimpiador 2', 'Válvula de la chimenea', 'Ladrillos refractarios', 'Pegante bulto', 'Tubo acero inxidable de 3 pulgadas',
+                        'Codos sanitarios de 3 pulgadas','Válvula de bola de 3 pulgadas', 'Férula sanitaria de 3 pulgadas',
                         'Abrazadera sanitaria de 3 pulgadas', 'Empaque de silicona de 3 pulgadas (alta temperatura)',
-                        'Sección de parrilla', 'Entrada hornilla','Paila melotera','Accesorios paila melotera', 'Valor aproximado del molino',
+                        'Sección de parrilla', 'Marco de la puerta','Paila melotera', 'Valor aproximado del molino',
                         'Valor total de la hornilla']
     #vector de accesorios
     for pun_i in range(len(Accesorios_disponibles)):
         Etiquetas_Hornilla.append(Accesorios_disponibles[pun_i])    
     #Establecimiento de factores para el calculo de elementos
+    if(Cana_molida_hora<0.8):
+        Cantidad_1=1
+        Cantidad_2=0
+    elif(Cana_molida_hora>0.8 and Cana_molida_hora<1.6):
+        Cantidad_1=1
+        Cantidad_2=1
+    elif(Cana_molida_hora>1.6 and Cana_molida_hora<2.0):
+        Cantidad_1=1
+        Cantidad_2=2
+    elif(Cana_molida_hora>2.0):
+        Cantidad_1=2
+        Cantidad_2=2
+    
     a=float(Hornilla['Prelimpiador'].values)
-    Cantidad=math.ceil(Total_pailas/20)
+    Valor_Hornilla.append([Cantidad_1, a, a*Cantidad_1])
+
+    a=float(Hornilla['Prelimpiador'].values)
+    Valor_Hornilla.append([Cantidad_2, a, a*Cantidad_2])
+
+    a=float(Hornilla['Válvula de la chimenea'].values)
+    Cantidad=1
     Valor_Hornilla.append([Cantidad, a, a*Cantidad])
 
     a=float(Hornilla['Ladrillos refractarios'].values)
     Cantidad=1200*Total_pailas
     Valor_Hornilla.append([Cantidad, a, a*Cantidad])
-    a=float(Hornilla['Pegante'].values)
+    a=float(Hornilla['Pegante bulto'].values)
     Cantidad=6*Total_pailas
     Valor_Hornilla.append([Cantidad, a, a*Cantidad])
     a=float(Hornilla['Tubo sanitario'].values)
-    Cantidad=math.ceil(0.6*Total_pailas)
+    Cantidad=math.ceil((0.017142857*Capacidad_hornilla)+2.714285714)
     Valor_Hornilla.append([Cantidad, a, a*Cantidad])
     a=float(Hornilla['Codos sanitarios'].values)
-    Cantidad=math.ceil(1.2*Total_pailas)
+    Cantidad=math.ceil((0.017142857*Capacidad_hornilla)+0.714285714)
     Valor_Hornilla.append([Cantidad, a, a*Cantidad])
     a=float(Hornilla['Válvula de bola'].values)
-    Cantidad=math.ceil(0.45*Total_pailas)
+    Cantidad=math.ceil((0.017142857*Capacidad_hornilla)+2.714285714)
     Valor_Hornilla.append([Cantidad, a, a*Cantidad])
     a=float(Hornilla['férula sanitaria'].values)
     Cantidad=math.ceil(0.9*Total_pailas)
@@ -335,15 +370,20 @@ def costos():
     Cantidad=math.ceil(0.9*Total_pailas)
     Valor_Hornilla.append([Cantidad, a, a*Cantidad])
     a=float(Hornilla['Sección de parrilla'].values)	
-    Cantidad=math.ceil(0.45*Total_pailas)
+    Cantidad=math.ceil(parrillas) #Traerlo
     Valor_Hornilla.append([Cantidad, a, a*Cantidad])
-    a=float(Hornilla['Entrada de la hornilla'].values)	
+    #Cambiarlo poner marco de puerta
+    #Falta la tuberia del jugo crudo a la hornilla "Quitar accesolrios"
+    #Valvula de la chimenea $1000000
+    #Quitar movilidad
+    #por kilo arregla y verficar precio Fedepanela
+    a=float(Hornilla['Marco de la puerta'].values)	
     Cantidad=math.ceil(Total_pailas/20)
     Valor_Hornilla.append([Cantidad, a, a*Cantidad])
-    a=float(Hornilla['Paila melotera'].values)	
+    a=round(float(Hornilla['Paila melotera'].values)*Capacidad_hornilla/250)
     Valor_Hornilla.append([1, a, a*1])
-    a=float(Hornilla['Accesorios paila melotera'].values)	
-    Valor_Hornilla.append([1, a, a*1])    
+#    a=float(Hornilla['Accesorios paila melotera'].values)	
+#    Valor_Hornilla.append([1, a, a*1])    
     Valor_molino=math.ceil(sum(Valor_M)/len(Valor_M))
     Valor_Hornilla.append([1,Valor_molino,1*Valor_molino])
 #    a=float(Hornilla['Base molino'].values)	
@@ -419,7 +459,7 @@ def costos():
 
     """>>>>>>>>>>>>>>-------------TOTALES PROYECTO--------------<<<<<<<<<<<<<<<"""
     Costo_imprevistos=math.ceil(0.02*total_hornilla)
-    Consolidado_totales_1=[total_hornilla, total_recuperador, total_operativos, Costo_imprevistos, float(Operativos['Movilidad'])]
+    Consolidado_totales_1=[total_hornilla, total_recuperador, total_operativos, Costo_imprevistos]#, float(Operativos['Movilidad'])]
     Total_proyecto=sum(Consolidado_totales_1)
     """>>>>>>>>>>>>>>>>>>>>>Codificar rotulo del informe<<<<<<<<<<<<<<<<"""
     Consolidado_totales_1.append(Total_proyecto)
@@ -430,7 +470,7 @@ def costos():
                        'Valor total de la construcción del recuperador de calor', 
                        'Valor total del gasto operativo durante la construcción', 
                        'Seguro contra gastos imprevistos (2% del total de la construcción de la hornilla)',
-                       'Movilidad',
+                       #'Movilidad',
                        'Valor total de la construcción con recuperador de calor',
                        'Valor total de la construcción sin recuperador de calor',
                         ]
@@ -483,7 +523,7 @@ def costos():
             Costo_kg_control=math.ceil(Total_Control/Produ_diaria)
         # >>>>>>>>>> Materia Prima	
         #Multiplico por 1000 para pasar de KG/h a litros
-        Relacion=Toneladas_cana_a_moler/(Capacidad_hornilla*1000)
+        Relacion=(Toneladas_cana_a_moler/numero_moliendas)/(Capacidad_hornilla*1000)
     
         Costo_kg_cana=math.ceil(Valor_Cana*Relacion)
         #Otros insumos Cera, Empaques, Clarificante			
@@ -545,7 +585,7 @@ def costos():
         t_anos=float(Operativos['Anos depreciacion'].values)
         Costo_financiero=(Total_proyecto*(1+Interes)**t_anos)-Total_proyecto
         """>>>>>>>>>>>>-------------GANACIAS DE LA PANELA-----------<<<<<<<<<<<<<<<<<<<<<<<"""
-        Valor_panela=float(Operativos['Costo panela'].values)
+        Valor_panela=float(Operativos['Costo panela por kg'].values)
         Produccion_mensual_kg=Capacidad_hornilla*Horas_trabajo_al_dia*Dias_trabajo_semana*numero_moliendas
         Produccion_anual_kg=Produccion_mensual_kg*12
         Ingreso_anual=Valor_panela*Produccion_anual_kg
@@ -735,12 +775,12 @@ def costos():
     Retorno_inversion2=[] 
     for k in range(2):
         if(k==0):
-            Valor_panela=float(Operativos['Costo panela'].values)
+            Valor_panela=float(Operativos['Costo panela por kg'].values)
             Costo_produccion=lista_costo_produccion_1
             flujo_caja=lista_flujo_1
             Produccion_anual_kg=lista_financiero_1[8]
         elif (k==1):
-            Valor_panela=float(Operativos['Costo panela'].values)
+            Valor_panela=float(Operativos['Costo panela por kg'].values)
             Costo_produccion=lista_costo_produccion_2
             flujo_caja=lista_flujo_2
             Produccion_anual_kg=lista_financiero_2[8]
@@ -748,7 +788,7 @@ def costos():
         Retorno_inversion=[]    
         for i in Costo_produccion:
             Ingreso_esperado=Valor_panela*Produccion_anual_kg
-            Ganancia_Acumulada=Ingreso_esperado-i
+            Ganancia_Acumulada=(Ingreso_esperado-i)/20
             Valor_Proyecto=round(flujo_caja[0],3)
             if(Ganancia_Acumulada==0):
                 Ganancia_Acumulada=0.1
@@ -760,7 +800,7 @@ def costos():
                             Valor_Proyecto, 
                             Tiempo_anos, 
                             Tiempo_anos*12]
-            Valor_panela=Valor_panela+25#+random.uniform(-500, 500)
+            Valor_panela=Valor_panela+75#+random.uniform(-500, 500)
             Retorno_inversion.append(Estado_retorno)
         if(k==0):
             Retorno_inversion1=Retorno_inversion

@@ -16,7 +16,7 @@ from pylatex.package import Package
 class Documento_Latex():
     global doc
     
-    def portada(Diccionario, eficiencia,T_Hornilla):
+    def portada(Diccionario, eficiencia, T_Hornilla, Area_bag, Area, Texto_Area):
         global doc
         doc = Document()
         geometry_options = {"tmargin": "4cm", "rmargin": "2cm", "lmargin": "4cm", "bmargin": "3cm"} 
@@ -64,41 +64,38 @@ class Documento_Latex():
                     if(str(Diccionario['Departamento'])=='--'):
                         tlg.append('\n'+str(Diccionario['Pais'])+'.')    
                     else:
-                        tlg.append('\n'+str(Diccionario['Ciudad'])+', '+str(Diccionario['Departamento'])+'.')
+                        tlg.append('\n \n \n'+str(Diccionario['Ciudad'])+', '+str(Diccionario['Departamento'])+'.')
                     tlg.append('\n \n') #Salto de línea en parráfo
                     tlg.append('\nApreciado(s) productor(es):')
                     tlg.append('\n \n') #Salto de línea en parráfo
-                    Parrafo= ('Con base en la información suministrada, está aplicación propone (ver Sección 1) la construcción de una hornilla '+
-                              T_Hornilla+' con capacidad de '+ str(Diccionario['Capacidad estimada de la hornilla']) +' kg/h'+' (la eficiencia estimada de la hornilla es del '+ str(round(Diccionario['Eficiencia de la hornilla']))+'%) '+'; adecuada para el procesamiento de hasta '+
-                              str(Diccionario['Área cosechada al mes'])+
-                              ' ha'+' de caña, con una producción de panela '+ str(round(float(Diccionario['Producción de panela por molienda [t]'])))+
-                              ' t por molienda y un periodo vegetativo de '+ str(Diccionario['Periodo vegetativo'])+' meses. Teniendo en cuenta que'+
-                              ' se realizan '+str(Diccionario['Número de moliendas al año'])+' moliendas al año se estableció una jornada laboral de '+
-                              str(Diccionario['Días de trabajo de la hornilla por semana'])+ ' días a la semana de '+str(Diccionario['Horas de trabajo de la hornilla por día'])+ ' horas laborables cada una.'+
-                              '\n Además, la aplicación estima que para garantizar una operación apropiada de la hornilla '+
-                              ' se requiere de un área disponible de al menos '+str(round(Diccionario['Capacidad estimada de la hornilla']*4.3))+' m²'
+                    #Verificar area
+                    Parrafo= ('Con base en la información suministrada, HornillApp propone (ver Sección 1) la construcción de una hornilla panelera tipo Cimpa con una '+
+                              T_Hornilla+' con capacidad de '+ str(Diccionario['Capacidad estimada de la hornilla']) +' kg/h'+' con una eficiencia estimada del '+ str(round(Diccionario['Eficiencia de la hornilla']))+'%'+'; adecuada para el procesamiento de hasta '+
+                              Area+
+                              Texto_Area+' de caña, una producción de ' + str(round(float(Diccionario['Producción de caña (toneladas por hectárea)'])))+ ' toneladas por hectárea, un periodo vegetativo de '+ str(Diccionario['Periodo vegetativo'])+' meses, para realizar '+
+                              str(round(float(Diccionario['Moliendas al año']),0))+' moliendas al año en una jornada laboral de '+ str(Diccionario['Jornada de trabajo al mes']) + ' de '+
+                              str(Diccionario['Días trabajados a la semana'])+ ' días cada semana de '+str(Diccionario['Horas de trabajo de la hornilla por día'])+ ' horas de trabajo diarias.'+
+                              '\n Está hornilla requiere un área para la(s) bagacera(s) aproximadamente de '+Area_bag+' m^2 y su productividad '
                               )
+                    
+
                     tlg.append(Parrafo)                
-                    Parrafo= (', cuya productividad puede aumentar al incorporar el sistema de recuperación de calor (hasta '+str(round(Diccionario['Capacidad estimada de la hornilla']+25))+' kg/h) como se muestra en las tablas del análisis financiero y al final del informe.'
-                              +' No obstante, la corporación ofrece los siguientes servicios de asistencia técnica para ajustar los valores provistos en esta propuesta de valor:'
-                              )
+                    Parrafo= (' puede alcanzar hasta '+str(round(Diccionario['Capacidad estimada de la hornilla']+25))+' kg/h con la incorporación del sistema de recuperación de calor. '
+                              +' Adicionalmente, en este informe encontrará la siguiente información complementaria para la hornilla: ')
                     tlg.append(Parrafo)
                     
                     with tlg.create(Itemize()) as itemize:
-                        itemize.add_item('Estudio detallado para la construcción e instalación de la hornilla.')
-                        itemize.add_item('Al menos tres visitas técnicas de dos funcionarios de AGROSAVIA para la puesta en marcha y '+
-                                         'capacitación de los operarios en el manejo de la hornilla y en la producción de panela '+
-                                         'saborizada, granulada o moldeada en presentación pastilla de chocolate.')
-                        itemize.add_item('Entrega de un ejemplar de la guía tecnológica para el manejo integral del sistema '+
-                                         'productivo de la caña panelera y una para el mantenimiento de la hornilla.')
+                        itemize.add_item('Una sugerencia de los tipos de molinos que se encuentran disponibles en el mercado apropiados para su buen funcionamiento.')
+                        itemize.add_item('Recomendaciones para su manejo, seguridad y mantenimiento.')
+                        itemize.add_item('Un análisis financiero de su implementación con y sin recuperador de calor.')
 
-                    Parrafo= ('Cualquier inquietud AGROSAVIA está presta a atenderla.\n'+
+                    Parrafo= ('Cualquier inquietud AGROSAVIA está presta a atenderla (atencionalcliente@agrosavia.co).\n'+
                               'Cordial saludo.\n'+
-                              '\n \n \n'+
+                              '\n \n'+
                               'AGROSAVIA (Corporación colombiana de investigación agropecuaria)')            
                     tlg.append(Parrafo)            
 
-                    Parrafo= ('\n \n Nota: Está propuesta de valor se basa en condiciones del terreno ideales y estacionarias, por lo que, '+
+                    Parrafo= ('\n \n \n \n \n \nNota: Está propuesta de valor se basa en condiciones del terreno ideales y estacionarias, por lo que, '+
                               'AGROSAVIA no se hace responsable de la reproducción total o parcial del material aquí suministrado sin una aprobación '+
                               'corporativa.')
                     tlg.append(Parrafo)
@@ -181,8 +178,9 @@ class Documento_Latex():
                         #Arreglo para asignar unidades y mostrarlas en el informe
                         if (str(i)=='Área caña sembrada'):
                             T1=str(D1[i])+" ha" 
-                        elif (str(i)=='Crecimiento aproximado del área sembrada'):
-                            T1=str(D1[i])+" ha"
+                        elif (str(i)=='Área de caña proyectada que se espera moler en los próximos 5 años (Hectáreas)'):
+                            i='Área proyectada en 5 años (hectáreas)'
+                            #T1=str(D1[i])+" ha"
                         elif (str(i)=='Caña esperada por hectárea'):
                             T1=str(D1[i])+" t/ha"
                         elif (str(i)=='Número de moliendas'):

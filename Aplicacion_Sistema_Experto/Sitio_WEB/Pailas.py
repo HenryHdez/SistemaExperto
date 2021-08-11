@@ -236,15 +236,15 @@ def Dibujar_planta(Vector_Entrada, Tipo_Hornilla, Etapas, Nombres_Ubicaciones, C
                     else:
                         Nombre_Paila='static/Vistas/Superior/'+'Cuadrada_acanalada_sin_aletas.png' 
                     
-            if(Tipo_Hornilla=='Plana de una camara'):
+            if(Tipo_Hornilla=='cámara plana'):
                 if(inter==0):
                     canvas.drawImage('static/Vistas/Chimeneas/Chimenea1_superior.png', 830, 271, width=Espacio*0.8, height=Espacio*0.75)
                     canvas.drawImage('static/Vistas/Camaras/Plana2_superior.png', 37, 270, width=Espacio*1.4*Escala_F2, height=Espacio*Escala_F)        
-            elif(Tipo_Hornilla=='Plana de dos camaras'):
+            elif(Tipo_Hornilla=='doble cámara'):
                 if(inter==0):
                     canvas.drawImage('static/Vistas/Chimeneas/Chimenea1_superior.png', 830, 271, width=Espacio*0.8, height=Espacio*0.75)
-                    canvas.drawImage('static/Vistas/Camaras/Doble_superior.png', 37, 153, width=Espacio*1.2*Escala_F2, height=Espacio*(Escala_F+1))         
-            elif(Tipo_Hornilla=='Ward cimpa'):
+                    canvas.drawImage('static/Vistas/Camaras/Doble_superior.png', 40, 163, width=Espacio*1.2*Escala_F2, height=Espacio*(Escala_F+1))         
+            elif(Tipo_Hornilla=='cámara Ward'):
                 if(inter==0):
                     canvas.drawImage('static/Vistas/Chimeneas/Chimenea1_superior.png', 830, 271, width=Espacio*0.8, height=Espacio*0.75)
                     canvas.drawImage('static/Vistas/Camaras/Cimpa_superior.png', 37, 270, width=Espacio*1.4*Escala_F2, height=Espacio*Escala_F)
@@ -262,7 +262,20 @@ def Dibujar_planta(Vector_Entrada, Tipo_Hornilla, Etapas, Nombres_Ubicaciones, C
                 canvas.drawImage('static/Vistas/Superior/'+'Plana_sin_aletas.png', 770, 270, width=Espacio*Escala_F, height=Espacio*Escala_F)
                 #>>>>>>>
                 canvas.setFont('Helvetica-Bold', 14)
-                canvas.drawString(Desplazamiento+12, 245, 'Paila: '+str(i+1))   
+                canvas.drawString(Desplazamiento+12, 245, 'Paila: '+str(i+1))
+                
+                canvas.setFont('Helvetica-Bold', 10)
+                if(i==2):
+                    canvas.drawString(Desplazamiento-5, 350, 'Concentradora')
+                elif(i==3 and Etapas>6):
+                    canvas.drawString(Desplazamiento-5, 350, 'Concentradora')    
+                elif(i==Etapas-1):
+                    canvas.drawString(Desplazamiento-5, 350, 'Recibidora')
+                elif(i==Etapas-2):
+                    canvas.drawString(Desplazamiento-5, 350, 'Clarificadora')
+                else:
+                    canvas.drawString(Desplazamiento-5, 350, 'Evaporadora')
+                
                 Desplazamiento=Desplazamiento+Espacio-10
                 canvas=Dibujar_Rotulo(canvas, 'Representación de la hornilla', 'Pictórico')
             if(inter==1):
@@ -272,7 +285,7 @@ def Dibujar_planta(Vector_Entrada, Tipo_Hornilla, Etapas, Nombres_Ubicaciones, C
                 canvas=Dibujar_Rotulo(canvas, 'Aviso', 'Aviso')
 #        #>>>>>>>>>>>>>>>>>>>>>>>>>>>>---------------------Vista de las camaras--------------------<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         canvas.showPage()
-        if(Tipo_Hornilla=='Plana de una camara'):
+        if(Tipo_Hornilla=='cámara plana'):
             if(inter==0):
                 canvas.drawImage('static/Vistas/Camaras/Plana2_cotas.png', 0, 0,  width=970, height=628)  
                 canvas=Dibujar_Cotas_Camara(canvas,'Cámara hornilla', Dimensiones_Pailas[0][4], Dimensiones_Pailas[0][3], 3)
@@ -284,7 +297,7 @@ def Dibujar_planta(Vector_Entrada, Tipo_Hornilla, Etapas, Nombres_Ubicaciones, C
                 Dibujar_Cotas_Valvula_1(canvas,'Válvula de tiro para la chimenea', Capacidad_hornilla, Ancho_UP)               
             if(inter==1):
                 canvas.drawImage('static/Vistas/Chimeneas/Recuperador.png', 0, 0,  width=970, height=628)  
-        elif(Tipo_Hornilla=='Plana de dos camaras'):
+        elif(Tipo_Hornilla=='doble cámara'):
             if(inter==0):
                 canvas.drawImage('static/Vistas/Camaras/Doble_cotas.png', 0, 0,  width=970, height=628)  
                 canvas=Dibujar_Cotas_Camara(canvas,'Cámara hornilla', Dimensiones_Pailas[0][4], Dimensiones_Pailas[0][3], 1)
@@ -296,7 +309,7 @@ def Dibujar_planta(Vector_Entrada, Tipo_Hornilla, Etapas, Nombres_Ubicaciones, C
                 Dibujar_Cotas_Valvula_1(canvas,'Válvula de tiro para la chimenea', Capacidad_hornilla, Ancho_UP) 
             if(inter==1):
                 canvas.drawImage('static/Vistas/Chimeneas/Recuperador.png', 0, 0,  width=970, height=628)  
-        elif(Tipo_Hornilla=='Ward cimpa'):
+        elif(Tipo_Hornilla=='cámara Ward'):
             if(inter==0):
                 canvas.drawImage('static/Vistas/Camaras/Cimpa_cotas.png', 0, 0,  width=970, height=628)
                 canvas=Dibujar_Cotas_Camara(canvas,'Cámara hornilla', Dimensiones_Pailas[0][4], Dimensiones_Pailas[0][3], 2)
@@ -1160,6 +1173,8 @@ def Mostrar_pailas(Vol_aux, Etapas, Sitio, T_Hornilla, Cap_hornilla, altura_medi
             Paila_seleccionada=random.choice([1,2,5,6])
             Tipo_paila[0].append(Paila_seleccionada)
             Tipo_paila[1].append(random.choice([True,False]))  
+        print(Tipo_paila[0])
+        print(float(Vol_aux[i]))
                    
     """---->>>>Algoritmo de optimización (Ascenso a la colina)<<<<----"""
     for i in range(Etapas-1,-1,-1):
@@ -1189,7 +1204,7 @@ def Mostrar_pailas(Vol_aux, Etapas, Sitio, T_Hornilla, Cap_hornilla, altura_medi
         else:
             Ancho_max=2.4
             Ancho_min=1.2
-        if(i==0):
+        if(i<4 and Tipo_paila[0][i]==3):
             Ancho_max=0.9
             Ancho_min=0.8
         A    = comprobar_individuo(Ancho_min, Ancho_max, abs(random.uniform(Ancho_min, Ancho_max)))

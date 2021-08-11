@@ -20,6 +20,9 @@
         <a class="nav-link" href="referencias">Bibliografía</a>
       </li>  
       <li class="nav-item">
+        <a class="nav-link" href="acceso">Corporativo</a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link" href="nosotros">Acerca de...</a>
       </li>
 {% endblock %}
@@ -31,14 +34,24 @@
     <hr class="my-4">
      <!--<form class="row" action = "http://localhost:7000/informe" method = "POST">-->
      <form class="row" action = "http://hornillapp.agrosavia.co:7000/informe" method = "POST">
+     
+         <div style= "width: 100%; text-align: center;">
+            <hr class="my-4">
+                <H3>
+                        <b>Datos del usuario</b>
+                </H3>
+            <hr class="my-4"> 
+         </div>
+         
+     <div>
         <table class="form-row">
             <tr class="col-md-6 col-sm-12 form-group">
                <td class="col-12"> <p> <b>Nombre de usuario o entidad*:</b> </p> </td>
-               <td class="col-12"> <input type = "text" name = "Nombre de usuario" placeholder="Ej. AGROSAVIA" maxlength="20" required/> </td>
+               <td class="col-12"> <input id="nom" type = "text" name = "Nombre de usuario" placeholder="Ej. AGROSAVIA" maxlength="20" required/> </td>
             </tr>
 
             <tr class="col-md-6 col-sm-12 form-group">
-               <td class="col-12"> <p> <b>Correo electrónico*:</b> </p> </td>
+               <td class="col-12"> <p> <b>Correo electrónico donde recibirá los resultados de la consulta*:</b> </p> </td>
                <td class="col-12"> <input type = "email" name = "Correo" maxlength="200" value="@" required/> </td>
             </tr>
 
@@ -48,7 +61,7 @@
             </tr>
                                                                         
             <tr class="col-md-6 col-sm-12 form-group">
-                <td class="col-12"> <p> <b>Pais:</b> </p> </td>
+                <td class="col-12"> <p> <b>País:</b> </p> </td>
                 <td class="col-12"> 
                     <select id="Pais" name="Pais" onchange="Ocultar_depto();">
                         {% for i in paises_lista %}
@@ -83,62 +96,82 @@
                     </select>                  
                 </td>
             </tr> 
+
+            </table> 
+         </div>
             
+         <div style= "width: 100%; text-align: center;">
+            <hr class="my-4">
+                <H3>
+                        <b>Información del cultivo</b>
+                </H3>
+            <hr class="my-4"> 
+         </div>
+            
+         <div>            
+            <table class="form-row">   
+                       
+            <tr class="col-md-6 col-sm-12 form-group">
+               <td class="col-12"> <p> <b>Área de caña disponible (Hectáreas):</b> </p> </td>
+               <td class="col-12"> <input id="Area_Semb" type = "number" name = "Área de caña disponible (Hectáreas)" value="18" step="0.5" min="1" max="400" onchange="Editar_Almanaque()"/> </td>
+            </tr>
+
+            <tr class="col-md-6 col-sm-12 form-group">
+               <td class="col-12"> <p> <b>Área de caña proyectada que se espera moler en los próximos 5 años (Hectáreas):</b> </p> </td>
+               <td class="col-12"> <input id="Area_proy" type = "number" name = "Área de caña proyectada que se espera moler en los próximos 5 años (Hectáreas)" value="0" step="0.5"  min="0" max="400" onchange="Editar_Almanaque()"/> </td>
+            </tr>
+
             <tr class="col-md-6 col-sm-12 form-group">
                <td class="col-12"> <p> <b>Altura del sitio (800 a 1800 metros sobre el nivel del mar):</b> </p> </td>
-               <td class="col-12"> <input id="Altura" type = "number" name = "Altura" value="1000" step="0.5" min="800" max="1800"/> </td>
+               <td class="col-12"> <input id="Altura22" type = "number" name = "Altura" value="1000" step="0.5" min="800" max="1800" onchange="Editar_Almanaque()"/> </td>
             </tr>
             
             <tr class="col-md-6 col-sm-12 form-group">
-               <td class="col-12"> <p> <b>Área de caña sembrada (Hectáreas):</b> </p> </td>
-               <td class="col-12"> <input id="Area_Semb" type = "number" name = "Área caña sembrada" value="18" step="0.5" min="10" max="80" onchange="Actualizar_caja()"/> </td>
+
+            </tr>  
+                      
+            <tr class="col-md-6 col-sm-12 form-group">
+                <td class="col-12"> <p> <b>¿Conoce el periodo vegetativo de la variedad?</b> </p> </td>
+                <td class="col-12"> 
+                    <select id="Conoce_veg" onchange="Ocultar_per();">
+                      <option value="NO" >NO</option> <!-- Si aparece cuadrito para poner el valor, no aparece el manejo agronomico-->
+                      <option value="SI" selected>SI</option>
+                    </select>  
+                </td>
+            </tr> 
+
+            <tr class="col-md-6 col-sm-12 form-group" id="cultivo_4">
+               <td class="col-12"> <p> <b>Digite el valor del periodo vegetativo (meses):</b> </p> </td>
+               <td class="col-12"> <input id="Vegetativo" type = "number" name = "Periodo vegetativo" value="18" step="1"  min="2" max="48" onchange="Editar_Almanaque()"/> </td>
             </tr>
 
-            <tr class="col-md-6 col-sm-12 form-group">
-               <td class="col-12"> <p> <b>Área proyectada para cultivo en los proximos 5 años (Hectáreas):</b> </p> </td>
-               <td class="col-12"> <input type = "number" name = "Área proyectada para cultivo en los proximos 5 años" value="0" step="0.5"  min="0" max="80"/> </td>
-            </tr>
-            
-            <tr class="col-md-6 col-sm-12 form-group">
-               <td class="col-12"> <p id="Molidastexto"> <b>¿Cada cuantos días quiere moler? (días 1 a 24):</p> </h6> </td>
-               <td class="col-12"> <input id="Molienda" type = "number" name = "¿Cada cuantos días quiere moler? (días)" value="16" min="1" max="24" onchange="Estimar_Molienda()"/> </td>
-            </tr>
 
             <tr class="col-md-6 col-sm-12 form-group">
-               <td class="col-12"> <p style="color:#FF0000"><b id="meses_ano_2" hidden=true>El parámetro asignado desborda la capacidad del sistema; se sugiere el asignado de forma automática (Meses de trabajo por año).</b></p></td>
-               <td class="col-12"> <p> <b id="meses_ano_1">Meses de trabajo por año (1 a 12):</b>  </p> </td>
-               <td class="col-12"> <input id="meses_ano" type = "number" name = "Meses de trabajo por año" step="1" value="12" min="1" max="12" onchange="Estimar_dias_w()"/> </td>
-            </tr>
+                <td class="col-12"> <p> <b>¿Conoce cuantas toneladas de caña produce por hectárea?</b> </p> </td>
+                <td class="col-12"> 
+                    <select id="Conoce_rend" onchange="Ocultar_Fertiliza();">
+                      <option value="NO" >NO</option> <!-- Si aparece cuadrito para poner el valor, no aparece el manejo agronomico-->
+                      <option value="SI" selected>SI</option>
+                    </select>  
+                </td>
+            </tr> 
 
-            <tr class="col-md-6 col-sm-12 form-group">
-               <td class="col-12"> <p style="color:#FF0000"><b id="semanas_mes_2" hidden=true>El parámetro asignado desborda la capacidad del sistema; se sugiere el asignado de forma automática (Semanas de trabajo por mes).</b></p></td>
-               <td class="col-12"> <p> <b  id="semanas_mes_1">Numero de moliendas al año:</b> </p> </td>
-               <td class="col-12"> <input id="semanas_mes" type = "number" name = "Número de moliendas al año" step="1" value="17" min="1" max="100"/> </td>
+            <tr class="col-md-6 col-sm-12 form-group" id="cultivo_3">
+               <td class="col-12"> <p> <b>Digite el valor de producción (toneladas por hectárea):</b> </p> </td>
+               <td class="col-12"> <input id="Rendi_proy" type = "number" name = "Producción de caña (toneladas por hectárea)" value="100" step="0.5"  min="40" max="200" onchange="Editar_Almanaque()"/> </td>
             </tr>
-
-            <tr class="col-md-6 col-sm-12 form-group">
-               <td class="col-12"> <p style="color:#FF0000"><b id="dias_semana_2" hidden=true>El parámetro asignado desborda la capacidad del sistema; se sugiere el asignado de forma automática (Dias de trabajo a la semana).</b></p></td>
-               <td class="col-12"> <p> <b id="dias_semana_1">Días de trabajo de la hornilla por semana (3 a 7):</b> </p> </td>
-               <td class="col-12"> <input id="dias_semana" type = "number" name = "Días de trabajo de la hornilla por semana" step="0.5" value="5.5" step="0.5" min="3" max="7" onchange="Estimar_dias_w()"/> </td>
-            </tr>
-
-            <tr class="col-md-6 col-sm-12 form-group">
-               <td class="col-12"> <p style="color:#FF0000"><b id="horas_dia_2" hidden=true>El parámetro asignado desborda la capacidad del sistema; se sugiere el asignado de forma automática (Horas de trabajo al dia).</b></p></td>
-               <td class="col-12"> <p> <b id="horas_dia_1">Horas de trabajo de la hornilla por día (12 a 24):</b> </p> </td>
-               <td class="col-12"> <input id="horas_dia" type = "number" name = "Horas de trabajo de la hornilla por día" step="0.5" value="24" min="12" max="24"/> </td>
-            </tr>
-                                    
-            <tr class="col-md-6 col-sm-12 form-group">
+          
+            <tr class="col-md-6 col-sm-12 form-group" id="cultivo_2" style="visibility:hidden;">
                 <td class="col-12"> <p> <b>¿Utiliza fertilizante y realiza control de la maleza?</b> </p> </td>
                 <td class="col-12"> 
                     <select id="Fertiliza" onchange="Respuesta();">
-                      <option value="NO">NO</option>
                       <option value="SI">SI</option>
+                      <option value="NO">NO</option>
                     </select>  
                 </td>
             </tr>
                        
-            <tr class="col-md-6 col-sm-12 form-group">
+            <tr class="col-md-6 col-sm-12 form-group" id="cultivo_1" style="visibility:hidden;">
                 <td class="col-12"> <p> <b>¿Conoce las variedades de caña sembradas?</b> </p> </td>
                 <td class="col-12"> 
                     <select id="Ocultaritem" onchange="OcultarCSS();">
@@ -146,18 +179,232 @@
                       <option value="SI">SI</option>
                     </select>  
                 </td>
+            </tr> 
+            
+            </table> 
+         </div>
+            
+         <div style= "width: 100%; text-align: center;">
+            <hr class="my-4">
+                <H3>
+                        <b>Funcionamiento de la hornilla</b>
+                </H3>
+            <hr class="my-4"> 
+         </div>
+            
+         <div>            
+            <table class="form-row">         
+            <tr class="col-md-6 col-sm-12 form-group">
+               <td class="col-12"> <p> <b id="meses_ano_1">Meses de trabajo por año (1 a 12):</b>  </p> </td>
+               <td class="col-12"> <input id="meses_ano" type = "number" name = "Meses de trabajo por año" step="1" value="12" min="1" max="12" onchange="Editar_Almanaque()"/> </td>
             </tr>
-                        
-            <tr class="col-12 form-group" id="Celdab1">
+
+            <tr class="col-md-6 col-sm-12 form-group">
+               <td class="col-12"> <p> <b id="horas_dia_1">Horas de trabajo por día (12 a 24):</b> </p> </td>
+               <td class="col-12"> <input id="horas_dia" type = "number" name = "Horas de trabajo de la hornilla por día" step="0.5" value="24" min="12" max="24" onchange="Editar_Almanaque()"/> </td>
+            </tr>
+           
+            <tr class="col-md-6 col-sm-12 form-group" valign="middle">              
+               <td class="col-12"> <p style="color:#FF0000" align="justify"><b id="Duracion_1" hidden=true>La configuración dada excede la capacidad de diseño del sistema por lo que se modificaron algunos parámetros (se sugiere aumentar las semanas de molienda, los meses de trabajo por año, las horas de trabajo por día o reducir las hectáreas de caña a cultivar).</b></p></td>
+               <td class="col-12"> <p><b id="Duracion_2">Ciclo de la molienda:</b></p></td>
+               <td class="col-12">
+                   <div class="div2">
+                        <p style="margin-right: 17px;"><tt>Inicia el &nbsp;</tt></p>
+                        <select id="dia_inicio" style="width:140px; height:40px" onchange="Editar_Almanaque()">
+                            <option>Domingo</option>
+                            <option>Lunes</option>
+                            <option>Martes</option>
+                            <option>Miercoles</option>
+                            <option>Jueves</option>
+                            <option>Viernes</option>
+                            <option>Sabado</option>
+                        </select> 
+                        <p><tt>&nbsp;a las &nbsp;</tt></p>
+                        <input id="Reloj_ini" type="time" value="00:00" style="width:140px; height:40px" onchange="Editar_Almanaque()" required>
+                    </div>
+                    <div class="div2">
+                        <p><tt>finaliza el &nbsp;</tt></p>
+                        <select id="dia_fin" style="width:140px; height:40px" onchange="Editar_Almanaque()">
+                            <option>mismo día</option>
+                            <option>Domingo</option>
+                            <option>Lunes</option>
+                            <option>Martes</option>
+                            <option>Miercoles</option>
+                            <option>Jueves</option>
+                            <option selected>Viernes</option>
+                            <option>Sabado</option>
+                        </select> 
+                        <p><tt>&nbsp;a las &nbsp;</tt></p>
+                        <input id="Reloj_fin" type="time" value="12:00" style="width:140px; height:40px" onchange="Editar_Almanaque()" required>
+                    </div>
+                    <div class="div2">
+
+                        <br/>
+                    </div>
+                </td>
+                
+                <td>
+                    <table class="form-row" id="Tablahorn" align="center">
+                        <tr class="col-6 form-group">
+                            <td class="col-12">
+                                Producción de panela anual [t]
+                            </td>
+                            <td class="col-12">
+                            <input id="Prod_anual_pane" type = "number" name = "Producción de panela anual [t]" value="115" readonly/> </td>
+                            </td>
+                         </tr>
+                         
+                         <tr class="col-6 form-group">
+                            <td class="col-12">
+                                Producción de la hornilla [kg/hora]
+                            </td>
+                            <td class="col-12">
+                            <input id="Prod_diaria_pane" type = "number" name = "Producción de la hornilla [kg/hora]" value="75" readonly/> </td>
+                            </td>
+                        </tr>
+            
+                        <tr class="col-6 form-group">
+                            <td class="col-12">
+                                Moliendas estimadas al año
+                            </td>
+                            <td class="col-12">
+                            <input id="Molidas_ano_t" type = "number" name = "Moliendas estimadas al año" value="51" readonly/> </td>
+                            </td>
+                         </tr>
+                         
+                         <tr class="col-6 form-group">
+                            <td class="col-12">
+                                Tipo de cámara <!-- Dias de molienda Cambiar luego-->
+                            </td>
+                            <td class="col-12">
+                            <input id="capacidad_horni" type = "text" name = "Panela producida por hora [kg/hora]" value="cámara Ward" readonly/> </td>
+                            </td>
+                        </tr>            
+                    </table>
+               </td> 
+            </tr>       
+            
+            <tr class="col-md-6 col-sm-12 form-group">
                 <td class="col-12">
-                    <input class="btn btn-success button-slider" type = "submit" value = "Generar informe"/>
+                        <div class="div2">
+                        <p><tt>¿Cuántas semanas al mes va a moler? &nbsp;</tt></p>
+                        
+                        <select id="Frecuencia_Mol" style="width:250px; height:40px" onchange="Editar_Almanaque()">
+                            <option value="1">1 semana (2 de descanso)</option>
+                            <option value="2" >1 semana (1 de descanso)</option>
+                            <option value="3" selected>Todas las semanas</option>
+                            <option value="4" >1 semana (3 de descanso)</option>
+                            <option value="5" >2 semanas (1 de descanso)</option>
+                            <option value="6" >2 semanas (2 de descanso)</option>
+                            <option value="7" >2 semanas (3 de descanso)</option>
+                            <option value="8" >3 semanas (1 de descanso)</option>
+                            <option value="9" >3 semanas (2 de descanso)</option>
+                        </select> 
+                        </div>
+                        <br/>
+                    </td>
+                    <td class="col-12">
+            		<table id="tabla2" border="1" style="text-align:center;">
+                            <tbody style="display: flex; justify-content: space-around; padding: 13px;">
+                                <tr style="width: 100%; display: flex; justify-content: space-around;">
+                                    <td style="width: 14.2%;">Dom</td>
+                                    <td style="width: 14.2%;">Lun</td>
+                                    <td style="width: 14.2%;">Mar</td>
+                                    <td style="width: 14.2%;">Mie</td>
+                                    <td style="width: 14.2%;">Jue</td>
+                                    <td style="width: 14.2%;">Vie</td>
+                                    <td style="width: 14.2%;">Sab</td>
+                                </tr>
+                                   
+                                <tr style="width: 100%; display: flex; justify-content: space-around;">
+                                    <td id="dia1" style="width: 14.2%;background-color: red;">1</td>
+                                    <td id="dia2" style="width: 14.2%;background-color: red;">2</td>
+                                    <td id="dia3" style="width: 14.2%;background-color: red;">3</td>
+                                    <td id="dia4" style="width: 14.2%;background-color: red;">4</td>
+                                    <td id="dia5" style="width: 14.2%;background-color: red;">5</td>
+                                    <td id="dia6" style="width: 14.2%;background-color: red;">6</td>
+                                    <td id="dia7" style="width: 14.2%;">7</td>
+                                </tr>
+                                   
+                                <tr style="width: 100%; display: flex; justify-content: space-around;">
+                                    <td id="dia8" style="width: 14.2%;background-color: orange;">8</td>
+                                    <td id="dia9" style="width: 14.2%;background-color: orange;">9</td>
+                                    <td id="dia10" style="width: 14.2%;background-color: orange;">10</td>
+                                    <td id="dia11" style="width: 14.2%;background-color: orange;">11</td>
+                                    <td id="dia12" style="width: 14.2%;background-color: orange;">12</td>
+                                    <td id="dia13" style="width: 14.2%;background-color: orange;">13</td>
+                                    <td id="dia14" style="width: 14.2%;">14</td>
+                                </tr>
+                                   
+                                <tr style="width: 100%; display: flex; justify-content: space-around;">
+                                    <td id="dia15" style="width: 14.2%;background-color: yellow;">15</td>
+                                    <td id="dia16" style="width: 14.2%;background-color: yellow;">16</td>
+                                    <td id="dia17" style="width: 14.2%;background-color: yellow;">17</td>
+                                    <td id="dia18" style="width: 14.2%;background-color: yellow;">18</td>
+                                    <td id="dia19" style="width: 14.2%;background-color: yellow;">19</td>
+                                    <td id="dia20" style="width: 14.2%;background-color: yellow;">20</td>
+                                    <td id="dia21" style="width: 14.2%;">21</td>
+                                </tr>
+                                   
+                                <tr style="width: 100%; display: flex; justify-content: space-around;">
+                                    <td id="dia22" style="width: 14.2%;background-color: green;">22</td>
+                                    <td id="dia23" style="width: 14.2%;background-color: green;">23</td>
+                                    <td id="dia24" style="width: 14.2%;background-color: green;">24</td>
+                                    <td id="dia25" style="width: 14.2%;background-color: green;">25</td>
+                                    <td id="dia26" style="width: 14.2%;background-color: green;">26</td>
+                                    <td id="dia27" style="width: 14.2%;background-color: green;">27</td>
+                                    <td id="dia28" style="width: 14.2%;">28</td>
+                                </tr>
+                                   
+                                <tr style="width: 100%; display: flex; justify-content: space-around;">
+                                    <td id="dia29" style="width: 14.2%;background-color: blue;">29</td>
+                                    <td id="dia30" style="width: 14.2%;background-color: blue;">30</td>
+                                    <td id="dia31" style="width: 14.2%;background-color: blue;">1</td>
+                                    <td id="dia32" style="width: 14.2%;background-color: blue;">2</td>
+                                    <td id="dia33" style="width: 14.2%;background-color: blue;">3</td>
+                                    <td id="dia34" style="width: 14.2%;background-color: blue;">4</td>
+                                    <td id="dia35" style="width: 14.2%;">5</td>
+                                </tr>
+                            </tbody>
+                    </table>
+                </td>  
+            </tr>
+
+            <tr class="col-md-6 col-sm-12 form-group" id="Cultivo_cama" style="visibility:hidden;">
+                <td class="col-12"> <p> <b>¿Quiere cámara doble? (Sí desconoce la respuesta seleccione NO)</b> </p> </td>
+                <td class="col-12"> 
+                    <select id="select_camara" onchange='Editar_Almanaque()'>
+                      <option value="NO">NO</option>
+                      <option value="SI">SI</option>
+                    </select>  
                 </td>
             </tr>
-        </table> 
+            
+            <tr class="col-md-6 col-sm-12 form-group">
 
+            </tr>
+            
+            <tr class="col-md-6 col-sm-12 form-group">
+
+            </tr>
+            
+
+                                    
+        </table> 
+        </div>     
+                  
+        <div id="Celdab1" style= "width: 100%; text-align: center;">
+            <hr class="my-4">
+                <H4>
+                        <b>Haga clic sobre el icono para generar el informe.</b> <br/>
+                        <input class="btn btn-success button-slider" src="/static/Iconos/Icono.png" type="image" style="width:150px; height:100px;"/>
+                </H4>
+            <hr class="my-4"> 
+         </div>   
+  
         <table class="form-row" id="Tabla1" align="center" style="visibility:hidden;">
-        
-            <div id="Titulo" style="visibility:hidden;">
+      
+            <div id="Titulo" style="width: 100%; text-align: center;visibility:hidden;">
                 <H3>
                     <b>Complete la siguiente información</b>
                 </H3>
@@ -208,15 +455,18 @@
                         <img src="{{url_for('static', filename='/Latex/Cana/POJ2878.png')}}" width="200" height="250">
                     </OBJECT>         
                 </td>
-            </tr> 
+            </tr>            
             
-            <tr class="col-12 form-group">
-                <td class="col-12">
-                    <input class="btn btn-success button-slider" type = "submit" value = "Generar informe"/>
-                </td>
-            </tr>
-        </table>                    
-        
+        </table>     
+                       
+        <div id="Titulo_1" style= "visibility:hidden; width: 100%; text-align: center;">
+            <hr class="my-4">
+                <H4>
+                        <b>Haga clic sobre el icono para generar el informe</b> <br/>
+                        <input class="btn btn-success button-slider" src="/static/Iconos/Icono.png" type="image" style="width:150px; height:100px;"/>
+                </H4>
+            <hr class="my-4"> 
+         </div>         
         <!--Rotulo oculto para almacenar las ciudades y las 
         variedades de caña temporalmente-->
         <select class="form-group-lg" id="CiudadOculto" style="visibility:hidden;">
@@ -233,10 +483,29 @@
             {% for k in Ciudad_cana_1 %}
                 <option value= {{loop.index}}>{{k}}</option>"
             {% endfor %}
-        </select> 
-
+        </select>
+         
+        <input class="form-row" id="RendOculto" name = "Conoce el rendimiento de la caña" type = "text" value="SI" style="visibility:hidden;">
+        <input class="form-row" id="variedadesOculto" name = "Conece las variedades de caña" type = "text" value="NO" style="visibility:hidden;">
         <input class="form-row" id="FertilizaOculto" name = "Usa fertilizante" type = "text" value="NO" style="visibility:hidden;">
         
+        <input class="form-row" id="Cana_horas" name = "Caña molida por hora [t]" type = "text" value="0.18" style="visibility:hidden;">
+        <input class="form-row" id="Capaci_mol" name = "Capacidad del molino [kg/hora]" type = "text" value="236.19" style="visibility:hidden;">
+        <input class="form-row" id="Etapas_hor" name = "Etapas" type = "text" value="5" style="visibility:hidden;">
+        
+        <input class="form-row" id="Dias_seman" name = "Días trabajados a la semana" type = "text" value="5.5" style="visibility:hidden;">
+        <input class="form-row" id="Jorn_traba" name = "Jornada de trabajo al mes" type = "text" value="Todas las semanas" style="visibility:hidden;">
+        <input class="form-row" id="Moli_por_a" name = "Moliendas al año" type = "text" value="51" style="visibility:hidden;">
+        <input class="form-row" id="Capa_estim" name = "Capacidad estimada de la hornilla [kg/hora]" type = "text" value="75" style="visibility:hidden;">
+        <input class="form-row" id="Producci_a" name = "Producción anual de caña [t]" type = "text" value="1086" style="visibility:hidden;">
+        <input class="form-row" id="Producc_jc" name = "Producción de jugo crudo [t]" type = "text" value="652" style="visibility:hidden;">
+        <input class="form-row" id="Jugo_clari" name = "Jugo clarificado [t]" type = "text" value="586" style="visibility:hidden;">
+        <input class="form-row" id="Cachaza_an" name = "Cachaza por año [t]" type = "text" value="65.2" style="visibility:hidden;">
+        <input class="form-row" id="Melote_ano" name = "Melote por año [t]" type = "text" value="35.8" style="visibility:hidden;">
+        <input class="form-row" id="Panela_anu" name = "Producción anual de panela [t]" type = "text" value="115" style="visibility:hidden;">
+        <input class="form-row" id="Panela_mol" name = "Panela producida por molienda [t]" type = "text" value="3" style="visibility:hidden;">
+        <input class="form-row" id="Tipo_camar" name = "Tipo de cámara de combustión" type = "text" value="Ward cimpa" style="visibility:hidden;">        
+        <input class="form-row" id="Area_bag" name = "Área de la bagacera (m^2)" type = "number" value="100" style="visibility:hidden;">                      
         <!--Termina el combo oculto-->
     </form>  
     
@@ -269,8 +538,8 @@
            sel.onchange = function() {Seleccionarvariedad()};
            Seleccionarvariedad();
            }
-         </script>  
-          
+         </script>        
+                   
          <script type="text/javascript">
          function Seleccionarvariedad() {
              var city   = document.getElementById("Ciudad");
@@ -384,37 +653,359 @@
                  var coeficiente = per_veg/Gr_Br2;
                  document.getElementById("CSS de la caña").value=Gr_Br2; 
                                  
-                 if(coeficiente<0.09){
-                     document.getElementById("Area_Semb").max=30;
-                     document.getElementById("meses_ano").value=12;
-                     document.getElementById("semanas_mes").value=17;
-                     document.getElementById("dias_semana").value=5.5;
-                     document.getElementById("horas_dia").value=24;
-                     document.getElementById("meses_ano_1").hidden = true;
-                     document.getElementById("meses_ano_2").hidden = false;
-                     document.getElementById("semanas_mes_1").hidden = true;
-                     document.getElementById("semanas_mes_2").hidden = false;
-                     document.getElementById("dias_semana_1").hidden = true;  
-                     document.getElementById("dias_semana_2").hidden = false;
-                     document.getElementById("horas_dia_1").hidden = true;                  
-                     document.getElementById("horas_dia_2").hidden = false;  
-                 }
-                 
-                 else{
-                     document.getElementById("Area_Semb").max=90;
-                     document.getElementById("meses_ano_2").hidden = true;
-                     document.getElementById("meses_ano_1").hidden = false;
-                     document.getElementById("semanas_mes_2").hidden = true;
-                     document.getElementById("semanas_mes_1").hidden = false;
-                     document.getElementById("dias_semana_2").hidden = true;  
-                     document.getElementById("dias_semana_1").hidden = false;
-                     document.getElementById("horas_dia_2").hidden = true;                  
-                     document.getElementById("horas_dia_1").hidden = false; 
-                     }
-                     
+                 Estimar_Molienda(Gr_Br2, per_veg);
                  Abririmagen(Var_cana+".png");          
              }
         </script> 
+
+        <script type="text/javascript">
+        function Ocultar_Fertiliza() {
+          //Función para ocultar los elementos de la página
+          var elemento = document.getElementById("Conoce_rend");
+          var ITEM     = elemento.options[elemento.selectedIndex].innerText;
+          if(ITEM=="NO"){
+              //document.getElementById("cultivo_1").style.visibility = "visible";
+              document.getElementById("cultivo_2").style.visibility = "visible";
+              //document.getElementById("cultivo_3").style.visibility = "hidden";
+              document.getElementById("RendOculto").value = "NO";
+              document.getElementById("Rendi_proy").value = 100;
+             }
+          else{
+              //document.getElementById("cultivo_1").style.visibility = "hidden";
+              document.getElementById("cultivo_2").style.visibility = "hidden";
+              //document.getElementById("cultivo_3").style.visibility = "visible";
+              document.getElementById("RendOculto").value = "SI";
+             } 
+        }
+        </script>
+
+        <script type="text/javascript">
+        function Ocultar_per() {
+          var elemento = document.getElementById("Conoce_veg");
+          var ITEM     = elemento.options[elemento.selectedIndex].innerText;
+          if(ITEM=="NO"){
+              var vegeta=18;
+              var altura2 = parseFloat(document.getElementById("Altura22").value);
+              if(altura2<=500){vegeta=12;}
+              else if(altura2>500 && altura2<=1000){vegeta=14;}
+              else if(altura2>1000 && altura2<=1500){vegeta=16;}
+              else if(altura2>1500 && altura2<=1600){vegeta=18;}
+              else if(altura2>1600 && altura2<=2000){vegeta=20;}
+              else {vegeta=24;}
+              document.getElementById("Vegetativo").value = vegeta;              
+             }
+          else{
+              document.getElementById("Vegetativo").value = 18;
+             } 
+        }
+        </script>
+
+        <script type="text/javascript">
+        function Ocultar_var() {
+          //Función para ocultar los elementos de la página
+          var elemento = document.getElementById("Ocultaritem");
+          var ITEM     = elemento.options[elemento.selectedIndex].innerText;
+          if(ITEM=="NO"){
+              document.getElementById("variedadesOculto").value = "NO";
+             }
+          else{
+              document.getElementById("variedadesOculto").value = "SI";
+             } 
+        }
+        </script>
+                    
+        <script type="text/javascript">
+        function timeStringToFloat(time) {
+          var hoursMinutes = time.split(/[.:]/);
+          var hours = parseInt(hoursMinutes[0], 10);
+          var minutes = hoursMinutes[1] ? parseInt(hoursMinutes[1], 10) : 0;
+          return hours + minutes / 60;
+        }
+        </script>
+
+        <script type="text/javascript">
+        function Llenar_almanaque(dia_ini, dia_fin, Freq_t) {
+              var color_f="red";
+              var conta_dias=0;
+              
+              for(let j = 1; j < 36; j++){
+                  var nombre_celda="dia"+j;
+                  var element = document.getElementById(nombre_celda);              
+                  if((j>=dia_ini) && (j<=dia_fin)){
+                      element.style.backgroundColor = color_f;
+                      if(j<31){conta_dias=conta_dias+1;}
+                      } 
+                  else{element.style.backgroundColor = "white";}
+                              
+                  if((j==07) && (Freq_t=="Todas las semanas")){dia_ini=dia_ini+7;dia_fin=dia_fin+7;color_f="orange";}
+                  if((j==14) && (Freq_t=="Todas las semanas")){dia_ini=dia_ini+7;dia_fin=dia_fin+7;color_f="yellow";}
+                  if((j==21) && (Freq_t=="Todas las semanas")){dia_ini=dia_ini+7;dia_fin=dia_fin+7;color_f="green";}
+                  if((j==28) && (Freq_t=="Todas las semanas")){dia_ini=dia_ini+7;dia_fin=dia_fin+7;color_f="blue";}
+
+                  if((j==07) && (Freq_t=="3 semanas (2 de descanso)")){dia_ini=dia_ini+7;dia_fin=dia_fin+7;color_f="orange";}
+                  if((j==14) && (Freq_t=="3 semanas (2 de descanso)")){dia_ini=dia_ini+7;dia_fin=dia_fin+7;color_f="yellow";}
+
+                  if((j==07) && (Freq_t=="3 semanas (1 de descanso)")){dia_ini=dia_ini+7;dia_fin=dia_fin+7;color_f="orange";}
+                  if((j==14) && (Freq_t=="3 semanas (1 de descanso)")){dia_ini=dia_ini+7;dia_fin=dia_fin+7;color_f="yellow";}
+                  if((j==28) && (Freq_t=="3 semanas (1 de descanso)")){dia_ini=dia_ini+14;dia_fin=dia_fin+14;color_f="blue";}
+                                    
+                  if((j==07) && (Freq_t=="2 semanas (2 de descanso)")){dia_ini=dia_ini+7;dia_fin=dia_fin+7;color_f="orange";}
+                  if((j==28) && (Freq_t=="2 semanas (2 de descanso)")){dia_ini=dia_ini+21;dia_fin=dia_fin+21;color_f="blue";}
+
+                  if((j==07) && (Freq_t=="2 semanas (3 de descanso)")){dia_ini=dia_ini+7;dia_fin=dia_fin+7;color_f="blue";}
+
+                  if((j==07) && (Freq_t=="2 semanas (1 de descanso)")){dia_ini=dia_ini+7;dia_fin=dia_fin+7;color_f="orange";}
+                  if((j==21) && (Freq_t=="2 semanas (1 de descanso)")){dia_ini=dia_ini+14;dia_fin=dia_fin+14;color_f="yellow";}
+                  if((j==28) && (Freq_t=="2 semanas (1 de descanso)")){dia_ini=dia_ini+7;dia_fin=dia_fin+7;color_f="blue";}
+
+                  if((j==14) && (Freq_t=="1 semana (1 de descanso)")){dia_ini=dia_ini+14;dia_fin=dia_fin+14;color_f="orange";}
+                  if((j==28) && (Freq_t=="1 semana (1 de descanso)")){dia_ini=dia_ini+14;dia_fin=dia_fin+14;color_f="blue";}
+                  
+                  if((j==21) && (Freq_t=="1 semana (2 de descanso)")){dia_ini=dia_ini+21;dia_fin=dia_fin+21;color_f="orange";}  
+                  
+                  if((j==28) && (Freq_t=="1 semana (3 de descanso)")){dia_ini=dia_ini+28;dia_fin=dia_fin+28;color_f="blue";}               
+                  }
+            return conta_dias;
+        }
+        </script>
+
+        <script type="text/javascript">
+        function Calcular_Hornilla(horas_t, Hora_sal, conta_dias, Freq, Freq_t, Crecimiento) {                  
+              var Produccion_anual_cana = 0;
+              var Produccion_jugo_crudo = 0;
+              var Jugo_clarificado = 0;
+              var Cachaza_por_ano = 0;
+              var Melto_ano = 0;
+              var Panela_anual = 0;
+              var Panela_Molienda = 0;
+              var Panela_diaria = 0;
+              var Panela_hora = 0;    
+              var Cana_molida_hora = 0;          
+              var meses    = parseFloat(document.getElementById("meses_ano").value); //meses al año
+              var horas_d  = parseFloat(document.getElementById("horas_dia").value); //horas de trabajo al dia
+              var dias_sem = ((horas_t-4)/24);                                       //Dias de trabajo a la semana
+              var dias_mes = ((((conta_dias)*24)-Hora_sal)/24)-1;
+              var Etapas=5;
+              var Rendimiento_cana = parseFloat(document.getElementById("Rendi_proy").value);
+              var Per_vege=document.getElementById("Vegetativo").value;
+              
+              var FactorCorreccion=0.5;
+              var elemento = document.getElementById("Fertiliza");
+              var ITEM     = elemento.options[elemento.selectedIndex].innerText;
+              if(ITEM=="NO"){
+                  FactorCorreccion=0.5;
+                 }
+              else{
+                  
+                  FactorCorreccion=0.8;
+                 }   
+            
+              Rendimiento_cana = Rendimiento_cana*FactorCorreccion;
+              Produccion_anual_cana=(Crecimiento*12.0*Rendimiento_cana)/parseFloat(Per_vege);
+              Produccion_jugo_crudo=60.0*Produccion_anual_cana/100.0; //Dato del molino
+              Jugo_clarificado=Produccion_jugo_crudo-(Produccion_jugo_crudo*(4.0/100.0));
+              Jugo_clarificado=(Jugo_clarificado*3/100)+Jugo_clarificado;
+              Cachaza_por_ano=Produccion_jugo_crudo*(4.0/100.0);
+              Melto_ano=Cachaza_por_ano*0.55;
+              Panela_anual=17*Jugo_clarificado/96.0;
+              var camara=0;
+              var semanas_molidos_ano = 0;
+              var dias_parada_molienda = 0;
+              
+              if(Freq_t=="Todas las semanas"){dias_parada_molienda=7;camara=1;}
+              if(Freq_t=="1 semana (2 de descanso)"){dias_parada_molienda=21;camara=0;}
+              if(Freq_t=="1 semana (1 de descanso)"){dias_parada_molienda=14;camara=1;}
+              if(Freq_t=="1 semana (3 de descanso)"){dias_parada_molienda=28;camara=0;}
+              
+              if(Freq_t=="2 semanas (1 de descanso)"){dias_parada_molienda=21; 
+                                                      if(dias_sem<5.5){camara=0;}
+                                                      else{camara=1;}
+                                                      }
+                                                      
+              if(Freq_t=="2 semanas (2 de descanso)"){dias_parada_molienda=28;
+                                                      if(dias_sem<5.5){camara=0;}
+                                                      else{camara=1;}              
+                                                      }
+                                                      
+              if(Freq_t=="3 semanas (1 de descanso)"){dias_parada_molienda=28;camara=1;}
+              
+              if(Freq_t=="3 semanas (2 de descanso)"){dias_parada_molienda=35;
+                                                      if(dias_sem<5.5){camara=0;}
+                                                      else{camara=1;}              
+                                                      }              
+              
+              if(Freq_t=="2 semanas (3 de descanso)"){dias_parada_molienda=35;camara=0;}
+              
+              semanas_molidos_ano = (30*meses)/dias_parada_molienda;              
+              var dias_molidos_ano = (dias_mes*meses);
+              
+              Cana_molida_hora = Produccion_anual_cana/(horas_d*dias_sem*semanas_molidos_ano);
+              var Capacidad_molino = Cana_molida_hora*1.3*1000;
+              
+              Panela_Molienda = Panela_anual/semanas_molidos_ano;
+              Panela_diaria   = (Panela_Molienda/dias_sem)*1000.0;
+              Panela_hora     = (Panela_anual/(horas_d*dias_sem*semanas_molidos_ano))*1000;
+              var Panela_hora_normalizado=0;
+
+              var Elemen  = document.getElementById("select_camara");
+              var Cam_sel = Elemen.options[Elemen.selectedIndex].innerText;
+                            
+              if(camara==0){Tipo_horn="cámara plana";}
+              else if(camara==1){Tipo_horn="cámara Ward";}
+              
+              if(Panela_hora<=75){Etapas=5; Panela_hora_normalizado=75;Tipo_horn="cámara plana";}
+              else if((Panela_hora>75) && (Panela_hora<=100)){Etapas=6;Panela_hora_normalizado=100;Tipo_horn="cámara plana";}
+              else if((Panela_hora>100) && (Panela_hora<=125)){Etapas=6;Panela_hora_normalizado=125;Tipo_horn="cámara plana";}
+              else if((Panela_hora>125) && (Panela_hora<=150)){Etapas=6;Panela_hora_normalizado=150;}
+              
+              else if((Panela_hora>150) && (Panela_hora<=175)){Etapas=7;Panela_hora_normalizado=175;}
+              else if((Panela_hora>175) && (Panela_hora<=200)){Etapas=7;Panela_hora_normalizado=200;}
+              else if((Panela_hora>200) && (Panela_hora<=225)){Etapas=7;Panela_hora_normalizado=225;}
+              else if((Panela_hora>225) && (Panela_hora<=250)){Etapas=7;Panela_hora_normalizado=250;}
+              else if((Panela_hora>250)){Etapas=7;Panela_hora_normalizado=250;} 
+              
+              if(Tipo_horn=="cámara plana"){document.getElementById("Cultivo_cama").style.visibility = "visible";}
+              else{document.getElementById("Cultivo_cama").style.visibility = "hidden";}
+              
+              var bagaceras=0;
+              var area = Math.round((Panela_hora*1.204577834)+12.47927141);
+              var pila = Math.round((Panela_hora*0.034993112)+0.019533504);
+              if(pila<1){pila=1;}
+                            
+              if(Tipo_horn == "cámara plana" && Panela_hora_normalizado<=125){bagaceras=2;}
+              else if(Tipo_horn == "cámara plana" && Panela_hora_normalizado>125){bagaceras=1;}
+              else if(Tipo_horn == "cámara Ward"){bagaceras=1;}
+              
+              area = area*bagaceras;
+              
+              if(Tipo_horn=="cámara plana" && Cam_sel=="SI"){Tipo_horn="doble cámara";}
+                   
+              //Envio a python
+              document.getElementById("Tipo_camar").value=Tipo_horn;
+              document.getElementById("Jorn_traba").value=Freq_t;
+              document.getElementById("Dias_seman").value=dias_sem;
+              document.getElementById("Moli_por_a").value=semanas_molidos_ano;
+              document.getElementById("Capa_estim").value=Panela_hora_normalizado;
+              document.getElementById("Producci_a").value=Produccion_anual_cana;
+              document.getElementById("Producc_jc").value=Produccion_jugo_crudo;
+              document.getElementById("Jugo_clari").value=Jugo_clarificado;
+              document.getElementById("Cachaza_an").value=Cachaza_por_ano;
+              document.getElementById("Melote_ano").value=Melto_ano;
+              document.getElementById("Panela_anu").value=Panela_anual;
+              document.getElementById("Panela_mol").value=Panela_Molienda; 
+              document.getElementById("Etapas_hor").value=Etapas;
+              document.getElementById("Area_bag").value=area;
+              //Capacidad del molino
+              document.getElementById("Cana_horas").value=Cana_molida_hora;
+              document.getElementById("Capaci_mol").value=Capacidad_molino;
+              
+              //Mostrar en html
+              document.getElementById("Prod_anual_pane").value=Math.round(Panela_anual);
+              document.getElementById("Prod_diaria_pane").value=Math.round(Panela_hora_normalizado);
+              document.getElementById("Molidas_ano_t").value=Math.round(semanas_molidos_ano);
+              document.getElementById("capacidad_horni").value=Tipo_horn;
+              return Panela_hora;
+              }
+        </script>
+                
+        <script type="text/javascript">
+         function Editar_Almanaque(){
+              var combo = document.getElementById("dia_inicio");
+              var dia_uno = combo.options[combo.selectedIndex].text;
+              var combo2 = document.getElementById("dia_fin");
+              var dia_dos = combo2.options[combo2.selectedIndex].text;  
+              var dia_ini=0;
+              var dia_fin=0;
+              var Hora1=document.getElementById("Reloj_ini").value;
+              var Hora2=document.getElementById("Reloj_fin").value;
+              var fHora1=timeStringToFloat(Hora1);
+              var fHora2=timeStringToFloat(Hora2);
+              var Hora_sal=fHora1-fHora2;
+              var Freq=0;
+              var combo3 = document.getElementById("Frecuencia_Mol");
+              var Freq_t = combo3.options[combo3.selectedIndex].text;
+              var horas_t=0;
+              var Freq_mo  = [12,20,26,36,40,52];                                    
+              //Cada semana de molienda
+              var Crecimiento = 0;
+              Crecimiento = parseFloat(document.getElementById("Area_Semb").value);
+              Crecimiento = Crecimiento+parseFloat(document.getElementById("Area_proy").value);
+                            
+              if(Freq_t=="1 semana (2 de descanso)"){Freq=26;}
+              if(Freq_t=="1 semana (1 de descanso)"){Freq=26;}
+              if(Freq_t=="Todas las semanas"){Freq=52;}
+              if(Freq_t=="1 semana (3 de descanso)"){Freq=12;}
+              if(Freq_t=="2 semanas (1 de descanso)"){Freq=40;}
+              if(Freq_t=="2 semanas (2 de descanso)"){Freq=26;}
+              if(Freq_t=="3 semanas (1 de descanso)"){Freq=36;}
+              if(Freq_t=="3 semanas (2 de descanso)"){Freq=30;}
+              if(Freq_t=="2 semanas (3 de descanso)"){Freq=20;}
+              
+              if(dia_uno=="Domingo"){dia_ini=1;}
+              if(dia_uno=="Lunes"){dia_ini=2;}
+              if(dia_uno=="Martes"){dia_ini=3;}
+              if(dia_uno=="Miercoles"){dia_ini=4;}
+              if(dia_uno=="Jueves"){dia_ini=5;}
+              if(dia_uno=="Viernes"){dia_ini=6;}
+              if(dia_uno=="Sabado"){dia_ini=7;}
+              
+              if(dia_dos=="mismo día"){dia_fin=0;}
+              if(dia_dos=="Domingo"){dia_fin=1;}
+              if(dia_dos=="Lunes"){dia_fin=2;}
+              if(dia_dos=="Martes"){dia_fin=3;}
+              if(dia_dos=="Miercoles"){dia_fin=4;}
+              if(dia_dos=="Jueves"){dia_fin=5;}
+              if(dia_dos=="Viernes"){dia_fin=6;}
+              if(dia_dos=="Sabado"){dia_fin=7;}              
+              
+              if(dia_fin==0){dia_fin=dia_ini;horas_t=Math.abs(Hora_sal);}
+              else if(dia_fin<=dia_ini){dia_fin=dia_fin+7;horas_t=((dia_fin-dia_ini)*24)-Hora_sal;}
+              else if(dia_fin>dia_ini){horas_t=((dia_fin-dia_ini)*24)-(Hora_sal);}
+              
+              var conta_dias = Llenar_almanaque(dia_ini, dia_fin, Freq_t);
+                                   
+              var Panela_hora = Calcular_Hornilla(horas_t, Hora_sal, conta_dias, Freq, Freq_t, Crecimiento);                   
+
+              //Tomar valor de la cantidad que ingrese el productor
+              if(Panela_hora>=250.0){
+                    alert("HornillApp ha estimado que los valores ingresados exceden la capacidad de diseño del sistema, por lo que ha seleccionado una apropiada para usted.");
+                    document.getElementById("Duracion_1").hidden=false;
+                    document.getElementById("Duracion_2").hidden=true;
+                    }
+              else{
+                    document.getElementById("Duracion_1").hidden=true;
+                    document.getElementById("Duracion_2").hidden=false;
+                    }
+              
+              var conta=0;
+              while(Panela_hora>=250.0 && conta<6){
+                  if(Freq_mo[conta]==12){document.getElementById("Frecuencia_Mol").value="4";}
+                  else if(Freq_mo[conta]==20){document.getElementById("Frecuencia_Mol").value="7";}
+                  else if(Freq_mo[conta]==26){document.getElementById("Frecuencia_Mol").value="6";}
+                  else if(Freq_mo[conta]==30){document.getElementById("Frecuencia_Mol").value="9";}
+                  else if(Freq_mo[conta]==36){document.getElementById("Frecuencia_Mol").value="8";}
+                  else if(Freq_mo[conta]==40){document.getElementById("Frecuencia_Mol").value="5";}
+                  else if(Freq_mo[conta]==52){document.getElementById("Frecuencia_Mol").value="3";}  
+                    
+                  combo3 = document.getElementById("Frecuencia_Mol");
+                  Freq_t = combo3.options[combo3.selectedIndex].text;
+                  conta_dias = Llenar_almanaque(dia_ini, dia_fin, Freq_t);   
+                  Panela_hora=Calcular_Hornilla(horas_t, Hora_sal, conta_dias, Freq_mo[conta], Freq_t, Crecimiento);           
+                  conta=conta+1;
+              }
+              conta=conta-1;
+              var mem_crecimiento=parseFloat(document.getElementById("Area_Semb").value);
+              var mem_crecimiento_2=parseFloat(document.getElementById("Area_proy").value);
+              while(Panela_hora>=250.0){
+                  if(mem_crecimiento_2>0){mem_crecimiento_2=mem_crecimiento_2-0.5;}
+                  else{mem_crecimiento=mem_crecimiento-0.5;}
+                  Crecimiento=mem_crecimiento+mem_crecimiento_2;  
+                  Panela_hora=Calcular_Hornilla(horas_t, Hora_sal, conta_dias, Freq_mo[conta], Freq_t, Crecimiento);           
+              }
+              document.getElementById("Area_Semb").value=mem_crecimiento;
+              document.getElementById("Area_proy").value=mem_crecimiento_2;              
+    		}    
+        </script>
 
         <script type="text/javascript">
          function Abririmagen(Nombre_Foto){
@@ -429,26 +1020,82 @@
               document.getElementById("Foto").appendChild(x);
 			}     
         </script>			  
-        
+               
         <script type="text/javascript">
-         function Estimar_dias_w(){
-              var meses=(360/document.getElementById("meses_ano").value)-Math.ceil(document.getElementById("dias_semana").value); 
-              meses = Math.floor(meses) 
-              document.getElementById("Molidastexto").innerHTML="¿Cada cuantos días quiere moler? (días 1 a "+meses+")";
-              document.getElementById("Molienda").max=parseInt(meses);
-              Estimar_Molienda();       
-			}     
-        </script>
-        
-        <script type="text/javascript">
-         function Estimar_Molienda(){
-              //Tomar valor de la cantidad que ingrese el productor
+         function Estimar_Molienda(Gr_Br2, per_veg){
+              var meses2=(360/document.getElementById("meses_ano").value)-Math.ceil(document.getElementById("dias_semana").value); 
+              meses2 = Math.floor(meses2) 
+              document.getElementById("Molidastexto").innerHTML="¿Cada cuantos días quiere moler? (días 1 a "+meses2+")";
+              document.getElementById("Molienda").max=parseInt(meses2);
+              
+              var Crecimiento = 0;
+              var Produccion_anual_cana = 0;
+              var Produccion_jugo_crudo = 0;
+              var Jugo_clarificado = 0;
+              var Cachaza_por_ano = 0;
+              var Melto_ano = 0;
+              var Panela_anual = 0;
+              var Panela_Molienda = 0;
+              var Panela_diaria = 0;
+              var Panela_Hora = 0;
               var molida = parseFloat(document.getElementById("Molienda").value);
               var semes  = parseFloat(document.getElementById("dias_semana").value);
               var meses  = parseFloat(document.getElementById("meses_ano").value);
-              var molidas_ano=Math.ceil((30/(molida+semes))*meses);
-              document.getElementById("semanas_mes").value=molidas_ano;
+              var molidas_ano = Math.ceil((30/(molida+semes))*meses); 
               
+              var FactorCorreccion=0.5;
+              var elemento = document.getElementById("Fertiliza");
+              var ITEM     = elemento.options[elemento.selectedIndex].innerText;
+              if(ITEM=="NO"){
+                  FactorCorreccion=0.5;
+                 }
+              else{
+                  
+                  FactorCorreccion=0.8;
+                 }                        
+              var rendi=parseFloat(Gr_Br2)*FactorCorreccion;             
+              Crecimiento = parseFloat(document.getElementById("Area_Semb").value);
+              Crecimiento = Crecimiento+parseFloat(document.getElementById("Area_proy").value);
+              Produccion_anual_cana=(Crecimiento*12.0*rendi)/parseFloat(per_veg);
+              Produccion_jugo_crudo=60.0*Produccion_anual_cana/100.0;
+              Jugo_clarificado=Produccion_jugo_crudo-(Produccion_jugo_crudo*(4.0/100.0));
+              Cachaza_por_ano=Produccion_jugo_crudo*(4.0/100.0);
+              Melto_ano=Cachaza_por_ano*0.55;
+              Panela_anual=19.2*Jugo_clarificado/90.5;
+              Panela_Molienda=Panela_anual/molidas_ano;
+              Panela_diaria=(Panela_Molienda/semes)*1000.0;
+              Panela_Hora=Panela_diaria/parseFloat(document.getElementById("horas_dia").value);
+              //Tomar valor de la cantidad que ingrese el productor
+              if(Panela_Hora>250.0){
+                    alert("HornillApp ha estimado que los valores ingresados exceden la capacidad de diseño del sistema, por lo que ha seleccionado una apropiada para usted.");
+                    document.getElementById("Area_semb_1").hidden=false;
+                    document.getElementById("Area_semb_2").hidden=true;
+                    }
+              else{
+                    document.getElementById("Area_semb_1").hidden=true;
+                    document.getElementById("Area_semb_2").hidden=false;
+                    }
+              var memoria_panela=document.getElementById("Area_Semb").value;
+              while(Panela_Hora>250.0){
+                  var molida = parseFloat(document.getElementById("Molienda").value);
+                  var semes  = parseFloat(document.getElementById("dias_semana").value);
+                  var meses  = parseFloat(document.getElementById("meses_ano").value);
+                  var molidas_ano = Math.ceil((30/(molida+semes))*meses); 
+                  memoria_panela=memoria_panela-1;
+                  Crecimiento = parseFloat(memoria_panela);
+                  Crecimiento = Crecimiento+parseFloat(document.getElementById("Area_proy").value);
+                  Produccion_anual_cana=(Crecimiento*12.0*rendi)/parseFloat(per_veg);
+                  Produccion_jugo_crudo=60.0*Produccion_anual_cana/100.0;
+                  Jugo_clarificado=Produccion_jugo_crudo-(Produccion_jugo_crudo*(4.0/100.0));
+                  Cachaza_por_ano=Produccion_jugo_crudo*(4.0/100.0);
+                  Melto_ano=Cachaza_por_ano*0.55;
+                  Panela_anual=19.2*Jugo_clarificado/90.5;
+                  Panela_Molienda=Panela_anual/molidas_ano;
+                  Panela_diaria=(Panela_Molienda/semes)*1000.0;
+                  Panela_Hora=Panela_diaria/parseFloat(document.getElementById("horas_dia").value);
+                  document.getElementById("Area_Semb").value-1;
+              }
+              document.getElementById("Area_Semb").value=memoria_panela;
               //Camara WARD cuando da menos de 15        
 			}     
         </script>
@@ -459,6 +1106,7 @@
               var elemento = document.getElementById("Ocultaritem");
               var ITEM     = elemento.options[elemento.selectedIndex].innerText;
               if(ITEM=="NO"){
+                  document.getElementById("Titulo_1").style.visibility = "hidden";
                   document.getElementById("Tabla1").style.visibility = "hidden";
                   document.getElementById("Titulo").style.visibility = "hidden";
                   document.getElementById("Celdab1").style.visibility = "visible";
@@ -466,11 +1114,13 @@
                   document.getElementById("Area_Semb").value = "18";
                  }
               else{
+                  document.getElementById("Titulo_1").style.visibility = "visible";
                   document.getElementById("Tabla1").style.visibility = "visible";
                   document.getElementById("Titulo").style.visibility = "visible";
                   document.getElementById("Celdab1").style.visibility = "hidden";
                   document.getElementById("Area_Semb").value = "10";
-                 }                
+                 }      
+                 Ocultar_var();          
 			}     
         </script>	
 
@@ -484,7 +1134,8 @@
                  }
               else{
                   document.getElementById("FertilizaOculto").value = "SI";
-                 }                
+                 }
+              Actualizar_caja();                
 			}     
         </script>
                 
@@ -525,7 +1176,8 @@
               if(Acumulador==0){
                   Acumulador=10.0;
               }
-              document.getElementById("Area_Semb").value=Acumulador.toString();                                     
+              document.getElementById("Area_Semb").value=Acumulador.toString();     
+              Actualizar_caja();                                
 			}     
         </script>
 

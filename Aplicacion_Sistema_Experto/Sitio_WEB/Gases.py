@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 import Diseno_inicial
 import Pailas
+import Costos_funcionamiento
 from Modulo1 import *
 from Modulo2 import *
 from Modulo21 import *
@@ -54,6 +55,11 @@ def Calcular_parrillas(Area_Calculada,Capacidad_Hornilla,i,Calor_suministrado,Ti
     Longitud_Camara=(Longitud_Seccion*Numero_secciones_Lon)+0.3
     Altura_camara=Volumen_Calculado/(Ancho_camara*Longitud_Camara)
     
+    #Más larga que ancha
+    if(Longitud_Camara<Ancho_camara):
+        Ancho_camara=Longitud_Camara
+        Longitud_Camara=Ancho_camara
+    
     #Calculo de la pared con respecto a los ladrillos
     Area_Cam=2*((Ancho_camara*Longitud_Camara)+(Ancho_camara*Altura_camara)+(Longitud_Camara*Altura_camara))
     Coef_Conduct_Termica=0
@@ -67,6 +73,8 @@ def Calcular_parrillas(Area_Calculada,Capacidad_Hornilla,i,Calor_suministrado,Ti
     Esp_Camara=0.12
     Aux=-264.44+(1.03*Temperatura_Flama_Ad)
     Q_Perd_Camara=(Coef_Conduct_Termica*Area_Cam)*((Aux-Temperatura_ambiente)/Esp_Camara)
+    
+    Costos_funcionamiento.cantidad_parr(Secciones_totales)
     Pailas.Dimensiones_parrilla(Ancho_seccion*1000, Longitud_Seccion*1000, Secciones_totales, Ancho_camara*1000, Longitud_Camara*1000, Altura_camara*1000)
     return Q_Perd_Camara
 

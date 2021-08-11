@@ -57,46 +57,53 @@ def Seleccionar_Molino(Kilos_Hora):
     df.to_excel('static/Temp/Temp.xlsx')
     return sum(E1)/len(E1)
     
-def Normalizar_Capacidad(Capacidad_Hornilla, Nivel_Freat):
-    global Tipo_Hornilla
-    if (Capacidad_Hornilla<=100):
-        Capacidad_Hornilla=75
-        Cant_Pailas=5
-        if (Nivel_Freat<=15):
-            Tipo_Hornilla="Ward cimpa"
-        else: #Evaluacion Ward cimpa
-            Tipo_Hornilla="Plana de una camara"
-    elif((Capacidad_Hornilla>100) and (Capacidad_Hornilla<=125)):
-        Capacidad_Hornilla=125
-        Cant_Pailas=6
-        if (Nivel_Freat<=15):
-            Tipo_Hornilla="Ward cimpa"
-        else: #Evaluacion Ward cimpa
-            Tipo_Hornilla=random.choice(["Plana de una camara","Ward cimpa","Mini-ward"])      
-    elif((Capacidad_Hornilla>125) and (Capacidad_Hornilla<=150)):
-        Capacidad_Hornilla=150
-        Cant_Pailas=6
-        if (Nivel_Freat<=15):
-            Tipo_Hornilla="Ward cimpa"
-        else: 
-            Tipo_Hornilla=random.choice(["Plana de una camara","Ward cimpa","Mini-ward"])
-    elif((Capacidad_Hornilla>150) and (Capacidad_Hornilla<=175)):
-        Capacidad_Hornilla=175 
-        Cant_Pailas=7
-        if (Nivel_Freat<=15):
-            Tipo_Hornilla="Ward cimpa"
-        else: 
-            Tipo_Hornilla=random.choice(["Plana de una camara","Ward cimpa","Mini-ward"])
-        ##################Sin recuperador#########
-    elif((Capacidad_Hornilla>175) and (Capacidad_Hornilla<=250)):
-        Capacidad_Hornilla=200
-        Cant_Pailas=7
-        Tipo_Hornilla="Plana de una camara"
-    elif(Capacidad_Hornilla>250):
-        Capacidad_Hornilla=250 
-        Cant_Pailas=7
-        Tipo_Hornilla="Plana de una camara" 
-    return [Capacidad_Hornilla, Cant_Pailas, Tipo_Hornilla]
+#def Normalizar_Capacidad(Capacidad_Hornilla, Nivel_Freat):
+#    global Tipo_Hornilla
+#    if (Capacidad_Hornilla<=75):
+#        Capacidad_Hornilla=75
+#        Cant_Pailas=5
+#        if (Nivel_Freat<=15):
+#            Tipo_Hornilla="Ward cimpa"
+#        else: #Evaluacion Ward cimpa
+#            Tipo_Hornilla="Plana de una camara"
+#    elif((Capacidad_Hornilla>75) and (Capacidad_Hornilla<=100)):
+#        Capacidad_Hornilla=125
+#        Cant_Pailas=6
+#        if (Nivel_Freat<=15):
+#            Tipo_Hornilla="Ward cimpa"
+#        else: #Evaluacion Ward cimpa
+#            Tipo_Hornilla=random.choice(["Plana de una camara","Ward cimpa","Mini-ward"])   
+#    elif((Capacidad_Hornilla>100) and (Capacidad_Hornilla<=125)):
+#        Capacidad_Hornilla=125
+#        Cant_Pailas=6
+#        if (Nivel_Freat<=15):
+#            Tipo_Hornilla="Ward cimpa"
+#        else: #Evaluacion Ward cimpa
+#            Tipo_Hornilla=random.choice(["Plana de una camara","Ward cimpa","Mini-ward"])      
+#    elif((Capacidad_Hornilla>125) and (Capacidad_Hornilla<=150)):
+#        Capacidad_Hornilla=150
+#        Cant_Pailas=6
+#        if (Nivel_Freat<=15):
+#            Tipo_Hornilla="Ward cimpa"
+#        else: 
+#            Tipo_Hornilla=random.choice(["Plana de una camara","Ward cimpa","Mini-ward"])
+#    elif((Capacidad_Hornilla>150) and (Capacidad_Hornilla<=175)):
+#        Capacidad_Hornilla=175 
+#        Cant_Pailas=7
+#        if (Nivel_Freat<=15):
+#            Tipo_Hornilla="Ward cimpa"
+#        else: 
+#            Tipo_Hornilla=random.choice(["Plana de una camara","Ward cimpa","Mini-ward"])
+#        ##################Sin recuperador#########
+#    elif((Capacidad_Hornilla>175) and (Capacidad_Hornilla<=250)):
+#        Capacidad_Hornilla=200
+#        Cant_Pailas=7
+#        Tipo_Hornilla="Plana de una camara"
+#    elif(Capacidad_Hornilla>250):
+#        Capacidad_Hornilla=250 
+#        Cant_Pailas=7
+#        Tipo_Hornilla="Plana de una camara" 
+#    return [Capacidad_Hornilla, Cant_Pailas, Tipo_Hornilla]
         
 def datos_entrada(Diccionario,iteracion,Valor_Algoritmo):
     global Tipo_Hornilla
@@ -114,7 +121,7 @@ def datos_entrada(Diccionario,iteracion,Valor_Algoritmo):
     #Altura del Sitio	
     
     """Nota: los valores de estas variables son supuestos (Estas son otras variables de entrada al modelo)"""
-    Porcentaje_extraccion=0.6       #60%
+    Porcentaje_extraccion=0.6       #60% tomar del molino
     Bagazillo_Prelimpiador=0.02 #2%
     Cachaza=0.04 #4%    
     CSS_Jugo_Clarificado=float(Diccionario['Grados Brix de la caña (promedio)'])+5
@@ -126,42 +133,49 @@ def datos_entrada(Diccionario,iteracion,Valor_Algoritmo):
     Temperatura_Ambiente=25#°C			
     Altura_sitio=float(Diccionario['Altura media sobre el nivel del mar'].replace(" m", ""))
     """Fin de los datos supuestos entrada"""
-    
-    """Cálculo de la capacidad del molino"""		
-    #Área de caña sembrada para el calculo
-    Crecimiento=float(Diccionario['Área proyectada para cultivo en los proximos 5 años'])
-    Crecimiento=Crecimiento+float(Diccionario['Área caña sembrada'])
-    Area_cana_calculo=Crecimiento
-    
-    Cana_esperada_hectarea=float(Diccionario['Rendimiento de caña (t/ha)'])
-    
-    P_vegetativo=float(Diccionario['Periodo vegetativo'])
-    # Caña molida al mes = Area sembrada de caña para calculo*Caña esperada por hectarea/Periodo vegetativo
-    Cana_molida_mes=(Area_cana_calculo*Cana_esperada_hectarea)/(P_vegetativo)
-    # Area cosechada al mes = Caña esperada por hectarea/Caña molida al mes
-    Area_Cosechada_mes=Cana_molida_mes/Cana_esperada_hectarea
-    #Caña molida a la semana = Caña molida al mes/numero de moliendas
-    Cana_molida_semana=Cana_molida_mes/float(Diccionario['Número de moliendas al año'])
-    #Caña molida por hora = Caña molida a la semana/Dias de trabajo*Horas al dia
-    Cana_molida_hora=Cana_molida_semana/(float(Diccionario['Días de trabajo de la hornilla por semana'])*float(Diccionario['Horas de trabajo de la hornilla por día']))
-    #Jugo Crudo=Caña molida por hora*porcentaje de extraccion
-    Jugo_Crudo=Cana_molida_hora*Porcentaje_extraccion
-    #Jugo Clarificado=Jugo_Crudo-((Jugo_Crudo*Bagacillo en Prelimpiador+((Jugo_Crudo-(Jugo_Crudo*Bagacillo en Prelimpiador))*(Cachaza))
-    Jugo_Clarificado=Jugo_Crudo-(((Jugo_Crudo*Bagazillo_Prelimpiador)+(Jugo_Crudo*Cachaza))*Jugo_Crudo)
-
-    #Jugo_Clarificado=Jugo_Crudo-((Jugo_Crudo*Bagazillo_Prelimpiador+((Jugo_Crudo-(Jugo_Crudo*Bagazillo_Prelimpiador))*(Cachaza))))
-    #Masa de panela=((Jugo_Clarificado*CSS de la caña))/CCS de la panela)*1000
-    CSS_Cana=float(Diccionario['Grados Brix de la caña (promedio)']) *0.6
+#    """Cálculo de la capacidad del molino"""		
+#    #Área de caña sembrada para el calculo
+#    Crecimiento=float(Diccionario['Área proyectada para cultivo en los proximos 5 años'])
+#    Crecimiento=Crecimiento+float(Diccionario['Área caña sembrada'])
+#    Area_cana_calculo=Crecimiento
+#    
+#    Cana_esperada_hectarea=float(Diccionario['Rendimiento de caña (t/ha)'])
+#       
+#    P_vegetativo=float(Diccionario['Periodo vegetativo'])
+#    # Caña molida al mes = Area sembrada de caña para calculo*Caña esperada por hectarea/Periodo vegetativo
+#    Cana_molida_mes=(Area_cana_calculo*Cana_esperada_hectarea)/(P_vegetativo)
+#    # Area cosechada al mes = Caña esperada por hectarea/Caña molida al mes
+#    Area_Cosechada_mes=Cana_molida_mes/Cana_esperada_hectarea
+#    #Caña molida a la semana = Caña molida al mes/numero de moliendas
+#
+#    Cana_molida_semana=Cana_molida_mes/float(Diccionario['Número de moliendas al año'])
+#    
+#    #Caña molida por hora = Caña molida a la semana/Dias de trabajo*Horas al dia
+#    Cana_molida_hora=float(Diccionario['Caña molida [kg/hora]'])/1000#Cana_molida_semana/(float(Diccionario['Días de trabajo de la hornilla por semana'])*float(Diccionario['Horas de trabajo de la hornilla por día']))
+#    #Jugo Crudo=Caña molida por hora*porcentaje de extraccion
+#    Jugo_Crudo=Cana_molida_hora*Porcentaje_extraccion
+#    
+#    #Jugo Clarificado=Jugo_Crudo-((Jugo_Crudo*Bagacillo en Prelimpiador+((Jugo_Crudo-(Jugo_Crudo*Bagacillo en Prelimpiador))*(Cachaza))
+#    Jugo_Clarificado=Jugo_Crudo-(Jugo_Crudo*(4/1000))#(((Jugo_Crudo*Bagazillo_Prelimpiador)+(Jugo_Crudo*Cachaza))*Jugo_Crudo)
+#    
+#    #Jugo_Clarificado=Jugo_Crudo-((Jugo_Crudo*Bagazillo_Prelimpiador+((Jugo_Crudo-(Jugo_Crudo*Bagazillo_Prelimpiador))*(Cachaza))))
+#    #Masa de panela=((Jugo_Clarificado*CSS de la caña))/CCS de la panela)*1000
+#
+#    Masa_panela = (Jugo_Clarificado*CSS_Cana/CSS_Panela)*1000
+#    #Capacidad del molino=constante*caña molida hora*1000
+     
+#    #Capacidad de la hornilla=Masa de panela
+#    Capacidad_Hornilla=Masa_panela
+#    #Normalización de la capacidad de la hornilla
+#    Mem_dias=float(Diccionario['¿Cada cuantos días quiere moler? (días)'])
+#    Mem_Temp=Normalizar_Capacidad(Capacidad_Hornilla, Mem_dias)
+    """Fin de los datos supuestos entrada"""
+    #Cana_molida_hora=float(Diccionario['Caña molida por hora'])
+    #Capacidad_molino=Cana_molida_hora*1.3*1000
+    CSS_Cana=float(Diccionario['Grados Brix de la caña (promedio)']) #*0.6
     CSS_Panela=float(Diccionario['Grados Brix de la panela (promedio)'])
-    Masa_panela = (Jugo_Clarificado*CSS_Cana/CSS_Panela)*1000
-    #Capacidad del molino=constante*caña molida hora*1000
-    Capacidad_molino=Cana_molida_hora*1.3*1000
-    #Capacidad de la hornilla=Masa de panela
-    Capacidad_Hornilla=Masa_panela*1.61
-    #Normalización de la capacidad de la hornilla
-    Mem_dias=float(Diccionario['¿Cada cuantos días quiere moler? (días)'])
-    Mem_Temp=Normalizar_Capacidad(Capacidad_Hornilla, Mem_dias)
-    Capacidad_Hornilla=Mem_Temp[0]
+    Capacidad_Hornilla=float(Diccionario['Capacidad estimada de la hornilla [kg/hora]'])#Mem_Temp[0]
+    
     """Cálculos para la masa de panela"""
     Masa_Jugo_Clarificado=(CSS_Panela*Capacidad_Hornilla)/CSS_Cana
     Masa_Jugo_Prelimpiador=Masa_Jugo_Clarificado/(1-Cachaza)
@@ -188,7 +202,7 @@ def datos_entrada(Diccionario,iteracion,Valor_Algoritmo):
     
     """Calculos de las propiedades de los jugos"""
     #NOTA: Esta es una caracteristica (T33) es propia del molino (Tomarla del catálogo).
-    T33=Seleccionar_Molino(Capacidad_molino) 
+    T33=Seleccionar_Molino(float(Diccionario['Capacidad del molino [kg/hora]'])) 
     #>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
     Inicial_Clf=997.39+(4.46*CSS_Cana)   
     Inicial_Eva=997.39+(4.46*CSS_Jugo_Clarificado)
@@ -223,8 +237,7 @@ def datos_entrada(Diccionario,iteracion,Valor_Algoritmo):
                'Capacidad estimada de la hornilla',			
                'Factor de consumo de bagazo',
                'Tipo de hornilla',
-               'Eficiencia de la hornilla',	
-               'Tipo de hornilla',				
+               'Eficiencia de la hornilla',					
                'Bagacillo del pre-limpiador',		
                'Cachaza',			
                'CSS del jugo de Caña',			
@@ -238,16 +251,7 @@ def datos_entrada(Diccionario,iteracion,Valor_Algoritmo):
                'Temperatura del ambiente',			
                'Humedad inicial bagazo',			
                'Presión atmosférica',			
-               'Temperatura de ebullición del agua',  
-               'CAPACIDAD MOLINO',
-               'Caña molida al mes',	
-               'Área cosechada al mes',		
-               'Caña molida a la semana',		
-               'Caña molida por Hora',		
-               'Jugo crudo',		
-               'Jugo clarificado',		
-               'Masa de panela',		
-               'Capacidad del Molino',		
+               'Temperatura de ebullición del agua',  	
                'DATOS DE LA MASA',
                'Caña',
                'Jugo',
@@ -293,9 +297,8 @@ def datos_entrada(Diccionario,iteracion,Valor_Algoritmo):
             'DATOS DE ENTRADA',
              math.ceil(Capacidad_Hornilla),
              round(Factor_consumo_bagazo,3),
-             Tipo_Hornilla,
+             Diccionario['Tipo de cámara de combustión'],
              round(Eficiencia,3),
-             Mem_Temp[2],
              round(Bagazillo_Prelimpiador,3),
              round(Cachaza,3),
              round(CSS_Cana,3),
@@ -310,15 +313,6 @@ def datos_entrada(Diccionario,iteracion,Valor_Algoritmo):
              round(Humedad_inicial_bagazo,3),
              round(Presion_atmosferica,3),
              round(Temperatura_Ebullicion_Agua,3),
-             'CAPACIDAD MOLINO',
-             round(Cana_molida_mes,3),
-             round(Area_Cosechada_mes,3),
-             round(Cana_molida_semana,3),
-             round(Cana_molida_hora,3),
-             round(Jugo_Crudo,3),
-             round(Jugo_Clarificado,3),
-             round(Masa_panela,3),
-             round(Capacidad_molino,3),
              'DATOS DE LA MASA',
              round(Masa_Cana,3),
              round(Masa_Jugo,3),
@@ -369,11 +363,11 @@ def Calculo_por_etapas(Diccionario):
     Lista_Contenido=[]
     Lista_columnas=[]
      #Normalización de la capacidad de la hornilla
-    Mem_dias=float(Diccionario['¿Cada cuantos días quiere moler? (días)'])
-    Mem_Temp=Normalizar_Capacidad(float(Diccionario['Capacidad estimada de la hornilla']),Mem_dias)
-    print(float(Diccionario['Capacidad estimada de la hornilla']))
-    print(Mem_Temp)
-    Etapas=Mem_Temp[1]
+    #Mem_dias=float(Diccionario['¿Cada cuantos días quiere moler? (días)'])
+    #Mem_Temp=Normalizar_Capacidad(float(Diccionario['Capacidad estimada de la hornilla']),Mem_dias)
+    #print(float(Diccionario['Capacidad estimada de la hornilla']))
+    #print(Mem_Temp)
+    Etapas=int(float(Diccionario['Etapas']))#Mem_Temp[1]
     #Etapas=12
     #Saturador "minimo son dos etapas"
     if (Etapas>2):

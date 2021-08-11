@@ -43,13 +43,13 @@
         
         <table align="center">
         {% for id, item in Molinos.items() %}
-            <tr class="row">
-               <td class="col-md-6 col-sm-12 mb-4"> <b>{{ id }}</b> </td>
+            <tr style="width: 75%; display: flex; justify-content: space-around;">
+               <td class="col-12"> <b>{{ id }}</b> </td>
                {% for uj in item %}
                    {% if (id=='Disponible en')%}
-                       <td> <a href= {{uj}} target="_blank">Ver fabricante</a> </td>
+                       <td class="col-12"> <a href= {{uj}} target="_blank">Ver fabricante</a> </td>
                    {%else%}
-                       <td> {{ uj }} </td>
+                       <td class="col-12"> {{ uj }} </td>
                    {% endif %}
                {% endfor %}
             </tr>

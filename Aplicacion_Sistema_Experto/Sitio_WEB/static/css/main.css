@@ -341,7 +341,7 @@ textarea#mensaje {
 
 /*Página usuario*/
 .button-slider{
-  border: 2px solid transparent !important;
+    border: 2px solid transparent !important;
     border-radius: 0.625rem 0.3125rem !important;
     font-size: 0.688rem !important;
     letter-spacing: 1.3px !important;
@@ -349,12 +349,39 @@ textarea#mensaje {
     text-transform: uppercase !important;
     z-index: 1 !important;
     color: #fff !important;
-    background-color: #005BAA !important;
+    background-color: #FFFFFF !important;
     box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15) !important;
 }
 
 .button-slider:hover{
-  background-color: #004784 !important;
+  background-color: #FFFFFF !important;
   box-shadow: none !important;
   transition: 0.5s !important;
+}
+
+.form-group td select:disabled {
+
+background-color: #ced4da;
+
+}
+
+.form-group td input:disabled {
+
+background-color: #d7dbde;
+
+color: gray;
+
+}
+
+.div2
+{
+display: flex;
+justify-content: space-around;
+vertical-align: middle;
+}
+
+.div3
+{
+text-align: center;
+vertical-align: middle;
 }
