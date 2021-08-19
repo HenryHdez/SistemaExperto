@@ -73,7 +73,7 @@ class Documento_Latex():
                               T_Hornilla+' con capacidad de '+ str(Diccionario['Capacidad estimada de la hornilla']) +' kg/h'+' con una eficiencia estimada del '+ str(round(Diccionario['Eficiencia de la hornilla']))+'%'+'; adecuada para el procesamiento de hasta '+
                               Area+
                               Texto_Area+' de caña, una producción de ' + str(round(float(Diccionario['Producción de caña (toneladas por hectárea)'])))+ ' toneladas por hectárea, un periodo vegetativo de '+ str(Diccionario['Periodo vegetativo'])+' meses, para realizar '+
-                              str(round(float(Diccionario['Moliendas al año']),0))+' moliendas al año en una jornada laboral de '+ str(Diccionario['Jornada de trabajo al mes']) + ' de '+
+                              str(int(round(float(Diccionario['Moliendas al año']),0)))+' moliendas al año en una jornada laboral de '+ str(Diccionario['Jornada de trabajo al mes']) + ' de '+
                               str(Diccionario['Días trabajados a la semana'])+ ' días cada semana de '+str(Diccionario['Horas de trabajo de la hornilla por día'])+ ' horas de trabajo diarias.'+
                               '\n Está hornilla requiere un área para la(s) bagacera(s) aproximadamente de '+Area_bag+' m^2 y su productividad '
                               )

@@ -154,6 +154,81 @@ def Dimensiones_parrilla(Ancho_seccion, Longitud_Seccion, Secciones_totales, Anc
     Dimensiones_Camara.append(Ancho_camara)
     Dimensiones_Camara.append(Longitud_Camara)
     Dimensiones_Camara.append(Altura_camara)
+
+def Fijar_pailas(canvas, Espacio, Desplazamiento, UP, Factor, Etapas, Vector_Entrada, Tipo_Hornilla, itera):
+    #Fijar plano
+    if(itera==0):
+        if(Tipo_Hornilla=='cámara Ward' or Tipo_Hornilla=='cámara plana'):
+            canvas.drawImage('static/Vistas/Planta/Arquitectonico.jpg', 0, 0, width=970, height=628)
+        else:
+            canvas.drawImage('static/Vistas/Planta/Arquitectonico3.jpg', 0, 0, width=970, height=628)  
+    elif(itera==1):
+        if(Tipo_Hornilla=='cámara Ward' or Tipo_Hornilla=='cámara plana'):
+            canvas.drawImage('static/Vistas/Planta/Arquitectonico1a.jpg', 0, 0, width=970, height=628)
+        else:
+            canvas.drawImage('static/Vistas/Planta/Arquitectonico3a.jpg', 0, 0, width=970, height=628)          
+    elif(itera==2):
+        if(Tipo_Hornilla=='cámara Ward' or Tipo_Hornilla=='cámara plana'):
+            canvas.drawImage('static/Vistas/Planta/Arquitectonico1b.jpg', 0, 0, width=970, height=628)
+        else:
+            canvas.drawImage('static/Vistas/Planta/Arquitectonico3b.jpg', 0, 0, width=970, height=628) 
+    #Fija pailas    
+    for i in range (Etapas):
+        if(itera==2):
+            canvas.setFont('Helvetica-Bold', 10)
+            canvas.drawString(Desplazamiento+12, UP-25, 'Paila: '+str(i+1))                              
+            if(i==2):
+                canvas.drawString(Desplazamiento-5, UP+65, 'Concentradora')
+            elif(i==3 and Etapas>6):
+                canvas.drawString(Desplazamiento-5, UP+65, 'Concentradora')    
+            elif(i==Etapas-1):
+                canvas.drawString(Desplazamiento+100, UP-25, 'Paila: Melotera') 
+                canvas.drawString(Desplazamiento-5, UP+65, 'Recibidora')
+            elif(i==Etapas-2):
+                canvas.drawString(Desplazamiento-5, UP+65, 'Clarificadora')
+            else:
+                canvas.drawString(Desplazamiento-5, UP+65, 'Evaporadora')
+                
+        if Vector_Entrada[i][0]==1:
+            #Nombre_ducto='static/Vistas/Ductos/'+'Dplana_superior.png'
+            if Vector_Entrada[i][1]==True:
+                Nombre_Paila='static/Vistas/Superior/'+'Plana_con_aletas.png'
+            else:
+                Nombre_Paila='static/Vistas/Superior/'+'Plana_sin_aletas.png'
+        elif Vector_Entrada[i][0]==2: 
+            #Nombre_ducto='static/Vistas/Ductos/'+'Dplana_superior.png'
+            if Vector_Entrada[i][1]==True:
+                Nombre_Paila='static/Vistas/Superior/'+'Pirotubular_circular_con_aletas.png'
+            else:
+                Nombre_Paila='static/Vistas/Superior/'+'Pirotubular_circular_sin_aletas.png'
+        elif Vector_Entrada[i][0]==3:
+            #Nombre_ducto='static/Vistas/Ductos/'+'Dsemiesferica_superior.png'
+            Nombre_Paila='static/Vistas/Superior/'+'Semiesferica.png' 
+        elif Vector_Entrada[i][0]==4:
+            #Nombre_ducto='static/Vistas/Ductos/'+'Dsemicilindrica_superior.png'
+            if Vector_Entrada[i][1]==True:
+                Nombre_Paila='static/Vistas/Superior/'+'Semicilindrica_con_aletas.png'
+            else:
+               Nombre_Paila='static/Vistas/Superior/'+'Semicilindrica_sin_aletas.png'
+        elif Vector_Entrada[i][0]==5:
+            #Nombre_ducto='static/Vistas/Ductos/'+'Dplana_superior.png'
+            if Vector_Entrada[i][1]==True:
+                Nombre_Paila='static/Vistas/Superior/'+'Pirotubular_cuadrada_con_aletas.png'
+            else:
+                Nombre_Paila='static/Vistas/Superior/'+'Pirotubular_cuadrada_sin_aletas.png'
+        elif Vector_Entrada[i][0]==6:
+            #Nombre_ducto='static/Vistas/Ductos/'+'Dplana_superior.png'
+            if Vector_Entrada[i][1]==True:
+                Nombre_Paila='static/Vistas/Superior/'+'Cuadrada_acanalada_con_aletas.png'
+            else:
+                Nombre_Paila='static/Vistas/Superior/'+'Cuadrada_acanalada_sin_aletas.png' 
+        canvas.drawImage(Nombre_Paila, Desplazamiento, UP, width=Espacio*0.19, height=Espacio*0.19)  
+        canvas=Dibujar_Rotulo(canvas, 'Representación de la hornilla', 'Pictórico')
+        Desplazamiento=Desplazamiento+Espacio-Factor
+    canvas.drawImage('static/Vistas/Superior/'+'Plana_sin_aletas.png', Desplazamiento, UP, width=Espacio*0.19, height=Espacio*0.19)  
+    if(itera<=1):
+        canvas.showPage()
+    return canvas
     
 def Dibujar_planta(Vector_Entrada, Tipo_Hornilla, Etapas, Nombres_Ubicaciones, Capacidad_hornilla, Altura_UP, Ancho_UP, Lista_Falcas):
     global Dimensiones_Pailas
@@ -168,121 +243,29 @@ def Dibujar_planta(Vector_Entrada, Tipo_Hornilla, Etapas, Nombres_Ubicaciones, C
         if(inter==0):
             canvas = canvas.Canvas("static/B1_Etapa_Planta_WEB.pdf", pagesize=letter)
             canvas.setPageSize((970,628))
-            canvas.drawImage('static/Vistas/Otros/Formato.png', 0, 0, width=970, height=628)
-            canvas.setFont('Helvetica-Bold', 22)
-            canvas.drawString(55,550,'ESTÁ IMÁGEN ES UNA REPRESENTACIÓN DEL ENSAMBLAJE DE LA HORNILLA')
+            if(Etapas==5):
+                canvas=Fijar_pailas(canvas, 130, 240, 362, 80, Etapas, Vector_Entrada, Tipo_Hornilla, 0)
+                canvas=Fijar_pailas(canvas, 110, 265, 368, 63, Etapas, Vector_Entrada, Tipo_Hornilla, 1)
+                canvas=Fijar_pailas(canvas, 260, 180, 296, 150, Etapas, Vector_Entrada, Tipo_Hornilla, 2)
+            if(Etapas==6):
+                canvas=Fijar_pailas(canvas, 100, 260, 364, 60, Etapas, Vector_Entrada, Tipo_Hornilla, 0)
+                canvas=Fijar_pailas(canvas, 80, 280, 370, 43, Etapas, Vector_Entrada, Tipo_Hornilla, 1)
+                canvas=Fijar_pailas(canvas, 230, 150, 300, 135, Etapas, Vector_Entrada, Tipo_Hornilla, 2)
+            if(Etapas==7):
+                canvas=Fijar_pailas(canvas, 80, 250, 366, 45, Etapas, Vector_Entrada, Tipo_Hornilla, 0)
+                canvas=Fijar_pailas(canvas, 60, 300, 372, 33, Etapas, Vector_Entrada, Tipo_Hornilla, 1)
+                canvas=Fijar_pailas(canvas, 200, 170, 304, 115, Etapas, Vector_Entrada, Tipo_Hornilla, 2)
+            #canvas.setFont('Helvetica-Bold', 22)
+            #canvas.drawString(55,550,'ESTÁ IMÁGEN ES UNA REPRESENTACIÓN DEL ENSAMBLAJE DE LA HORNILLA')
+       
         if(inter==1):
             canvas = canvas.Canvas("static/B4_Etapa_Planta_WEB.pdf", pagesize=letter)
             canvas.setPageSize((970,628))
             canvas.drawImage('static/Vistas/Otros/Formato.png', 0, 0, width=970, height=628)  
-        #>>>>>>>>>>>>>>>----------------------------Vista superior----------------------<<<<<<<<<<<<<<<<<<<<<
-        Espacio=650/Etapas
-        Desplazamiento=170
-        if(inter==0):
-            for i in range (Etapas):
-                #Dibujar Parte superior y selección de camáras
-                canvas.drawImage('static/Vistas/Ductos/Pared_superior.png', Desplazamiento-40, 270, width=Espacio*0.4, height=Espacio*0.6)        
-                canvas.drawImage('static/Vistas/Ductos/Pared_superior.png', 815, 270, width=Espacio*0.4, height=Espacio*0.6)
-                Desplazamiento=Desplazamiento+Espacio-10
-        if(Etapas==6):
-            Espacio=650/Etapas
-            Desplazamiento=200
-            Escala_F=0.6
-            Escala_F2=1
-        elif(Etapas==5):
-            Espacio=625/Etapas
-            Desplazamiento=220
-            Escala_F=0.625
-            Escala_F2=1
-        elif(Etapas==7):
-            Espacio=660/Etapas
-            Desplazamiento=190
-            Escala_F=0.6
-            Escala_F2=1.1
-        for i in range (Etapas):
-            if(inter==0):
-                Nombre_ducto='static/Vistas/Ductos/'+'Ladrillos.png'
-                if Vector_Entrada[i][0]==1:
-                    #Nombre_ducto='static/Vistas/Ductos/'+'Dplana_superior.png'
-                    if Vector_Entrada[i][1]==True:
-                        Nombre_Paila='static/Vistas/Superior/'+'Plana_con_aletas.png'
-                    else:
-                        Nombre_Paila='static/Vistas/Superior/'+'Plana_sin_aletas.png'
-                elif Vector_Entrada[i][0]==2: 
-                    #Nombre_ducto='static/Vistas/Ductos/'+'Dplana_superior.png'
-                    if Vector_Entrada[i][1]==True:
-                        Nombre_Paila='static/Vistas/Superior/'+'Pirotubular_circular_con_aletas.png'
-                    else:
-                        Nombre_Paila='static/Vistas/Superior/'+'Pirotubular_circular_sin_aletas.png'
-                elif Vector_Entrada[i][0]==3:
-                    #Nombre_ducto='static/Vistas/Ductos/'+'Dsemiesferica_superior.png'
-                    Nombre_Paila='static/Vistas/Superior/'+'Semiesferica.png' 
-                elif Vector_Entrada[i][0]==4:
-                    #Nombre_ducto='static/Vistas/Ductos/'+'Dsemicilindrica_superior.png'
-                    if Vector_Entrada[i][1]==True:
-                        Nombre_Paila='static/Vistas/Superior/'+'Semicilindrica_con_aletas.png'
-                    else:
-                       Nombre_Paila='static/Vistas/Superior/'+'Semicilindrica_sin_aletas.png'
-                elif Vector_Entrada[i][0]==5:
-                    #Nombre_ducto='static/Vistas/Ductos/'+'Dplana_superior.png'
-                    if Vector_Entrada[i][1]==True:
-                        Nombre_Paila='static/Vistas/Superior/'+'Pirotubular_cuadrada_con_aletas.png'
-                    else:
-                        Nombre_Paila='static/Vistas/Superior/'+'Pirotubular_cuadrada_sin_aletas.png'
-                elif Vector_Entrada[i][0]==6:
-                    #Nombre_ducto='static/Vistas/Ductos/'+'Dplana_superior.png'
-                    if Vector_Entrada[i][1]==True:
-                        Nombre_Paila='static/Vistas/Superior/'+'Cuadrada_acanalada_con_aletas.png'
-                    else:
-                        Nombre_Paila='static/Vistas/Superior/'+'Cuadrada_acanalada_sin_aletas.png' 
-                    
-            if(Tipo_Hornilla=='cámara plana'):
-                if(inter==0):
-                    canvas.drawImage('static/Vistas/Chimeneas/Chimenea1_superior.png', 830, 271, width=Espacio*0.8, height=Espacio*0.75)
-                    canvas.drawImage('static/Vistas/Camaras/Plana2_superior.png', 37, 270, width=Espacio*1.4*Escala_F2, height=Espacio*Escala_F)        
-            elif(Tipo_Hornilla=='doble cámara'):
-                if(inter==0):
-                    canvas.drawImage('static/Vistas/Chimeneas/Chimenea1_superior.png', 830, 271, width=Espacio*0.8, height=Espacio*0.75)
-                    canvas.drawImage('static/Vistas/Camaras/Doble_superior.png', 40, 163, width=Espacio*1.2*Escala_F2, height=Espacio*(Escala_F+1))         
-            elif(Tipo_Hornilla=='cámara Ward'):
-                if(inter==0):
-                    canvas.drawImage('static/Vistas/Chimeneas/Chimenea1_superior.png', 830, 271, width=Espacio*0.8, height=Espacio*0.75)
-                    canvas.drawImage('static/Vistas/Camaras/Cimpa_superior.png', 37, 270, width=Espacio*1.4*Escala_F2, height=Espacio*Escala_F)
-            elif(Tipo_Hornilla=='Mini-ward'):
-                if(inter==0):
-                    canvas.drawImage('static/Vistas/Chimeneas/Chimenea1_superior.png', 830, 271, width=Espacio*0.8, height=Espacio*0.75)
-                    canvas.drawImage('static/Vistas/Camaras/Ward_superior.png', 37, 270, width=Espacio*1.4*Escala_F2, height=Espacio*Escala_F)
-            if(inter==0):
-                canvas.drawImage(Nombre_ducto, Desplazamiento-9, 270, width=Espacio, height=Espacio*Escala_F) 
-                canvas.drawImage(Nombre_ducto, Desplazamiento+9, 270, width=Espacio, height=Espacio*Escala_F) 
-                canvas.drawImage(Nombre_Paila, Desplazamiento, 270, width=Espacio*0.6, height=Espacio*Escala_F)
-                #Melotera
-                canvas.setFont('Helvetica-Bold', 14)
-                canvas.drawString(760, 245, 'Paila: Melotera')                
-                canvas.drawImage('static/Vistas/Superior/'+'Plana_sin_aletas.png', 770, 270, width=Espacio*Escala_F, height=Espacio*Escala_F)
-                #>>>>>>>
-                canvas.setFont('Helvetica-Bold', 14)
-                canvas.drawString(Desplazamiento+12, 245, 'Paila: '+str(i+1))
-                
-                canvas.setFont('Helvetica-Bold', 10)
-                if(i==2):
-                    canvas.drawString(Desplazamiento-5, 350, 'Concentradora')
-                elif(i==3 and Etapas>6):
-                    canvas.drawString(Desplazamiento-5, 350, 'Concentradora')    
-                elif(i==Etapas-1):
-                    canvas.drawString(Desplazamiento-5, 350, 'Recibidora')
-                elif(i==Etapas-2):
-                    canvas.drawString(Desplazamiento-5, 350, 'Clarificadora')
-                else:
-                    canvas.drawString(Desplazamiento-5, 350, 'Evaporadora')
-                
-                Desplazamiento=Desplazamiento+Espacio-10
-                canvas=Dibujar_Rotulo(canvas, 'Representación de la hornilla', 'Pictórico')
-            if(inter==1):
-                canvas.setFont('Helvetica-Bold', 48)
-                canvas.drawString(30, 320, 'A continuación se presenta una hornilla')
-                canvas.drawString(30, 220, 'con recuperador')
-                canvas=Dibujar_Rotulo(canvas, 'Aviso', 'Aviso')
+            canvas.setFont('Helvetica-Bold', 48)
+            canvas.drawString(30, 320, 'A continuación se presenta una hornilla')
+            canvas.drawString(30, 220, 'con recuperador')
+            canvas=Dibujar_Rotulo(canvas, 'Aviso', 'Aviso')
 #        #>>>>>>>>>>>>>>>>>>>>>>>>>>>>---------------------Vista de las camaras--------------------<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         canvas.showPage()
         if(Tipo_Hornilla=='cámara plana'):

@@ -123,7 +123,7 @@
 
             <tr class="col-md-6 col-sm-12 form-group">
                <td class="col-12"> <p> <b>Altura del sitio (800 a 1800 metros sobre el nivel del mar):</b> </p> </td>
-               <td class="col-12"> <input id="Altura22" type = "number" name = "Altura" value="1000" step="0.5" min="800" max="1800" onchange="Editar_Almanaque()"/> </td>
+               <td class="col-12"> <input id="Altura22" type = "number" name = "Altura" value="1600" step="0.5" min="800" max="1800" onchange="Editar_Almanaque()"/> </td>
             </tr>
             
             <tr class="col-md-6 col-sm-12 form-group">
@@ -292,7 +292,7 @@
                         <select id="Frecuencia_Mol" style="width:250px; height:40px" onchange="Editar_Almanaque()">
                             <option value="1">1 semana (2 de descanso)</option>
                             <option value="2" >1 semana (1 de descanso)</option>
-                            <option value="3" selected>Todas las semanas</option>
+                            <option value="3" selected>todas las semanas del mes</option>
                             <option value="4" >1 semana (3 de descanso)</option>
                             <option value="5" >2 semanas (1 de descanso)</option>
                             <option value="6" >2 semanas (2 de descanso)</option>
@@ -494,7 +494,7 @@
         <input class="form-row" id="Etapas_hor" name = "Etapas" type = "text" value="5" style="visibility:hidden;">
         
         <input class="form-row" id="Dias_seman" name = "Días trabajados a la semana" type = "text" value="5.5" style="visibility:hidden;">
-        <input class="form-row" id="Jorn_traba" name = "Jornada de trabajo al mes" type = "text" value="Todas las semanas" style="visibility:hidden;">
+        <input class="form-row" id="Jorn_traba" name = "Jornada de trabajo al mes" type = "text" value="todas las semanas del mes" style="visibility:hidden;">
         <input class="form-row" id="Moli_por_a" name = "Moliendas al año" type = "text" value="51" style="visibility:hidden;">
         <input class="form-row" id="Capa_estim" name = "Capacidad estimada de la hornilla [kg/hora]" type = "text" value="75" style="visibility:hidden;">
         <input class="form-row" id="Producci_a" name = "Producción anual de caña [t]" type = "text" value="1086" style="visibility:hidden;">
@@ -504,7 +504,7 @@
         <input class="form-row" id="Melote_ano" name = "Melote por año [t]" type = "text" value="35.8" style="visibility:hidden;">
         <input class="form-row" id="Panela_anu" name = "Producción anual de panela [t]" type = "text" value="115" style="visibility:hidden;">
         <input class="form-row" id="Panela_mol" name = "Panela producida por molienda [t]" type = "text" value="3" style="visibility:hidden;">
-        <input class="form-row" id="Tipo_camar" name = "Tipo de cámara de combustión" type = "text" value="Ward cimpa" style="visibility:hidden;">        
+        <input class="form-row" id="Tipo_camar" name = "Tipo de cámara de combustión" type = "text" value="cámara Ward" style="visibility:hidden;">        
         <input class="form-row" id="Area_bag" name = "Área de la bagacera (m^2)" type = "number" value="100" style="visibility:hidden;">                      
         <!--Termina el combo oculto-->
     </form>  
@@ -676,6 +676,7 @@
               //document.getElementById("cultivo_3").style.visibility = "visible";
               document.getElementById("RendOculto").value = "SI";
              } 
+            Editar_Almanaque();
         }
         </script>
 
@@ -737,10 +738,10 @@
                       } 
                   else{element.style.backgroundColor = "white";}
                               
-                  if((j==07) && (Freq_t=="Todas las semanas")){dia_ini=dia_ini+7;dia_fin=dia_fin+7;color_f="orange";}
-                  if((j==14) && (Freq_t=="Todas las semanas")){dia_ini=dia_ini+7;dia_fin=dia_fin+7;color_f="yellow";}
-                  if((j==21) && (Freq_t=="Todas las semanas")){dia_ini=dia_ini+7;dia_fin=dia_fin+7;color_f="green";}
-                  if((j==28) && (Freq_t=="Todas las semanas")){dia_ini=dia_ini+7;dia_fin=dia_fin+7;color_f="blue";}
+                  if((j==07) && (Freq_t=="todas las semanas del mes")){dia_ini=dia_ini+7;dia_fin=dia_fin+7;color_f="orange";}
+                  if((j==14) && (Freq_t=="todas las semanas del mes")){dia_ini=dia_ini+7;dia_fin=dia_fin+7;color_f="yellow";}
+                  if((j==21) && (Freq_t=="todas las semanas del mes")){dia_ini=dia_ini+7;dia_fin=dia_fin+7;color_f="green";}
+                  if((j==28) && (Freq_t=="todas las semanas del mes")){dia_ini=dia_ini+7;dia_fin=dia_fin+7;color_f="blue";}
 
                   if((j==07) && (Freq_t=="3 semanas (2 de descanso)")){dia_ini=dia_ini+7;dia_fin=dia_fin+7;color_f="orange";}
                   if((j==14) && (Freq_t=="3 semanas (2 de descanso)")){dia_ini=dia_ini+7;dia_fin=dia_fin+7;color_f="yellow";}
@@ -789,17 +790,11 @@
               var Rendimiento_cana = parseFloat(document.getElementById("Rendi_proy").value);
               var Per_vege=document.getElementById("Vegetativo").value;
               
-              var FactorCorreccion=0.5;
+              var FactorCorreccion=1;
               var elemento = document.getElementById("Fertiliza");
               var ITEM     = elemento.options[elemento.selectedIndex].innerText;
-              if(ITEM=="NO"){
-                  FactorCorreccion=0.5;
-                 }
-              else{
-                  
-                  FactorCorreccion=0.8;
-                 }   
-            
+              if(ITEM=="NO"){FactorCorreccion=0.5;}
+             
               Rendimiento_cana = Rendimiento_cana*FactorCorreccion;
               Produccion_anual_cana=(Crecimiento*12.0*Rendimiento_cana)/parseFloat(Per_vege);
               Produccion_jugo_crudo=60.0*Produccion_anual_cana/100.0; //Dato del molino
@@ -812,7 +807,7 @@
               var semanas_molidos_ano = 0;
               var dias_parada_molienda = 0;
               
-              if(Freq_t=="Todas las semanas"){dias_parada_molienda=7;camara=1;}
+              if(Freq_t=="todas las semanas del mes"){dias_parada_molienda=7;camara=1;}
               if(Freq_t=="1 semana (2 de descanso)"){dias_parada_molienda=21;camara=0;}
               if(Freq_t=="1 semana (1 de descanso)"){dias_parada_molienda=14;camara=1;}
               if(Freq_t=="1 semana (3 de descanso)"){dias_parada_molienda=28;camara=0;}
@@ -856,7 +851,7 @@
               if(Panela_hora<=75){Etapas=5; Panela_hora_normalizado=75;Tipo_horn="cámara plana";}
               else if((Panela_hora>75) && (Panela_hora<=100)){Etapas=6;Panela_hora_normalizado=100;Tipo_horn="cámara plana";}
               else if((Panela_hora>100) && (Panela_hora<=125)){Etapas=6;Panela_hora_normalizado=125;Tipo_horn="cámara plana";}
-              else if((Panela_hora>125) && (Panela_hora<=150)){Etapas=6;Panela_hora_normalizado=150;}
+              else if((Panela_hora>125) && (Panela_hora<=150)){Etapas=6;Panela_hora_normalizado=150;} //Doble punteadora
               
               else if((Panela_hora>150) && (Panela_hora<=175)){Etapas=7;Panela_hora_normalizado=175;}
               else if((Panela_hora>175) && (Panela_hora<=200)){Etapas=7;Panela_hora_normalizado=200;}
@@ -864,8 +859,10 @@
               else if((Panela_hora>225) && (Panela_hora<=250)){Etapas=7;Panela_hora_normalizado=250;}
               else if((Panela_hora>250)){Etapas=7;Panela_hora_normalizado=250;} 
               
-              if(Tipo_horn=="cámara plana"){document.getElementById("Cultivo_cama").style.visibility = "visible";}
-              else{document.getElementById("Cultivo_cama").style.visibility = "hidden";}
+              if(Panela_hora<=150){
+                  if(Tipo_horn=="cámara plana"){document.getElementById("Cultivo_cama").style.visibility = "visible";}
+                  else{document.getElementById("Cultivo_cama").style.visibility = "hidden";}
+              }
               
               var bagaceras=0;
               var area = Math.round((Panela_hora*1.204577834)+12.47927141);
@@ -910,6 +907,7 @@
                 
         <script type="text/javascript">
          function Editar_Almanaque(){
+              Ocultar_per();
               var combo = document.getElementById("dia_inicio");
               var dia_uno = combo.options[combo.selectedIndex].text;
               var combo2 = document.getElementById("dia_fin");
@@ -933,7 +931,7 @@
                             
               if(Freq_t=="1 semana (2 de descanso)"){Freq=26;}
               if(Freq_t=="1 semana (1 de descanso)"){Freq=26;}
-              if(Freq_t=="Todas las semanas"){Freq=52;}
+              if(Freq_t=="todas las semanas del mes"){Freq=52;}
               if(Freq_t=="1 semana (3 de descanso)"){Freq=12;}
               if(Freq_t=="2 semanas (1 de descanso)"){Freq=40;}
               if(Freq_t=="2 semanas (2 de descanso)"){Freq=26;}
@@ -1135,7 +1133,8 @@
               else{
                   document.getElementById("FertilizaOculto").value = "SI";
                  }
-              Actualizar_caja();                
+              //Actualizar_caja();  
+              Editar_Almanaque();              
 			}     
         </script>
                 
