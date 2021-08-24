@@ -70,10 +70,10 @@ class Documento_Latex():
                     tlg.append('\n \n') #Salto de línea en parráfo
                     #Verificar area
                     Parrafo= ('Con base en la información suministrada, HornillApp propone (ver Sección 1) la construcción de una hornilla panelera tipo Cimpa con una '+
-                              T_Hornilla+' con capacidad de '+ str(Diccionario['Capacidad estimada de la hornilla']) +' kg/h'+' con una eficiencia estimada del '+ str(round(Diccionario['Eficiencia de la hornilla']))+'%'+'; adecuada para el procesamiento de hasta '+
+                              T_Hornilla+' con capacidad de '+ str(Diccionario['Capacidad estimada de la hornilla']) +' kg/h'+' y una eficiencia estimada del '+ str(round(Diccionario['Eficiencia de la hornilla']))+'%'+'; adecuada para el procesamiento de hasta '+
                               Area+
                               Texto_Area+' de caña, una producción de ' + str(round(float(Diccionario['Producción de caña (toneladas por hectárea)'])))+ ' toneladas por hectárea, un periodo vegetativo de '+ str(Diccionario['Periodo vegetativo'])+' meses, para realizar '+
-                              str(int(round(float(Diccionario['Moliendas al año']),0)))+' moliendas al año en una jornada laboral de '+ str(Diccionario['Jornada de trabajo al mes']) + ' de '+
+                              str(int(round(float(Diccionario['Moliendas al año']),0)))+' moliendas al año en una jornada laboral de \"'+ str(Diccionario['Jornada de trabajo al mes']) + '\"' +' de '+
                               str(Diccionario['Días trabajados a la semana'])+ ' días cada semana de '+str(Diccionario['Horas de trabajo de la hornilla por día'])+ ' horas de trabajo diarias.'+
                               '\n Está hornilla requiere un área para la(s) bagacera(s) aproximadamente de '+Area_bag+' m^2 y su productividad '
                               )
@@ -108,7 +108,7 @@ class Documento_Latex():
                                             itemize.add_item('Sección 1')
                                             with itemize.create(Itemize()) as item:
                                                         item.add_item('Información del usuario.')
-                                                        item.add_item('Características de la caña sembrada.')
+                                                        #item.add_item('Características de la caña sembrada.')
                                                         item.add_item('Características del molino.')
                                                         item.add_item('Consideraciones generales para el manejo de la hornilla.')
                                                         item.add_item('Análisis financiero.')
@@ -169,11 +169,34 @@ class Documento_Latex():
                 if(str(i)=='DATOS DE ENTRADA'):
                     break
                 else:
-                    if((SM(None, 'Altura', i).ratio()<0.85) and
-                       (SM(None, 'Variedad de Caña', i).ratio()<0.85) and
-                       (SM(None, 'Usa fertilizante', i).ratio()<0.85) and
-                       (SM(None, 'Grados Brix de la panela (promedio)', i).ratio()<0.85) and
-                       (SM(None, '--', str(D1[i])).ratio()<0.85)):
+#                    if((SM(None, 'Altura', i).ratio()<0.85) and
+#                       (SM(None, 'Variedad de Caña', i).ratio()<0.85) and
+#                       (SM(None, 'Usa fertilizante', i).ratio()<0.85) and
+#                       (SM(None, 'Grados Brix de la panela (promedio)', i).ratio()<0.85) and
+#                       (SM(None, '--', str(D1[i])).ratio()<0.85)):
+                        
+                    if(i!='Área de la bagacera (m^2)' and i!='x' and i!='y' and i!='Variedad de Caña'
+                       and i!='Usa fertilizante' and i!='--' and i!='Conoce el rendimiento de la caña'
+                       and i!='Cachaza por año [t]' and i!='Melote por año [t]' and i!='Variedad de Caña 1'
+                       and i!='Conece las variedades de caña' and i!='Panela producida por molienda [t]'
+                       
+                       and i!='Moliendas estimadas al año' and i!='Caña molida por hora [t]'
+                       and i!='Capacidad del molino [kg/hora]' and i!='Etapas'
+                       and i!='Jornada de trabajo al mes' and i!='Moliendas al año'
+                       and i!='Días trabajados a la semana' and i!='Caña molida por hora [t]'
+                       and i!='Capacidad del molino [kg/hora]' and i!='Etapas'
+                       and i!='Capacidad estimada de la hornilla [kg/hora]' and i!='Grados Brix de la caña (promedio)'
+                       and i!='Grados Brix de la panela (promedio)' and i!='Meses de trabajo por año'
+                       and i!='Horas de trabajo de la hornilla por día' and i!='Altura'
+                       and i!='Caña molida por hora [t]'
+                       
+                       and i!='Ancho de la bagacera (mm)' and i!='Largo de la bagacera (mm)'
+                       and i!='Ancho de la zona de moldeo (mm)' and i!='Largo de la zona de moldeo (mm)' 
+                       and i!='Ancho de la zona de empaque (mm)' and i!='Largo de la zona de empaque (mm)'
+                       and i!='Ancho de la zona de bodega (mm)' and i!='Largo de la zona de bodega (mm)'
+                       and i!='Área del cañetero (mm^2)' and i!='Ancho del cañetero (mm)'
+                       and i!='Ancho del cañetero (mm)' and i!='Largo del cañetero (mm)' and i!='Pilas de bagazo'):                        
+                        
                         T1=str(D1[i])
                         #Arreglo para asignar unidades y mostrarlas en el informe
                         if (str(i)=='Área caña sembrada'):
@@ -207,38 +230,38 @@ class Documento_Latex():
         doc.append(NewPage())
         
         '''>>>>>>>>>>>>>>>>>>>>Presentación de los datos de la caña<<<<<<<<<<<<<<<<<<<<<<<'''
-        doc = Documento_Latex.titulos_I (doc, 'CARACTERÍSTICAS DE LAS VARIEDADES DE CAÑA SELECCIONADAS')
+#        doc = Documento_Latex.titulos_I (doc, 'CARACTERÍSTICAS DE LAS VARIEDADES DE CAÑA SELECCIONADAS')
         Canas=pd.read_excel('static/Temp/Temp4.xlsx',skipcolumn = 0,)
         Carpe=pd.read_excel('static/Temp/Temp5.xlsx',skipcolumn = 0,)
-        Eti = Canas.iloc[0].values
-        Val = Canas.iloc[1].values
-        Car = Carpe.iloc[0].values
-        
-        conta=1
-        for i in range (len(Car)-1):
-            with doc.create(Tabular('lcccccl')) as table:
-                for j in range (1,8):
-                    table.add_row((bold(str(Eti[conta])), ' ', ' ', ' ', ' ', ' ', str(Val[conta])))
-                    conta=conta+1
-                conta=conta+1
-            doc.append(LineBreak())
-            doc.append('\n')
-            doc.append(LineBreak())
-        
-        for i in range (1,len(Car),3):
-            with doc.create(Figure(position='h!')) as imagesRow1:
-                for j in range(3):
-                    if((i+j)<len(Car)):
-                        with doc.create(
-                            SubFigure(width=NoEscape(r'0.33\linewidth'))) as left_imagesRow1:
-                            left_imagesRow1.add_image(Car[i+j], width=NoEscape(r'0.95\linewidth'))
-                            left_imagesRow1.add_caption('Variedad de caña '+str(i+j))
-                imagesRow1.append(LineBreak())
-                imagesRow1.append(NewPage())  
-        
-        doc.append(NewPage())
-        doc.append(TextColor('white','HH')) 
-        doc.append(NewPage())
+#        Eti = Canas.iloc[0].values
+#        Val = Canas.iloc[1].values
+#        Car = Carpe.iloc[0].values
+#        
+#        conta=1
+#        for i in range (len(Car)-1):
+#            with doc.create(Tabular('lcccccl')) as table:
+#                for j in range (1,8):
+#                    table.add_row((bold(str(Eti[conta])), ' ', ' ', ' ', ' ', ' ', str(Val[conta])))
+#                    conta=conta+1
+#                conta=conta+1
+#            doc.append(LineBreak())
+#            doc.append('\n')
+#            doc.append(LineBreak())
+#        
+#        for i in range (1,len(Car),3):
+#            with doc.create(Figure(position='h!')) as imagesRow1:
+#                for j in range(3):
+#                    if((i+j)<len(Car)):
+#                        with doc.create(
+#                            SubFigure(width=NoEscape(r'0.33\linewidth'))) as left_imagesRow1:
+#                            left_imagesRow1.add_image(Car[i+j], width=NoEscape(r'0.95\linewidth'))
+#                            left_imagesRow1.add_caption('Variedad de caña '+str(i+j))
+#                imagesRow1.append(LineBreak())
+#                imagesRow1.append(NewPage())  
+#        
+#        doc.append(NewPage())
+#        doc.append(TextColor('white','HH')) 
+#        doc.append(NewPage())
         
         '''>>>>>>>>>>>>>>>>>>>>Presentación de los molinos seleccionados<<<<<<<<<<<<<<<<<<<<<<<'''   
         doc = Documento_Latex.titulos_I (doc, 'MOLINOS PRESELECCIONADOS PARA ESTE DISEÑO')
@@ -287,7 +310,7 @@ class Documento_Latex():
         
         doc.append(NewPage())
         doc.append(TextColor('white','HH')) 
-        doc.append(NewPage())                
+        #doc.append(NewPage())                
 
         #MANUAL DE OPERACIÓN DE LA HORNILLA                   
         with doc.create(MediumText(' ')) as tlg:
