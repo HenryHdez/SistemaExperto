@@ -3,13 +3,10 @@
 """----Definición de las librerías requeridas para la ejecución de la aplicación---"""
 from flask import Flask, request, render_template        #Interfaz gráfica WEB
 ##from flask_socketio import SocketIO
-from difflib import SequenceMatcher as SM                #Detección de secuencias en estructuras de texto
 from werkzeug.utils import secure_filename               #Encriptar información archivos de pdf
 from email.mime.multipart import MIMEMultipart           #Creación del cuerpo del correo electrónico 1
 from email.mime.application import MIMEApplication       #Creación del cuerpo del correo electrónico 2            
 from email.mime.text import MIMEText                     #Creación del cuerpo del correo electrónico 3
-from email.mime.base import MIMEBase
-from email import encoders
 from shutil import rmtree                                #Gestión de directorios en el servidor
 import smtplib                                           #Conexión con el servidor de correo
 from rpy2.robjects import r                              #Interfaz entre PYTHON y R
@@ -172,7 +169,7 @@ def Enviar_msn(Correo):
         mensaje.attach(archivo_adjunto)
         # Datos de acceso a la cuenta de usuario
         usuario   ='hornillapp@agrosavia.co'
-        contrasena='Contrasena1234567@'          
+        contrasena='Contrasena123456@'          
         #Interfaz de conexión con el servidor de gmail
         servidor = smtplib.SMTP('correo.agrosavia.co:587')
         servidor.starttls()
@@ -239,8 +236,12 @@ def generar_valores_informe(Cliente_actual):
     Formulario_1_Etiquetas=[]
     Formulario_1_Valores=[]
     aux_i=' '      
+
     for i in a:
-        if(i!='x' and i!='y' and i!='Panela producida por hora [kg/hora]' and i!='Variedades de caña sembrada' and i!='Conoce el rendimiento de la caña' and i!='Conece las variedades de caña'):
+        if(i!='x' and i!='y' and i!='Panela producida por hora [kg/hora]' 
+           and i!='Variedades de caña sembrada' and i!='Conoce el rendimiento de la caña' 
+           and i!='Conece las variedades de caña'
+           ):
             try:
                 if(i!='Telefono'):
                     aux_i=str(round(float(a[i]),3))
@@ -298,29 +299,6 @@ def generar_valores_informe(Cliente_actual):
             print("Variedad no disponible")
         ha_cana_conta_p=ha_cana_conta/(cantidadcanas-1)
         Periodo_v=Periodo_v/(cantidadcanas-1)
-    #FORMULARIO 1
-    #Agregar caña esperada por ha
-    #=(Hectareas*L*12/periodo vegetativo)*Factor correccion
-#    Factor_Correccion=0.5
-#    if(a['Usa fertilizante']=='NO'):
-#        Factor_Correccion=0.5
-#    else:
-#        Factor_Correccion=0.8
-   
-#    ha_cana_conta_2=ha_cana_conta_p*Factor_Correccion
-
-    #Formulario_1_Etiquetas.append('Producción de caña (toneladas por hectárea)')
-    #Formulario_1_Valores.append(str(float(result.get('Producción de caña (toneladas por hectárea)'))))
-    #Determinar periodo vegetativo
-    Formulario_1_Etiquetas.append('Periodo vegetativo')
-    Formulario_1_Valores.append(str(18))
-    #Formulario_1_Valores.append(str(round(math.exp((altura_media+5518.9)/2441.1),0)))
-    #Formulario_1_Etiquetas.append('Numero de moliendas al año')
-#    a1=float(result.get('¿Cada cuantos días quiere moler? (días)'))
-#    a2=float(result.get('Días de trabajo de la hornilla por semana'))
-#    a3=float(result.get('Meses de trabajo por año'))
-#    Numero_Moliendas=round((30/(a1+a2))*a3,3)
-    #Formulario_1_Valores.append(str(Numero_Moliendas))   
       
     #FORMULARIO 2
     #Exportar variedades de caña seleccionadas
@@ -337,51 +315,6 @@ def generar_valores_informe(Cliente_actual):
     Formulario_2a_Valores.append(G_brix_cana)
     Formulario_2a_Etiquetas.append('Grados Brix de la panela (promedio)')
     Formulario_2a_Valores.append(G_brix_panela)    
-
-    '''>>>>>>>>---------------Excel-------------<<<<<<<<'''
-    #Área de caña sembrada para el calculo
-#    Crecimiento=float(result.get('Área proyectada para cultivo en los proximos 5 años'))
-#    Crecimiento=Crecimiento+float(result.get("Área de caña disponible (Hectáreas)"))
-#    
-#    Produccion_anual_cana=(Crecimiento*12*ha_cana_conta_2)/Periodo_v
-#    
-#    Produccion_jugo_crudo=60*Produccion_anual_cana/100#ha_cana_conta_2
-#    Jugo_clarificado=Produccion_jugo_crudo-(Produccion_jugo_crudo*(4/100))
-#    Cachaza_por_ano=Produccion_jugo_crudo*(4/100)
-#    Melto_ano=Cachaza_por_ano*0.55
-#    Panela_anual=G_brix_cana*Jugo_clarificado/G_brix_panela
-#    Panela_Molienda=Panela_anual/Numero_Moliendas
-#    #Panela_Semanal=Panela_Mensual/float(result.get('Número de moliendas al año'))
-#    Panela_diaria=(Panela_Molienda/float(result.get('Días de trabajo de la hornilla por semana')))*1000
-#    
-#    Panela_Hora=Panela_diaria/float(result.get('Horas de trabajo de la hornilla por día'))
-#    
-#    Cana_molida=(Produccion_anual_cana/(Numero_Moliendas*
-#                                        float(result.get('Días de trabajo de la hornilla por semana'))*
-#                                        float(result.get('Horas de trabajo de la hornilla por día'))))*1000
-#                                        
-#    Formulario_1_Etiquetas.append('Número de moliendas al año')
-#    Formulario_1_Valores.append(str(round(Numero_Moliendas)))                                     
-#    Formulario_1_Etiquetas.append('Producción anual de caña esperada [t]')
-#    Formulario_1_Valores.append(str(round(Produccion_anual_cana))) 
-#    Formulario_1_Etiquetas.append('Producción anual de jugo crudo [t]')
-#    Formulario_1_Valores.append(str(round(Produccion_jugo_crudo))) 
-#    Formulario_1_Etiquetas.append('Producción anual de jugo clarificado [t]')
-#    Formulario_1_Valores.append(str(round(Jugo_clarificado))) 
-#    Formulario_1_Etiquetas.append('Cachaza por año [t]')
-#    Formulario_1_Valores.append(str(round(Cachaza_por_ano)))
-#    Formulario_1_Etiquetas.append('Melote por año [t]')
-#    Formulario_1_Valores.append(str(round(Melto_ano))) 
-#    Formulario_1_Etiquetas.append('Producción de panela anual [t]')
-#    Formulario_1_Valores.append(str(round(Panela_anual))) 
-#    Formulario_1_Etiquetas.append('Producción de panela por molienda [t]')
-#    Formulario_1_Valores.append(str(round(Panela_Molienda)))  
-#    Formulario_1_Etiquetas.append('Producción de panela diaria [kg]')
-#    Formulario_1_Valores.append(str(round(Panela_diaria))) 
-#    Formulario_1_Etiquetas.append('Panela producida por hora [kg/hora]')
-#    Formulario_1_Valores.append(str(round(Panela_Hora)))   
-#    Formulario_1_Etiquetas.append('Caña molida [kg/hora]')
-#    Formulario_1_Valores.append(str(round(Cana_molida)))   
     
     """----------->>>>Actualización de diccionarios<<<<<<<<<<--------"""
     Diccionario=dict(zip(Formulario_1_Etiquetas,Formulario_1_Valores))
@@ -423,6 +356,7 @@ def generar_valores_informe(Cliente_actual):
         
     for t in range(inio,len(Diccionario_2['Volumen de jugo [m^3/kg]'])):
         Vector_volumenes.append(Diccionario_2['Volumen de jugo [m^3/kg]'][t])
+        
     Pailas.Mostrar_pailas(
             Vector_volumenes,
             #Diccionario_2['Volumen de jugo [L]'],
@@ -430,7 +364,8 @@ def generar_valores_informe(Cliente_actual):
             Nombre_Rot,
             Diccionario['Tipo de cámara de combustión'],
             Diccionario['Capacidad estimada de la hornilla'],
-            altura_media
+            altura_media,
+            Diccionario
             )
     """Presentar información del molino"""
     Formulario_3_Etiquetas=['Caña molida por hora [t]', 'Capacidad del molino [kg/hora]']
@@ -582,16 +517,22 @@ def infor1():
     #rutina para filtrar y eliminar la palabra variedad de caña
     lista_etiquetas_filtradas=[]
     lista_valores_filtrados=[]
-    for i in range(len(Formulario_1_Etiquetas)):
-        if((SM(None, 'Variedad de Caña', Formulario_1_Etiquetas[i]).ratio()<0.85) and 
-           (SM(None, 'Usa fertilizante', Formulario_1_Etiquetas[i]).ratio()<0.85) and
-           (SM(None, '--', Formulario_1_Valores[i]).ratio()<0.85)and
-           (SM(None, 'Conoce el rendimiento de la caña', Formulario_1_Valores[i]).ratio()<0.85)and
-           (SM(None, 'Conece las variedades de caña', Formulario_1_Valores[i]).ratio()<0.85)and
-           (SM(None, 'x', Formulario_1_Valores[i]).ratio()<0.85)and
-           (SM(None, 'y', Formulario_1_Valores[i]).ratio()<0.85)):
-            lista_etiquetas_filtradas.append(Formulario_1_Etiquetas[i])
-            lista_valores_filtrados.append(Formulario_1_Valores[i])    
+    
+    for ind,i in enumerate(Formulario_1_Etiquetas):      
+        if(i!='Área de la bagacera (m^2)' and i!='x' and i!='y' and i!='Variedad de Caña'
+           and i!='Usa fertilizante' and i!='--' and i!='Conoce el rendimiento de la caña'
+           and i!='Cachaza por año [t]' and i!='Melote por año [t]' and i!='Variedad de Caña 1'
+           and i!='Conece las variedades de caña' and i!='Panela producida por molienda [t]'
+           and i!='Ancho de la bagacera (mm)' and i!='Largo de la bagacera (mm)'
+           and i!='Ancho de la zona de moldeo (mm)' and i!='Largo de la zona de moldeo (mm)' 
+           and i!='Ancho de la zona de empaque (mm)' and i!='Largo de la zona de empaque (mm)'
+           and i!='Ancho de la zona de bodega (mm)' and i!='Largo de la zona de bodega (mm)'
+           and i!='Área del cañetero (mm^2)' and i!='Ancho del cañetero (mm)'
+           and i!='Ancho del cañetero (mm)' and i!='Largo del cañetero (mm)' and i!='Pilas de bagazo'):
+            
+            lista_etiquetas_filtradas.append(Formulario_1_Etiquetas[ind])
+            lista_valores_filtrados.append(Formulario_1_Valores[ind])
+
     return render_template('informe1.html', 
                            Etiquetas = lista_etiquetas_filtradas, 
                            Valores = lista_valores_filtrados)     
@@ -839,7 +780,7 @@ def contac_rta():
                 os.remove(nombre_archivo_pdf)
             # Datos de acceso a la cuenta de usuario
             usuario   ='hornillapp@agrosavia.co'
-            contrasena='Contrasena1234567@'          
+            contrasena='Contrasena123456@'          
             #Interfaz de conexión con el servidor de gmail
             servidor = smtplib.SMTP('correo.agrosavia.co:587')
             servidor.starttls()

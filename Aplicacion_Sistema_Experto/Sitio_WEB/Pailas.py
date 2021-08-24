@@ -155,8 +155,10 @@ def Dimensiones_parrilla(Ancho_seccion, Longitud_Seccion, Secciones_totales, Anc
     Dimensiones_Camara.append(Longitud_Camara)
     Dimensiones_Camara.append(Altura_camara)
 
-def Fijar_pailas(canvas, Espacio, Desplazamiento, UP, Factor, Etapas, Vector_Entrada, Tipo_Hornilla, itera):
+def Fijar_pailas(canvas, Espacio, Desplazamiento1, UP, Factor, Etapas, Vector_Entrada, Tipo_Hornilla, itera, Diccionario):
     #Fijar plano
+    mem_desp=0
+    Desplazamiento=Desplazamiento1
     if(itera==0):
         if(Tipo_Hornilla=='cámara Ward' or Tipo_Hornilla=='cámara plana'):
             canvas.drawImage('static/Vistas/Planta/Arquitectonico.jpg', 0, 0, width=970, height=628)
@@ -166,71 +168,142 @@ def Fijar_pailas(canvas, Espacio, Desplazamiento, UP, Factor, Etapas, Vector_Ent
         if(Tipo_Hornilla=='cámara Ward' or Tipo_Hornilla=='cámara plana'):
             canvas.drawImage('static/Vistas/Planta/Arquitectonico1a.jpg', 0, 0, width=970, height=628)
         else:
-            canvas.drawImage('static/Vistas/Planta/Arquitectonico3a.jpg', 0, 0, width=970, height=628)          
+            canvas.drawImage('static/Vistas/Planta/Arquitectonico3a.jpg', 0, 0, width=970, height=628)  
+        canvas=Dibujar_Cotas_arquitectonico1(canvas, Diccionario)
+        canvas=Dibujar_Cotas_arquitectonico2(canvas, Diccionario)
     elif(itera==2):
         if(Tipo_Hornilla=='cámara Ward' or Tipo_Hornilla=='cámara plana'):
             canvas.drawImage('static/Vistas/Planta/Arquitectonico1b.jpg', 0, 0, width=970, height=628)
         else:
             canvas.drawImage('static/Vistas/Planta/Arquitectonico3b.jpg', 0, 0, width=970, height=628) 
     #Fija pailas    
-    for i in range (Etapas):
-        if(itera==2):
-            canvas.setFont('Helvetica-Bold', 10)
-            canvas.drawString(Desplazamiento+12, UP-25, 'Paila: '+str(i+1))                              
+    if(Tipo_Hornilla=='cámara Ward' or Tipo_Hornilla=='cámara plana'):
+        for i in range (Etapas):
+            if(itera==2):
+                canvas.setFont('Helvetica-Bold', 10)
+                canvas.drawString(Desplazamiento+12, UP-25, 'Paila: '+str(i+1))                              
+                if(i==2):
+                    canvas.drawString(Desplazamiento-5, UP+65, 'Concentradora')
+                elif(i==3 and Etapas>6):
+                    canvas.drawString(Desplazamiento-5, UP+65, 'Concentradora')    
+                elif(i==Etapas-1):
+                    canvas.drawString(Desplazamiento+90, UP-25, 'Paila: Melotera') 
+                    canvas.drawString(Desplazamiento-5, UP+65, 'Recibidora')
+                elif(i==Etapas-2):
+                    canvas.drawString(Desplazamiento-5, UP+65, 'Clarificadora')
+                else:
+                    canvas.drawString(Desplazamiento-5, UP+65, 'Evaporadora')
+                    
+            if Vector_Entrada[i][0]==1:
+                #Nombre_ducto='static/Vistas/Ductos/'+'Dplana_superior.png'
+                if Vector_Entrada[i][1]==True:
+                    Nombre_Paila='static/Vistas/Superior/'+'Plana_con_aletas.png'
+                else:
+                    Nombre_Paila='static/Vistas/Superior/'+'Plana_sin_aletas.png'
+            elif Vector_Entrada[i][0]==2: 
+                #Nombre_ducto='static/Vistas/Ductos/'+'Dplana_superior.png'
+                if Vector_Entrada[i][1]==True:
+                    Nombre_Paila='static/Vistas/Superior/'+'Pirotubular_circular_con_aletas.png'
+                else:
+                    Nombre_Paila='static/Vistas/Superior/'+'Pirotubular_circular_sin_aletas.png'
+            elif Vector_Entrada[i][0]==3:
+                #Nombre_ducto='static/Vistas/Ductos/'+'Dsemiesferica_superior.png'
+                Nombre_Paila='static/Vistas/Superior/'+'Semiesferica.png' 
+            elif Vector_Entrada[i][0]==4:
+                #Nombre_ducto='static/Vistas/Ductos/'+'Dsemicilindrica_superior.png'
+                if Vector_Entrada[i][1]==True:
+                    Nombre_Paila='static/Vistas/Superior/'+'Semicilindrica_con_aletas.png'
+                else:
+                   Nombre_Paila='static/Vistas/Superior/'+'Semicilindrica_sin_aletas.png'
+            elif Vector_Entrada[i][0]==5:
+                #Nombre_ducto='static/Vistas/Ductos/'+'Dplana_superior.png'
+                if Vector_Entrada[i][1]==True:
+                    Nombre_Paila='static/Vistas/Superior/'+'Pirotubular_cuadrada_con_aletas.png'
+                else:
+                    Nombre_Paila='static/Vistas/Superior/'+'Pirotubular_cuadrada_sin_aletas.png'
+            elif Vector_Entrada[i][0]==6:
+                #Nombre_ducto='static/Vistas/Ductos/'+'Dplana_superior.png'
+                if Vector_Entrada[i][1]==True:
+                    Nombre_Paila='static/Vistas/Superior/'+'Cuadrada_acanalada_con_aletas.png'
+                else:
+                    Nombre_Paila='static/Vistas/Superior/'+'Cuadrada_acanalada_sin_aletas.png' 
+            canvas.drawImage(Nombre_Paila, Desplazamiento, UP, width=Espacio*0.19, height=Espacio*0.19)  
+            canvas=Dibujar_Rotulo(canvas, 'Representación de la hornilla', 'Pictórico')
+            Desplazamiento=Desplazamiento+Espacio-Factor
+            canvas.drawImage('static/Vistas/Superior/'+'Plana_sin_aletas.png', Desplazamiento, UP, width=Espacio*0.19, height=Espacio*0.19)  
+    else:
+        #Doble
+        for i in range (Etapas):
+            if(i==0):
+                mem_desp=Desplazamiento
+            if(itera==2):
+                canvas.setFont('Helvetica-Bold', 10)
+                if(i!=2):
+                    canvas.drawString(Desplazamiento+12, UP-25, 'Paila: '+str(i+1))                              
+                if(i==2):
+                    canvas.drawString(mem_desp-30, UP+135, 'Paila: '+str(i+1)) 
+                    canvas.drawString(mem_desp+5, UP+135, '-Concentradora')
+                elif(i==3 and Etapas>6):
+                    canvas.drawString(Desplazamiento-5, UP+65, 'Concentradora')    
+                elif(i==Etapas-1):
+                    canvas.drawString(Desplazamiento+135, UP-25, 'Paila: Melotera') 
+                    canvas.drawString(Desplazamiento-5, UP+65, 'Recibidora')
+                elif(i==Etapas-2):
+                    canvas.drawString(Desplazamiento-5, UP+65, 'Clarificadora')
+                else:
+                    canvas.drawString(Desplazamiento-5, UP+65, 'Evaporadora')
+                    
+            if Vector_Entrada[i][0]==1:
+                #Nombre_ducto='static/Vistas/Ductos/'+'Dplana_superior.png'
+                if Vector_Entrada[i][1]==True:
+                    Nombre_Paila='static/Vistas/Superior/'+'Plana_con_aletas.png'
+                else:
+                    Nombre_Paila='static/Vistas/Superior/'+'Plana_sin_aletas.png'
+            elif Vector_Entrada[i][0]==2: 
+                #Nombre_ducto='static/Vistas/Ductos/'+'Dplana_superior.png'
+                if Vector_Entrada[i][1]==True:
+                    Nombre_Paila='static/Vistas/Superior/'+'Pirotubular_circular_con_aletas.png'
+                else:
+                    Nombre_Paila='static/Vistas/Superior/'+'Pirotubular_circular_sin_aletas.png'
+            elif Vector_Entrada[i][0]==3:
+                #Nombre_ducto='static/Vistas/Ductos/'+'Dsemiesferica_superior.png'
+                Nombre_Paila='static/Vistas/Superior/'+'Semiesferica.png' 
+            elif Vector_Entrada[i][0]==4:
+                #Nombre_ducto='static/Vistas/Ductos/'+'Dsemicilindrica_superior.png'
+                if Vector_Entrada[i][1]==True:
+                    Nombre_Paila='static/Vistas/Superior/'+'Semicilindrica_con_aletas.png'
+                else:
+                   Nombre_Paila='static/Vistas/Superior/'+'Semicilindrica_sin_aletas.png'
+            elif Vector_Entrada[i][0]==5:
+                #Nombre_ducto='static/Vistas/Ductos/'+'Dplana_superior.png'
+                if Vector_Entrada[i][1]==True:
+                    Nombre_Paila='static/Vistas/Superior/'+'Pirotubular_cuadrada_con_aletas.png'
+                else:
+                    Nombre_Paila='static/Vistas/Superior/'+'Pirotubular_cuadrada_sin_aletas.png'
+            elif Vector_Entrada[i][0]==6:
+                #Nombre_ducto='static/Vistas/Ductos/'+'Dplana_superior.png'
+                if Vector_Entrada[i][1]==True:
+                    Nombre_Paila='static/Vistas/Superior/'+'Cuadrada_acanalada_con_aletas.png'
+                else:
+                    Nombre_Paila='static/Vistas/Superior/'+'Cuadrada_acanalada_sin_aletas.png' 
+            
             if(i==2):
-                canvas.drawString(Desplazamiento-5, UP+65, 'Concentradora')
-            elif(i==3 and Etapas>6):
-                canvas.drawString(Desplazamiento-5, UP+65, 'Concentradora')    
-            elif(i==Etapas-1):
-                canvas.drawString(Desplazamiento+100, UP-25, 'Paila: Melotera') 
-                canvas.drawString(Desplazamiento-5, UP+65, 'Recibidora')
-            elif(i==Etapas-2):
-                canvas.drawString(Desplazamiento-5, UP+65, 'Clarificadora')
+                if(itera<=1):
+                    des_pos=25
+                else:
+                    des_pos=80
+                canvas.drawImage(Nombre_Paila, mem_desp, UP+des_pos, width=Espacio*0.19, height=Espacio*0.19) 
             else:
-                canvas.drawString(Desplazamiento-5, UP+65, 'Evaporadora')
-                
-        if Vector_Entrada[i][0]==1:
-            #Nombre_ducto='static/Vistas/Ductos/'+'Dplana_superior.png'
-            if Vector_Entrada[i][1]==True:
-                Nombre_Paila='static/Vistas/Superior/'+'Plana_con_aletas.png'
-            else:
-                Nombre_Paila='static/Vistas/Superior/'+'Plana_sin_aletas.png'
-        elif Vector_Entrada[i][0]==2: 
-            #Nombre_ducto='static/Vistas/Ductos/'+'Dplana_superior.png'
-            if Vector_Entrada[i][1]==True:
-                Nombre_Paila='static/Vistas/Superior/'+'Pirotubular_circular_con_aletas.png'
-            else:
-                Nombre_Paila='static/Vistas/Superior/'+'Pirotubular_circular_sin_aletas.png'
-        elif Vector_Entrada[i][0]==3:
-            #Nombre_ducto='static/Vistas/Ductos/'+'Dsemiesferica_superior.png'
-            Nombre_Paila='static/Vistas/Superior/'+'Semiesferica.png' 
-        elif Vector_Entrada[i][0]==4:
-            #Nombre_ducto='static/Vistas/Ductos/'+'Dsemicilindrica_superior.png'
-            if Vector_Entrada[i][1]==True:
-                Nombre_Paila='static/Vistas/Superior/'+'Semicilindrica_con_aletas.png'
-            else:
-               Nombre_Paila='static/Vistas/Superior/'+'Semicilindrica_sin_aletas.png'
-        elif Vector_Entrada[i][0]==5:
-            #Nombre_ducto='static/Vistas/Ductos/'+'Dplana_superior.png'
-            if Vector_Entrada[i][1]==True:
-                Nombre_Paila='static/Vistas/Superior/'+'Pirotubular_cuadrada_con_aletas.png'
-            else:
-                Nombre_Paila='static/Vistas/Superior/'+'Pirotubular_cuadrada_sin_aletas.png'
-        elif Vector_Entrada[i][0]==6:
-            #Nombre_ducto='static/Vistas/Ductos/'+'Dplana_superior.png'
-            if Vector_Entrada[i][1]==True:
-                Nombre_Paila='static/Vistas/Superior/'+'Cuadrada_acanalada_con_aletas.png'
-            else:
-                Nombre_Paila='static/Vistas/Superior/'+'Cuadrada_acanalada_sin_aletas.png' 
-        canvas.drawImage(Nombre_Paila, Desplazamiento, UP, width=Espacio*0.19, height=Espacio*0.19)  
-        canvas=Dibujar_Rotulo(canvas, 'Representación de la hornilla', 'Pictórico')
-        Desplazamiento=Desplazamiento+Espacio-Factor
-    canvas.drawImage('static/Vistas/Superior/'+'Plana_sin_aletas.png', Desplazamiento, UP, width=Espacio*0.19, height=Espacio*0.19)  
+                canvas.drawImage(Nombre_Paila, Desplazamiento, UP, width=Espacio*0.19, height=Espacio*0.19) 
+                canvas=Dibujar_Rotulo(canvas, 'Representación de la hornilla', 'Pictórico')
+                Desplazamiento=Desplazamiento+Espacio-Factor
+                canvas.drawImage('static/Vistas/Superior/'+'Plana_sin_aletas.png', Desplazamiento, UP, width=Espacio*0.19, height=Espacio*0.19)
+            
     if(itera<=1):
         canvas.showPage()
     return canvas
     
-def Dibujar_planta(Vector_Entrada, Tipo_Hornilla, Etapas, Nombres_Ubicaciones, Capacidad_hornilla, Altura_UP, Ancho_UP, Lista_Falcas):
+def Dibujar_planta(Vector_Entrada, Tipo_Hornilla, Etapas, Nombres_Ubicaciones, Capacidad_hornilla, Altura_UP, Ancho_UP, Lista_Falcas, Diccionario):
     global Dimensiones_Pailas
     global Dimensiones_Camara
 #    print(Dimensiones_Pailas)
@@ -243,33 +316,31 @@ def Dibujar_planta(Vector_Entrada, Tipo_Hornilla, Etapas, Nombres_Ubicaciones, C
         if(inter==0):
             canvas = canvas.Canvas("static/B1_Etapa_Planta_WEB.pdf", pagesize=letter)
             canvas.setPageSize((970,628))
-            if(Etapas==5):
-                canvas=Fijar_pailas(canvas, 130, 240, 362, 80, Etapas, Vector_Entrada, Tipo_Hornilla, 0)
-                canvas=Fijar_pailas(canvas, 110, 265, 368, 63, Etapas, Vector_Entrada, Tipo_Hornilla, 1)
-                canvas=Fijar_pailas(canvas, 260, 180, 296, 150, Etapas, Vector_Entrada, Tipo_Hornilla, 2)
-            if(Etapas==6):
-                canvas=Fijar_pailas(canvas, 100, 260, 364, 60, Etapas, Vector_Entrada, Tipo_Hornilla, 0)
-                canvas=Fijar_pailas(canvas, 80, 280, 370, 43, Etapas, Vector_Entrada, Tipo_Hornilla, 1)
-                canvas=Fijar_pailas(canvas, 230, 150, 300, 135, Etapas, Vector_Entrada, Tipo_Hornilla, 2)
-            if(Etapas==7):
-                canvas=Fijar_pailas(canvas, 80, 250, 366, 45, Etapas, Vector_Entrada, Tipo_Hornilla, 0)
-                canvas=Fijar_pailas(canvas, 60, 300, 372, 33, Etapas, Vector_Entrada, Tipo_Hornilla, 1)
-                canvas=Fijar_pailas(canvas, 200, 170, 304, 115, Etapas, Vector_Entrada, Tipo_Hornilla, 2)
-            #canvas.setFont('Helvetica-Bold', 22)
-            #canvas.drawString(55,550,'ESTÁ IMÁGEN ES UNA REPRESENTACIÓN DEL ENSAMBLAJE DE LA HORNILLA')
-       
-        if(inter==1):
-            canvas = canvas.Canvas("static/B4_Etapa_Planta_WEB.pdf", pagesize=letter)
-            canvas.setPageSize((970,628))
-            canvas.drawImage('static/Vistas/Otros/Formato.png', 0, 0, width=970, height=628)  
-            canvas.setFont('Helvetica-Bold', 48)
-            canvas.drawString(30, 320, 'A continuación se presenta una hornilla')
-            canvas.drawString(30, 220, 'con recuperador')
-            canvas=Dibujar_Rotulo(canvas, 'Aviso', 'Aviso')
-#        #>>>>>>>>>>>>>>>>>>>>>>>>>>>>---------------------Vista de las camaras--------------------<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-        canvas.showPage()
-        if(Tipo_Hornilla=='cámara plana'):
-            if(inter==0):
+            if(Tipo_Hornilla=='cámara Ward' or Tipo_Hornilla=='cámara plana'):
+                if(Etapas==5):
+                    canvas=Fijar_pailas(canvas, 130, 240, 362, 80, Etapas, Vector_Entrada, Tipo_Hornilla, 0, Diccionario)
+                    canvas=Fijar_pailas(canvas, 110, 265, 368, 63, Etapas, Vector_Entrada, Tipo_Hornilla, 1, Diccionario)
+                    canvas=Fijar_pailas(canvas, 260, 180, 296, 150, Etapas, Vector_Entrada, Tipo_Hornilla, 2, Diccionario)
+                if(Etapas==6):
+                    canvas=Fijar_pailas(canvas, 100, 260, 364, 60, Etapas, Vector_Entrada, Tipo_Hornilla, 0, Diccionario)
+                    canvas=Fijar_pailas(canvas, 80, 280, 370, 43, Etapas, Vector_Entrada, Tipo_Hornilla, 1, Diccionario)
+                    canvas=Fijar_pailas(canvas, 230, 150, 300, 135, Etapas, Vector_Entrada, Tipo_Hornilla, 2, Diccionario)
+                if(Etapas==7):
+                    canvas=Fijar_pailas(canvas, 80, 250, 366, 45, Etapas, Vector_Entrada, Tipo_Hornilla, 0, Diccionario)
+                    canvas=Fijar_pailas(canvas, 60, 300, 372, 33, Etapas, Vector_Entrada, Tipo_Hornilla, 1, Diccionario)
+                    canvas=Fijar_pailas(canvas, 200, 140, 304, 110, Etapas, Vector_Entrada, Tipo_Hornilla, 2, Diccionario)
+            else:
+                if(Etapas==5):
+                    canvas=Fijar_pailas(canvas, 130, 275, 358, 80, Etapas, Vector_Entrada, Tipo_Hornilla, 0, Diccionario)
+                    canvas=Fijar_pailas(canvas, 110, 275, 358, 60, Etapas, Vector_Entrada, Tipo_Hornilla, 1, Diccionario)
+                    canvas=Fijar_pailas(canvas, 260, 125, 275, 100, Etapas, Vector_Entrada, Tipo_Hornilla, 2, Diccionario)
+                if(Etapas==6):
+                    canvas=Fijar_pailas(canvas, 100, 280, 361, 55, Etapas, Vector_Entrada, Tipo_Hornilla, 0, Diccionario)
+                    canvas=Fijar_pailas(canvas, 80, 280, 361, 35, Etapas, Vector_Entrada, Tipo_Hornilla, 1, Diccionario)
+                    canvas=Fijar_pailas(canvas, 230, 140, 275, 105, Etapas, Vector_Entrada, Tipo_Hornilla, 2, Diccionario)
+            
+            canvas.showPage()        
+            if(Tipo_Hornilla=='cámara plana'):    
                 canvas.drawImage('static/Vistas/Camaras/Plana2_cotas.png', 0, 0,  width=970, height=628)  
                 canvas=Dibujar_Cotas_Camara(canvas,'Cámara hornilla', Dimensiones_Pailas[0][4], Dimensiones_Pailas[0][3], 3)
                 canvas.showPage()
@@ -278,10 +349,7 @@ def Dibujar_planta(Vector_Entrada, Tipo_Hornilla, Etapas, Nombres_Ubicaciones, C
                 canvas.showPage()
                 canvas.drawImage('static/Vistas/Chimeneas/Valvula_1.png', 0, 0,  width=970, height=628)   
                 Dibujar_Cotas_Valvula_1(canvas,'Válvula de tiro para la chimenea', Capacidad_hornilla, Ancho_UP)               
-            if(inter==1):
-                canvas.drawImage('static/Vistas/Chimeneas/Recuperador.png', 0, 0,  width=970, height=628)  
-        elif(Tipo_Hornilla=='doble cámara'):
-            if(inter==0):
+            elif(Tipo_Hornilla=='doble cámara'):
                 canvas.drawImage('static/Vistas/Camaras/Doble_cotas.png', 0, 0,  width=970, height=628)  
                 canvas=Dibujar_Cotas_Camara(canvas,'Cámara hornilla', Dimensiones_Pailas[0][4], Dimensiones_Pailas[0][3], 1)
                 canvas.showPage()
@@ -290,10 +358,7 @@ def Dibujar_planta(Vector_Entrada, Tipo_Hornilla, Etapas, Nombres_Ubicaciones, C
                 canvas.showPage()
                 canvas.drawImage('static/Vistas/Chimeneas/Valvula_1.png', 0, 0,  width=970, height=628)   
                 Dibujar_Cotas_Valvula_1(canvas,'Válvula de tiro para la chimenea', Capacidad_hornilla, Ancho_UP) 
-            if(inter==1):
-                canvas.drawImage('static/Vistas/Chimeneas/Recuperador.png', 0, 0,  width=970, height=628)  
-        elif(Tipo_Hornilla=='cámara Ward'):
-            if(inter==0):
+            elif(Tipo_Hornilla=='cámara Ward'):
                 canvas.drawImage('static/Vistas/Camaras/Cimpa_cotas.png', 0, 0,  width=970, height=628)
                 canvas=Dibujar_Cotas_Camara(canvas,'Cámara hornilla', Dimensiones_Pailas[0][4], Dimensiones_Pailas[0][3], 2)
                 canvas.showPage()
@@ -302,23 +367,8 @@ def Dibujar_planta(Vector_Entrada, Tipo_Hornilla, Etapas, Nombres_Ubicaciones, C
                 canvas.showPage()
                 canvas.drawImage('static/Vistas/Chimeneas/Valvula_1.png', 0, 0,  width=970, height=628)   
                 Dibujar_Cotas_Valvula_1(canvas,'Válvula de tiro para la chimenea', Capacidad_hornilla, Ancho_UP) 
-            if(inter==1):
-                canvas.drawImage('static/Vistas/Chimeneas/Recuperador.png', 0, 0,  width=970, height=628)  
-        elif(Tipo_Hornilla=='Mini-ward'):
-            if(inter==0):
-                canvas.drawImage('static/Vistas/Camaras/Ward_cotas.png', 0, 0,  width=970, height=628)     
-                canvas=Dibujar_Cotas_Camara(canvas,'Cámara hornilla', Dimensiones_Pailas[0][4], Dimensiones_Pailas[0][3], 4)
-                canvas.showPage()
-                canvas.drawImage('static/Vistas/Chimeneas/Chimenea1_cotas.png', 0, 0,  width=970, height=628)
-                canvas=Dibujar_Cotas_Chimenea(canvas,'Chimenea hornilla', Capacidad_hornilla, Altura_UP)
-                canvas.showPage()
-                canvas.drawImage('static/Vistas/Chimeneas/Valvula_1.png', 0, 0,  width=970, height=628)   
-                Dibujar_Cotas_Valvula_1(canvas,'Válvula de tiro para la chimenea', Capacidad_hornilla, Ancho_UP) 
-            if(inter==1):
-                canvas.drawImage('static/Vistas/Chimeneas/Recuperador.png', 0, 0,  width=970, height=628)  
-        canvas.save()
-        #Disposición de los ladrillos
-        if(inter==0):
+            canvas.save()
+
             from reportlab.lib.pagesizes import letter
             from reportlab.pdfgen import canvas
             canvas = canvas.Canvas("static/B3_Etapa_Planta_WEB.pdf", pagesize=letter)
@@ -367,8 +417,6 @@ def Dibujar_planta(Vector_Entrada, Tipo_Hornilla, Etapas, Nombres_Ubicaciones, C
                 canvas.showPage()
                 canvas.drawImage(ruta_ladrillos, 0, 0,  width=970, height=628) 
                 canvas=Dibujar_Rotulo(canvas, Nombres_Ubicaciones[i], 'Ubicación de los ladrillos')                
-
- 
                 canvas.showPage()
                 canvas.drawImage(ruta_ladrillos_2, 0, 0,  width=970, height=628) 
                 canvas=Dibujar_Rotulo(canvas, Nombres_Ubicaciones[i], 'Ubicación de los ladrillos')
@@ -377,6 +425,19 @@ def Dibujar_planta(Vector_Entrada, Tipo_Hornilla, Etapas, Nombres_Ubicaciones, C
                     canvas.drawImage(ruta_ladrillos_3, 0, 0,  width=970, height=628) 
                     canvas=Dibujar_Rotulo(canvas, Nombres_Ubicaciones[i], 'Ubicación de los ladrillos')
             canvas.save()
+
+        if(inter==1):
+            canvas = canvas.Canvas("static/B4_Etapa_Planta_WEB.pdf", pagesize=letter)
+            canvas.setPageSize((970,628))
+            canvas.drawImage('static/Vistas/Otros/Formato.png', 0, 0, width=970, height=628)  
+            canvas.setFont('Helvetica-Bold', 48)
+            canvas.drawString(30, 320, 'A continuación se presenta una hornilla')
+            canvas.drawString(30, 220, 'con recuperador')
+            canvas=Dibujar_Rotulo(canvas, 'Aviso', 'Aviso')
+            canvas.showPage()
+            canvas.drawImage('static/Vistas/Chimeneas/Recuperador.png', 0, 0,  width=970, height=628)  
+            canvas.save()
+
     shutil.copy("static/B1_Etapa_Planta_WEB.pdf","static/pdf01/B1_Etapa_Planta_WEB.pdf")
     shutil.copy("static/B3_Etapa_Planta_WEB.pdf","static/pdf01/B3_Etapa_Planta_WEB.pdf")
     shutil.copy("static/B4_Etapa_Planta_WEB.pdf","static/pdf01/B4_Etapa_Planta_WEB.pdf")
@@ -392,6 +453,85 @@ def Dibujar_Rotulo(canvas, Nombre_Usuario, Nombre_Paila):
     canvas.setFont('Helvetica-Bold', 5)
     tiempo = time.asctime(time.localtime(time.time()))
     canvas.drawString(720,16,str(tiempo))
+    return canvas
+
+def Dibujar_Cotas_arquitectonico1(canvas, Diccionario):
+    global Dimensiones_Camara
+    global DIV
+    global Aplano
+    Conv=['A','B','C','D','E','F','G','H']
+    Valores_Dim=[]
+    Aplano=Dimensiones_Camara[3]+float(Diccionario['Ancho de la bagacera (mm)'])+float(Diccionario['Ancho de la zona de bodega (mm)'])+3000
+    P_Q=float(Diccionario['Largo del cañetero (mm)'])+float(Diccionario['Largo de la bagacera (mm)'])
+    RESTO=P_Q-float(Diccionario['Largo de la zona de moldeo (mm)'])-float(Diccionario['Largo de la zona de empaque (mm)'])-float(Diccionario['Largo de la zona de bodega (mm)'])-1500
+    DIV=round(RESTO/7)
+    Valores_Dim.append(round(Aplano)) #A                 
+    Valores_Dim.append(DIV) #B 
+    Valores_Dim.append(DIV) #C 
+    Valores_Dim.append(1500) #D 
+    Valores_Dim.append(round(float(Diccionario['Largo de la zona de moldeo (mm)']))) #E 
+    Valores_Dim.append(round(float(Diccionario['Largo de la zona de empaque (mm)']))) #F 
+    Valores_Dim.append(round(float(Diccionario['Largo de la zona de bodega (mm)']))) #G 
+    Valores_Dim.append(DIV) #H   
+    x_i=50
+    y_i=120
+    vv=155
+    #Dimensiones de las cotas
+    canvas.setLineWidth(0.5)
+    canvas.line(x_i,y_i,x_i+245,y_i)
+    for i in range(len(Valores_Dim)):
+        Puntero=(y_i-8)-(i*9)
+        canvas.setFont('Helvetica-Bold', 9)
+        canvas.drawString(x_i+60, Puntero-1, Conv[i])
+        canvas.setFont('Helvetica', 9)
+        try:
+            canvas.drawString(x_i+170, Puntero-1, str(round(Valores_Dim[i],3)))
+        except:
+            canvas.drawString(x_i+vv, Puntero-1, str(Valores_Dim[i]))            
+        canvas.line(x_i,Puntero-2,x_i+245,Puntero-2)      
+    canvas.setFont('Helvetica-Bold', 9)
+    canvas.drawString(x_i+95, y_i+2, 'CONVENCIONES') 
+    canvas.line(x_i,y_i,x_i,Puntero-2)
+    canvas.line(x_i+125,y_i,x_i+125,Puntero-2)
+    canvas.line(x_i+245,y_i,x_i+245,Puntero-2)         
+    return canvas
+
+def Dibujar_Cotas_arquitectonico2(canvas, Diccionario):
+    global DIV
+    global Aplano
+    Bplano = Aplano-float(Diccionario['Ancho del cañetero (mm)'])-float(Diccionario['Ancho de la zona de bodega (mm)'])
+    Conv=['I','J','K','L','M','N','O','P','Q']
+    Valores_Dim=[]
+    Valores_Dim.append(DIV) #I 
+    Valores_Dim.append(DIV) #J
+    Valores_Dim.append(DIV) #K
+    Valores_Dim.append(DIV) #L
+    Valores_Dim.append(round(Bplano)) #M
+    Valores_Dim.append(round(float(Diccionario['Ancho de la zona de bodega (mm)']))) #N
+    Valores_Dim.append(round(float(Diccionario['Ancho del cañetero (mm)']))) #O
+    Valores_Dim.append(round(float(Diccionario['Largo del cañetero (mm)']))) #P
+    Valores_Dim.append(round(float(Diccionario['Largo de la bagacera (mm)']))) #Q    
+    x_i=350
+    y_i=120
+    vv=155
+    #Dimensiones de las cotas
+    canvas.setLineWidth(0.5)
+    canvas.line(x_i,y_i,x_i+245,y_i)
+    for i in range(len(Valores_Dim)):
+        Puntero=(y_i-8)-(i*9)
+        canvas.setFont('Helvetica-Bold', 9)
+        canvas.drawString(x_i+60, Puntero-1, Conv[i])
+        canvas.setFont('Helvetica', 9)
+        try:
+            canvas.drawString(x_i+170, Puntero-1, str(round(Valores_Dim[i],3)))
+        except:
+            canvas.drawString(x_i+vv, Puntero-1, str(Valores_Dim[i]))            
+        canvas.line(x_i,Puntero-2,x_i+245,Puntero-2)      
+    canvas.setFont('Helvetica-Bold', 9)
+    canvas.drawString(x_i+95, y_i+2, 'CONVENCIONES') 
+    canvas.line(x_i,y_i,x_i,Puntero-2)
+    canvas.line(x_i+125,y_i,x_i+125,Puntero-2)
+    canvas.line(x_i+245,y_i,x_i+245,Puntero-2)        
     return canvas
 
 def Dibujar_Cotas_Valvula_1(canvas,Nombre_Usuario, Capacidad_hornilla, Ancho_UP):
@@ -1100,7 +1240,7 @@ def comprobar_individuo(Lim_inf,Lim_sup,valor_actual):
 """--------->>>Función que optimiza las dimensiones de la paila a partir de los,
 pesos<<-------------""" 
 #Dimensiones de la lamina 4*10 pies o 1.21*3.04 metros (Restricción del sistema)
-def Mostrar_pailas(Vol_aux, Etapas, Sitio, T_Hornilla, Cap_hornilla, altura_media):
+def Mostrar_pailas(Vol_aux, Etapas, Sitio, T_Hornilla, Cap_hornilla, altura_media, Diccionario):
     global Cantidad_pailas
     global Lista_de_pailas
     global Dimensiones_Pailas
@@ -1156,8 +1296,8 @@ def Mostrar_pailas(Vol_aux, Etapas, Sitio, T_Hornilla, Cap_hornilla, altura_medi
             Paila_seleccionada=random.choice([1,2,5,6])
             Tipo_paila[0].append(Paila_seleccionada)
             Tipo_paila[1].append(random.choice([True,False]))  
-        print(Tipo_paila[0])
-        print(float(Vol_aux[i]))
+#        print(Tipo_paila[0])
+#        print(float(Vol_aux[i]))
                    
     """---->>>>Algoritmo de optimización (Ascenso a la colina)<<<<----"""
     for i in range(Etapas-1,-1,-1):
@@ -1332,7 +1472,7 @@ def Mostrar_pailas(Vol_aux, Etapas, Sitio, T_Hornilla, Cap_hornilla, altura_medi
         #print("________>>>>>>>>>>>>>____________")
         #print(str(iteraciones))
         #print(str(f)) 
-    Dibujar_planta(Pailas_Planta,T_Hornilla, sum(Cantidad_pailas), Nombres_Ubi, Cap_hornilla, R_A, R_B, Lista_Falcas)    
+    Dibujar_planta(Pailas_Planta,T_Hornilla, sum(Cantidad_pailas), Nombres_Ubi, Cap_hornilla, R_A, R_B, Lista_Falcas, Diccionario)    
     df = pd.DataFrame([Lista_de_pailas, Cantidad_pailas])
     df.to_excel('static/Temp/Temp2.xlsx')
     Cantidad_pailas=[0,0,0,0,0,0,0,0,0,0,0]

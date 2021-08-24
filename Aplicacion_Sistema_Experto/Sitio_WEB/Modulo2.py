@@ -9,12 +9,12 @@ def Tw(Q, visc, Hfg , Tens , Rho , cpjuice , k , Tebll ):
     
     alfa = 1
     Csf = 0.00413
-    tp1 = Q / (visc * Hfg * 1000)
-    #tp2 = Sqr(Tens / (9.81 * (Rho - 0.521956)))
-    tp2 = (Tens / (9.81 * (Rho - 0.521956)))**0.5
-    tp3 = (cpjuice * visc * 1000 / k) ** alfa
-    tp4 = Hfg / cpjuice
     try:
+        tp1 = Q / (visc * Hfg * 1000)
+        #tp2 = Sqr(Tens / (9.81 * (Rho - 0.521956)))
+        tp2 = (Tens / (9.81 * (Rho - 0.521956)))**0.5
+        tp3 = (cpjuice * visc * 1000 / k) ** alfa
+        tp4 = Hfg / cpjuice
         Tw = Csf * ((tp1 * tp2) ** (1 / 3)) * tp3 * tp4 + Tebll
     except:
         Tw = 0.1
@@ -22,7 +22,10 @@ def Tw(Q, visc, Hfg , Tens , Rho , cpjuice , k , Tebll ):
 
 def twg(espesor , flux , twe ):
     k = 21.5
-    twg = (espesor / k) * flux + twe
+    try:
+        twg = (espesor / k) * flux + twe
+    except:
+        twg = 0.1
     return twg
 
 def Tadiabatica(Exceso , EfReaccion , Hum_bz , hum_air ):
@@ -303,7 +306,10 @@ def Tantoine(P):
     return Tantoine
 
 def delta_Tjugo(X):
-    delta_Tjugo = 0.2209 * math.exp(0.0557 * X)
+    try:
+        delta_Tjugo = 0.2209 * math.exp(0.0557 * X)
+    except:
+        delta_Tjugo = 20
     return delta_Tjugo
 
 def Tjugo(P, X):

@@ -10,10 +10,10 @@ import pandas as pd
 import Diseno_inicial
 import Pailas
 import Costos_funcionamiento
-from Modulo1 import *
-from Modulo2 import *
-from Modulo21 import *
-from Modulo4 import *
+import Modulo1
+import Modulo2
+import Modulo21
+import Modulo4
 
 def Calcular_parrillas(Area_Calculada,Capacidad_Hornilla,i,Calor_suministrado,Tipo_ladrillo,Temperatura_ambiente,Temperatura_Flama_Ad):
     """>>>----------Algoritmo para el calculo de las parrillas-----------<<<<<<<<<"""
@@ -144,11 +144,11 @@ def Propiedades(Calor_transferido):
     
     Presion=float(Diccionario_Entr['Presión atmosférica'])/760.0
 
-    Temperatura_Flama_Ad=Tadiabatica(Exceso_aire,Eficiencia_Combustion,Humedad_bagazo,Humedad_aire)
+    Temperatura_Flama_Ad=Modulo2.Tadiabatica(Exceso_aire,Eficiencia_Combustion,Humedad_bagazo,Humedad_aire)
 
-    Velocidad_I=(Flujo_Masico/Densidad_kgm3(CO_producidos_3,CO2_producidos_3,N2_producidos_3,O2_producidos_3,H2O_Totales_3,Presion*101.325,Temperatura_Flama_Ad))/0.32
+    Velocidad_I=(Flujo_Masico/Modulo1.Densidad_kgm3(CO_producidos_3,CO2_producidos_3,N2_producidos_3,O2_producidos_3,H2O_Totales_3,Presion*101.325,Temperatura_Flama_Ad))/0.32
 
-    Energia_inicial_Gas=DH_KJKmol(25,Temperatura_Flama_Ad,CO_producidos/1000,CO2_producidos/1000,N2_producidos/1000,O2_producidos/1000,H2O_Totales/1000)/3600
+    Energia_inicial_Gas=Modulo1.DH_KJKmol(25,Temperatura_Flama_Ad,CO_producidos/1000,CO2_producidos/1000,N2_producidos/1000,O2_producidos/1000,H2O_Totales/1000)/3600
 
     Perdida_total=Energia_inicial_Gas*0.14
     
@@ -174,7 +174,7 @@ def Propiedades(Calor_transferido):
         Gas_Paila.append(Temp1)                                     #Calor antes de la paila
         aux=Temp1-(0.25*Perdida_total)-Calor_transferido[i]
         Gas_Paila.append(aux)        
-        mem1= abs(Tcalculada(Temp1,                                 #Temperatura antes de la paila
+        mem1= abs(Modulo2.Tcalculada(Temp1,                                 #Temperatura antes de la paila
                              Gas_Total,
                              CO_producidos_3,
                              CO2_producidos_3,
@@ -182,7 +182,7 @@ def Propiedades(Calor_transferido):
                              O2_producidos_3,
                              H2O_Totales_3))                        #Calor despues de la paila
         Gas_Paila.append(mem1)
-        mem2= abs(Tcalculada(aux,                                   #Temperatura despues de la paila
+        mem2= abs(Modulo2.Tcalculada(aux,                                   #Temperatura despues de la paila
                              Gas_Total,
                              CO_producidos_3,
                              CO2_producidos_3,
@@ -216,13 +216,13 @@ def Propiedades(Calor_transferido):
     Q_Total_estimado=[]
     for i in range(Cantidad_Pailas):
     #'''>>>>>>>>---------------Calor por convección----------------<<<<<<<<<<<<'''
-        aux=Cp(Temperarura_Gases[i],                                                                                #Calor Especifico a Presión Cte           
+        aux=Modulo1.Cp(Temperarura_Gases[i],                                                                                #Calor Especifico a Presión Cte           
                CO_producidos_3,
                CO2_producidos_3,
                N2_producidos_3,
                O2_producidos_3,
                H2O_Totales_3)
-        aux2=Densidad_kgm3(CO_producidos_3,                                                                         #Densidad
+        aux2=Modulo1.Densidad_kgm3(CO_producidos_3,                                                                         #Densidad
                            CO2_producidos_3,
                            N2_producidos_3,
                            O2_producidos_3,
@@ -237,11 +237,18 @@ def Propiedades(Calor_transferido):
         n_plant   =visc_dina*aux/Coef_teri                                                                          #N° Prandlt
         Diametro_h=4*Area_Flujo[i]/Perimetro[i]                                                                     #Diametro hidraulico
         n_reynol  =(aux2*vel_gase1*Diametro_h)/visc_dina                                                            #Numero de Reynolds
-        Nu1=((0.664*n_reynol)**(1/2))*(n_plant**(1/3))                                                              #No. Nusselt  Nre<1e5
-        Nu2=(0.037*(n_reynol**0.8)*n_plant)/(1+(2.443*(n_reynol**-0.1))*((n_plant**0.67)-1))                        #No. Nusselt  Nre>5e5
-        Nu3=((Nu1**2)+(Nu2**2))**(0.5)                                                                              #No. Nusselt  1e5< Nre <5e5
-        Nu4=((0.4*(n_reynol**0.5))+0.06*(n_reynol**(2/3)))*((n_plant**0.4)*((visc_dina/visc_sup1)**(1/4)))          #No. Nusselt P.S.E
-        Nu5=(2.36*((0.027*(n_reynol**0.8))*(n_plant**(1/3))*(visc_dina/visc_sup1)**(1/4)))-13.6                     #No. Nusselt Pirotubular Re<2,3e3
+        try:
+            Nu1=((0.664*n_reynol)**(1/2))*(n_plant**(1/3))                                                              #No. Nusselt  Nre<1e5
+            Nu2=(0.037*(n_reynol**0.8)*n_plant)/(1+(2.443*(n_reynol**-0.1))*((n_plant**0.67)-1))                        #No. Nusselt  Nre>5e5
+            Nu3=((Nu1**2)+(Nu2**2))**(0.5)                                                                              #No. Nusselt  1e5< Nre <5e5
+            Nu4=((0.4*(n_reynol**0.5))+0.06*(n_reynol**(2/3)))*((n_plant**0.4)*((visc_dina/visc_sup1)**(1/4)))          #No. Nusselt P.S.E
+            Nu5=(2.36*((0.027*(n_reynol**0.8))*(n_plant**(1/3))*(visc_dina/visc_sup1)**(1/4)))-13.6                     #No. Nusselt Pirotubular Re<2,3e3
+        except:
+            Nu1=0.1
+            Nu2=0.1
+            Nu3=((Nu1**2)+(Nu2**2))**(0.5) 
+            Nu4=0.1
+            Nu5=0.1
         Coef_conv=Coef_teri*Nu4/Diametro_h                                                                          #Coeficiente de convección corregido
         Calor_conv=Area_Lisa[i]*Coef_conv*(Temperarura_Gases[i]-Temperatura_Superficie[i])                          #Calor por convección
         T_pared=abs(-264.44+(1.03*Temperarura_Gases[i]))+273                                                        #Temperatura de la pared
@@ -290,7 +297,7 @@ def Q_Cedido_gas(Calor_estimado):
 #    Lista_Contenido[14]=T Pared L Jugo
 #    Lista_Contenido[15]=T Pared L Gas
     Etapas=int(Diccionario_Pailas['Etapas']) 
-    Lista_Contenido=np.ones((16, Etapas))
+    Lista_Contenido=np.zeros((16, Etapas))
     """Calculo de la hornilla por etapas"""   
     CSS_Cana=float(Diccionario_Entr['CSS del jugo de Caña'])
 #    print(Diccionario_Entr['Temperatura del ambiente'])
@@ -312,7 +319,7 @@ def Q_Cedido_gas(Calor_estimado):
             else:
                 Lista_Contenido[4][i]=Masa_Jugo_Aux    
                 
-        Lista_Contenido[2][i]=XbrixCl(Lista_Contenido[4][i], 
+        Lista_Contenido[2][i]=Modulo2.XbrixCl(Lista_Contenido[4][i], 
                                       Lista_Contenido[1][i], 0, 
                                       Lista_Contenido[0][i], 
                                       CSS_Cana,
@@ -320,7 +327,7 @@ def Q_Cedido_gas(Calor_estimado):
                                       Temp_amb)
         Lista_Contenido[2][i]=saturador(Lista_Contenido[2][i],100,0) #Reparación en caso de que el CSS se dispare
         Lista_Contenido[3][i]=(Lista_Contenido[2][i]+Lista_Contenido[1][i])/2           
-        Lista_Contenido[5][i]=Tjugo(Presion,Lista_Contenido[3][i]) 
+        Lista_Contenido[5][i]=Modulo2.Tjugo(Presion,Lista_Contenido[3][i]) 
         Temp_amb=Lista_Contenido[5][i]
         Lista_Contenido[6][i]=(math.exp(-11.229+(3257.5/(Lista_Contenido[5][i]+273.15))+(0.07572*Lista_Contenido[3][i])))/1000                
         Lista_Contenido[7][i]=Tension_superficial
@@ -329,7 +336,7 @@ def Q_Cedido_gas(Calor_estimado):
         Lista_Contenido[10][i]=2492.9-(2.0523*Lista_Contenido[5][i])-(0.0030752*Lista_Contenido[5][i]**2)  
         Lista_Contenido[11][i]=(0.3815-0.0051*Lista_Contenido[3][i])+(0.001866*Lista_Contenido[5][i]) 
         Lista_Contenido[13][i]=1000*(Lista_Contenido[0][i]/Lista_Contenido[12][i])     
-        Lista_Contenido[14][i]=Tw(Lista_Contenido[13][i],
+        Lista_Contenido[14][i]=Modulo2.Tw(Lista_Contenido[13][i],
                                   Lista_Contenido[6][i],
                                   Lista_Contenido[10][i],
                                   Lista_Contenido[7][i],
@@ -337,7 +344,7 @@ def Q_Cedido_gas(Calor_estimado):
                                   Lista_Contenido[9][i],
                                   Lista_Contenido[11][i],
                                   Lista_Contenido[5][i])       
-        Lista_Contenido[15][i]=twg(Espesor_lamina[i], Lista_Contenido[13][i], Lista_Contenido[14][i])
+        Lista_Contenido[15][i]=Modulo2.twg(Espesor_lamina[i], Lista_Contenido[13][i], Lista_Contenido[14][i])
     return Lista_Contenido
     
 def Optimizacion(Diccionario_1, Diccionario_2):
