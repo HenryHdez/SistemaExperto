@@ -101,7 +101,7 @@ sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.4
 spyder==3.3.6
 spyder-kernels==0.5.2
-sqlparse==0.4.1
+sqlparse==0.4.2
 terminado==0.8.3
 testpath==0.4.4
 toml==0.10.2
