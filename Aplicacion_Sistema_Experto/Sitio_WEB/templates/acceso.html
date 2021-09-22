@@ -7,9 +7,9 @@
       <li class="nav-item">
         <a class="nav-link" href="usuario">Formulario</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link disabled" href="informe1" aria-disabled="true">Informe</a>
-      </li>
+      <!--<li class="nav-item">-->
+      <!--  <a class="nav-link disabled" href="informe1" aria-disabled="true">Informe</a>-->
+      <!--</li>-->
       <!--<li class="nav-item">-->
       <!--<a class="nav-link disabled" href="presentar" aria-disabled="true">Mapas</a>-->
       <!--</li>-->
@@ -53,6 +53,9 @@
                   <a class="btn btn-danger btn-resetear" href="/" role="button">Salir</a>
                 </td>
             </tr>
-        </table>                  
+        </table>       
+            <a download="Rep1" href="{{url_for('static', filename='/Reporte1.xlsx')}}"> Rep1 </a>
+            <a download="Rep2" href="{{url_for('static', filename='/Reporte2.xlsx')}}"> Rep2 </a>
+            <a download="Rep3" href="{{url_for('static', filename='/Reporte3.xlsx')}}"> Rep3 </a>           
 {% endblock %}
 

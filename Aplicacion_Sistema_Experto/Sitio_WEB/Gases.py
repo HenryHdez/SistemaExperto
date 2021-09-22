@@ -15,6 +15,12 @@ import Modulo2
 import Modulo21
 import Modulo4
 
+def diccionarios_sis(D1,D2):
+    global Diccionario_Entr
+    global Diccionario_Pailas
+    Diccionario_Entr=D1
+    Diccionario_Pailas=D2
+    
 def Calcular_parrillas(Area_Calculada,Capacidad_Hornilla,i,Calor_suministrado,Tipo_ladrillo,Temperatura_ambiente,Temperatura_Flama_Ad):
     """>>>----------Algoritmo para el calculo de las parrillas-----------<<<<<<<<<"""
     Ancho_seccion=0.155	
@@ -79,12 +85,15 @@ def Calcular_parrillas(Area_Calculada,Capacidad_Hornilla,i,Calor_suministrado,Ti
     return Q_Perd_Camara
 
 #Función para calcular las propiedades de los gases           
-def Propiedades(Calor_transferido):
+def Propiedades(Calor_transferido, AF, PF, AL):
     #Valores iniciales
     global Diccionario_Entr
     global Diccionario_Pailas
+    
+    Datos_simulacion=[]
+    
     Q_Cedido=Q_Cedido_gas(Calor_transferido)
-    Masa_Bagazo=float(Diccionario_Entr['Capacidad estimada de la hornilla'])*float(Diccionario_Entr['Factor de consumo de bagazo'])
+    Masa_Bagazo=float(Diccionario_Entr['Bagazo suministrado'])
     Cantidad_Pailas=int(Diccionario_Pailas['Etapas'])   
     Humedad_bagazo=float(Diccionario_Entr['Humedad del bagazo'])
     Exceso_aire=float(Diccionario_Entr['Exceso de aire'])
@@ -96,7 +105,7 @@ def Propiedades(Calor_transferido):
     Hidrogeno=0.065
     Oxigeno=0.440
     Escorias=0.025
-    Masa_Bagazo_Seco=Masa_Bagazo*(1-(Humedad_bagazo))
+    Masa_Bagazo_Seco=float(Diccionario_Entr['Bagazo seco'])#Masa_Bagazo*(1-(Humedad_bagazo))
     #Masa molar    
     C=12.011
     H2=2.016
@@ -114,6 +123,7 @@ def Propiedades(Calor_transferido):
     O2_sum=O2_req*Exceso_aire
     N2_sum=O2_sum*3.76
     H2O_aire=(((N2_sum*N2)+(O2_sum*O2))*Humedad_aire)/H2O
+       
     #Masa molar(Salida)
     CO2_producidos=Eficiencia_Combustion*C_bagazo*1000.0
     CO_producidos=(C_bagazo*1000)-CO2_producidos
@@ -121,20 +131,19 @@ def Propiedades(Calor_transferido):
     H2O_Totales=H2O_producidos+((H2O_aire+H2O_bagazo)*1000.0)
     O2_producidos=((O2_sum-O2_req)*1000.0)+(CO_producidos/2)
     N2_producidos=N2_sum*1000.0
-    Gases_Totales=CO2_producidos+CO_producidos+H2O_Totales+O2_producidos+N2_producidos
-    Temperatura_llama= 1180.0 + 273.15
-    masa_Gases_Total= (CO2_producidos*CO2)+(CO_producidos*CO)+(H2O_Totales*H2O)+(O2_producidos*O2)+(N2_producidos*N2)
-    Potencia_Inicial_Gas=float(Diccionario_Entr['Calor suministrado'])
+
+    Gases_Totales        = CO2_producidos+CO_producidos+H2O_Totales+O2_producidos+N2_producidos
+    Temperatura_llama    = 1180.0 + 273.15
+    masa_Gases_Total     = (CO2_producidos*CO2)+(CO_producidos*CO)+(H2O_Totales*H2O)+(O2_producidos*O2)+(N2_producidos*N2)
+    Potencia_Inicial_Gas = float(Diccionario_Entr['Calor suministrado'])
     
     CO2_producidos_2=CO2*CO2_producidos/1000.0
-    CO_producidos_2=CO*CO_producidos/1000.0
-    
+    CO_producidos_2=CO*CO_producidos/1000.0    
     H2O_Totales_2=(H2O*H2O_Totales)/1000.0
     O2_producidos_2=(O2*O2_producidos)/1000.0
     N2_producidos_2=(N2*N2_producidos)/1000.0
     Gas_Total=CO2_producidos_2+CO_producidos_2+H2O_Totales_2+O2_producidos_2+N2_producidos_2
-    Flujo_Masico=Gas_Total/3600.0
-    
+    Flujo_Masico=Gas_Total/3600.0    
     CO2_producidos_3=CO2_producidos/Gases_Totales
     CO_producidos_3=CO_producidos/Gases_Totales
     H2O_Totales_3=H2O_Totales/Gases_Totales
@@ -143,15 +152,32 @@ def Propiedades(Calor_transferido):
     Gas_Total_2=CO2_producidos_3+CO_producidos_3+H2O_Totales_3+O2_producidos_3+N2_producidos_3  
     
     Presion=float(Diccionario_Entr['Presión atmosférica'])/760.0
-
     Temperatura_Flama_Ad=Modulo2.Tadiabatica(Exceso_aire,Eficiencia_Combustion,Humedad_bagazo,Humedad_aire)
-
     Velocidad_I=(Flujo_Masico/Modulo1.Densidad_kgm3(CO_producidos_3,CO2_producidos_3,N2_producidos_3,O2_producidos_3,H2O_Totales_3,Presion*101.325,Temperatura_Flama_Ad))/0.32
-
+   
     Energia_inicial_Gas=Modulo1.DH_KJKmol(25,Temperatura_Flama_Ad,CO_producidos/1000,CO2_producidos/1000,N2_producidos/1000,O2_producidos/1000,H2O_Totales/1000)/3600
-
     Perdida_total=Energia_inicial_Gas*0.14
-    
+
+    Datos_simulacion.append(Q_Cedido)
+    Datos_simulacion.append(Calor_transferido)
+    Datos_simulacion.append(Masa_Bagazo)
+    Datos_simulacion.append(CO2_producidos_2)
+    Datos_simulacion.append(CO_producidos_2)
+    Datos_simulacion.append(H2O_Totales_2)
+    Datos_simulacion.append(O2_producidos_2)
+    Datos_simulacion.append(N2_producidos_2)
+    Datos_simulacion.append(Gas_Total)
+    Datos_simulacion.append(Flujo_Masico)
+    Datos_simulacion.append(Velocidad_I)
+    Datos_simulacion.append(CO2_producidos_3)
+    Datos_simulacion.append(CO_producidos_3)
+    Datos_simulacion.append(H2O_Totales_3)
+    Datos_simulacion.append(O2_producidos_3)
+    Datos_simulacion.append(N2_producidos_3)
+    Datos_simulacion.append(Gas_Total_2)
+    Datos_simulacion.append(Temperatura_Flama_Ad)
+    Datos_simulacion.append(Energia_inicial_Gas)
+
     Tipo_ladrillo=0
     Q_perdido_cam = Calcular_parrillas(float(Diccionario_Entr['Área de la parrilla']),
                                        float(Diccionario_Entr['Capacidad estimada de la hornilla']),
@@ -160,6 +186,7 @@ def Propiedades(Calor_transferido):
                                        'Refractario',
                                        float(Diccionario_Entr['Temperatura del ambiente']),
                                        Temperatura_Flama_Ad)
+    
     '''>>>>>>>>---------------Calculo de los gases----------------<<<<<<<<<<<<'''
     #>>>>>>>>>>>>>>>>>>>>>>>>>>>>Este arreglo inicia por la ultima paila<<<<<<<<<<<<<<<<<<<<<<<
     Gas_Paila=[]
@@ -199,6 +226,7 @@ def Propiedades(Calor_transferido):
         Temp2=aux        
     
     Gases_Consolidado_t=np.transpose(np.around(Gases_Consolidado,3))
+    
     '''>>>>>>>>---------------Estimar el calor por convección y radiación----------------<<<<<<<<<<<<'''
     Temperarura_Gases=Gases_Consolidado_t[4]  
     C_Boltzman=0.0000000567
@@ -206,13 +234,15 @@ def Propiedades(Calor_transferido):
     Emisividad_Ducto=0.96
     Factor_forma_Pared=0.4
     Factor_Forma_Piso=0.2
-    Area_Paredes_radiantes=np.random.random(Cantidad_Pailas)*2 #[1.88,2.2,2.291,2.162,2.162,1.6215,1.216125]     #np.random.random(Cantidad_Pailas)              #Faltan ecuaciones
-    Area_Piso_radiante=np.random.random(Cantidad_Pailas) #[0.8,0.803,0.803,1.238,1.238,1.238,1.238]            #np.random.random(Cantidad_Pailas)                  #Faltan ecuaciones
-    Area_Flujo=np.random.random(Cantidad_Pailas)*1.5 #[1.150,1.150, 1.150, 0.869	, 0.824, 0.824, 0.824]             #np.random.random(Cantidad_Pailas)                          #Faltan las ecuaciones
-    Area_Lisa=np.random.random(Cantidad_Pailas)*3 #[0.614,0.99,1.8,2.176,2.9,5]                                  #np.random.random(Cantidad_Pailas)                           #Faltan las ecuaciones
-    Perimetro=np.random.random(Cantidad_Pailas)*3 #[3.200,3.200,5.085,3.979,3.889,3.889]                         #Faltan las ecuaciones
-    Temperatura_Superficie=Q_Cedido[15]                                     #Lista del arreglo Q_cedido
-    Emisividad_gases=np.random.random(Cantidad_Pailas)*0.2 #[0.119,0.126,0.147,0.153,0.153,0.153]                  #Revisar nomograma
+    
+    Area_Paredes_radiantes= np.ones(Cantidad_Pailas)     #Faltan ecuaciones
+    Area_Piso_radiante    = np.ones(Cantidad_Pailas)     #Faltan ecuaciones
+    Area_Flujo            = AF                
+    Area_Lisa             = AL
+    Perimetro             = PF
+    
+    Temperatura_Superficie=Q_Cedido[15]                    #Lista del arreglo Q_cedido
+    Emisividad_gases=np.ones(Cantidad_Pailas)*0.2 #Revisar nomograma
     Q_Total_estimado=[]
     for i in range(Cantidad_Pailas):
     #'''>>>>>>>>---------------Calor por convección----------------<<<<<<<<<<<<'''
@@ -236,19 +266,20 @@ def Propiedades(Calor_transferido):
         visc_cine =visc_dina/aux2                                                                                   #Viscocidad cinematica
         n_plant   =visc_dina*aux/Coef_teri                                                                          #N° Prandlt
         Diametro_h=4*Area_Flujo[i]/Perimetro[i]                                                                     #Diametro hidraulico
-        n_reynol  =(aux2*vel_gase1*Diametro_h)/visc_dina                                                            #Numero de Reynolds
         try:
+            n_reynol=(aux2*vel_gase1*Diametro_h)/visc_dina                                                            #Numero de Reynolds
             Nu1=((0.664*n_reynol)**(1/2))*(n_plant**(1/3))                                                              #No. Nusselt  Nre<1e5
             Nu2=(0.037*(n_reynol**0.8)*n_plant)/(1+(2.443*(n_reynol**-0.1))*((n_plant**0.67)-1))                        #No. Nusselt  Nre>5e5
             Nu3=((Nu1**2)+(Nu2**2))**(0.5)                                                                              #No. Nusselt  1e5< Nre <5e5
             Nu4=((0.4*(n_reynol**0.5))+0.06*(n_reynol**(2/3)))*((n_plant**0.4)*((visc_dina/visc_sup1)**(1/4)))          #No. Nusselt P.S.E
             Nu5=(2.36*((0.027*(n_reynol**0.8))*(n_plant**(1/3))*(visc_dina/visc_sup1)**(1/4)))-13.6                     #No. Nusselt Pirotubular Re<2,3e3
         except:
-            Nu1=0.1
-            Nu2=0.1
+            n_reynol=2000
+            Nu1=0.01
+            Nu2=0.01
             Nu3=((Nu1**2)+(Nu2**2))**(0.5) 
-            Nu4=0.1
-            Nu5=0.1
+            Nu4=0.01
+            Nu5=0.01
         Coef_conv=Coef_teri*Nu4/Diametro_h                                                                          #Coeficiente de convección corregido
         Calor_conv=Area_Lisa[i]*Coef_conv*(Temperarura_Gases[i]-Temperatura_Superficie[i])                          #Calor por convección
         T_pared=abs(-264.44+(1.03*Temperarura_Gases[i]))+273                                                        #Temperatura de la pared
@@ -262,6 +293,12 @@ def Propiedades(Calor_transferido):
         Q_Total_paila=Q_Paredes+Q_Piso+Q_Gas
         Q_Total_paila=saturador(Q_Total_paila,1300,0)
         Q_Total_estimado.append(Q_Total_paila+Calor_conv)
+
+
+    
+    df1 = pd.DataFrame(Datos_simulacion)
+    df1.to_excel('static/Reporte1.xlsx')
+    
     return Q_Total_estimado
 
 def saturador (valor_i,maximo,minimo):
@@ -347,39 +384,40 @@ def Q_Cedido_gas(Calor_estimado):
         Lista_Contenido[15][i]=Modulo2.twg(Espesor_lamina[i], Lista_Contenido[13][i], Lista_Contenido[14][i])
     return Lista_Contenido
     
-def Optimizacion(Diccionario_1, Diccionario_2):
+def Optimizacion(Diccionario_1, Diccionario_2, L_temp):
     global Diccionario_Entr
     global Diccionario_Pailas
     Diccionario_Entr=Diccionario_1
     Diccionario_Pailas=Diccionario_2
     #Parámetros del algoritmo de optimización
-    Iteraciones_Max  = 10000
     Iteracion_actual = 0
-    Error_Minimo     = 0.05
-    Error_actual     = 100
+    Taza_cambio=0.1
+#    Error_actual     = 100
     #Individuos de la población inicial
-    Diccionario = Diseno_inicial.datos_entrada(Diccionario_Entr,0,0)
+    #Diccionario = Diseno_inicial.datos_entrada(Diccionario_Entr,0,0)
     #Condiciones iniciales
     Calor_0=Diccionario_Pailas['Calor Nece Calc por Etapa [kW]']
-    Factor_bagazo_nuevo=2.1
-    yprueba=0
-    Diccionario = Diseno_inicial.datos_entrada(Diccionario_Entr,Iteracion_actual,Factor_bagazo_nuevo)
-    while (yprueba<=1 or Diccionario['Eficiencia de la hornilla']<40.0):
-        yprueba=yprueba+1
+    Factor_bagazo_nuevo=Diccionario_Entr['Factor de consumo de bagazo']
+    Diccionario = Diseno_inicial.datos_entrada(Diccionario_Entr,1,Factor_bagazo_nuevo)
+    Efec=Diccionario['Eficiencia de la hornilla']
+    Factor_original=Factor_bagazo_nuevo
+    Flag=True
+    while (Iteracion_actual<=100):
         Diccionario = Diseno_inicial.datos_entrada(Diccionario_Entr,Iteracion_actual,Factor_bagazo_nuevo)
-        a11 = np.array(Calor_0, dtype = np.float)
-        a11 [np.isnan(a11)] = 0.1
-        Calor_0=a11
-        Calor_1=np.around(Propiedades(Calor_0),3)
-
+        Efec=Diccionario['Eficiencia de la hornilla']
+        Calor_1=np.around(Propiedades(Calor_0, L_temp[0], L_temp[1], L_temp[2]),3)
+        
+        for x in np.nditer(Calor_1):
+            if(x<=0 or np.isnan(x)):
+                Flag=False
+                break
+            else:
+                Flag=True
+       
         a11 = np.array(Calor_1, dtype = np.float)
         a11 [np.isnan(a11)] = 0.1
         Calor_1=a11
-        
-#        print('Factor Consumo bagazo='+str(Diccionario['Factor de consumo de bagazo']))
-#        print('Area parrilla='+str(Diccionario['Área de la parrilla']))
-#        print('Eficiencia de la hornilla='+str(Diccionario['Eficiencia de la hornilla']))
-#        print('Q='+str(Calor_1))
+
         #Calculo del error usando la magnitud del vector
         Calor_0 = np.array(Calor_0)
         Calor_1 = np.array(Calor_1) 
@@ -387,16 +425,35 @@ def Optimizacion(Diccionario_1, Diccionario_2):
         x0=np.linalg.norm(Calor_0)
         x1=np.linalg.norm(Calor_1)
         Error=(x1-x0)/x0
-        Error_actual=abs(Error)
-        if(Error<0):
-            Factor_bagazo_nuevo=Factor_bagazo_nuevo+(0.25*np.random.random(1))
+        #Error_actual=abs(Error)
+               
+        if(Efec<40 and Flag==True):
+            Calor_0=Calor_1
+            Factor_original=Factor_bagazo_nuevo
         else:
-            Factor_bagazo_nuevo=Factor_bagazo_nuevo-(0.25*np.random.random(1))
-        Factor_bagazo_nuevo=float(saturador(Factor_bagazo_nuevo,100,2.1))
+            if(Error<0):
+                Factor_bagazo_nuevo=Factor_bagazo_nuevo-(Taza_cambio*np.random.random(1))
+            else:
+                Factor_bagazo_nuevo=Factor_bagazo_nuevo+(Taza_cambio*np.random.random(1))
+            Factor_bagazo_nuevo=float(saturador(Factor_bagazo_nuevo,10,1))        
+            
+        Iteracion_actual=Iteracion_actual+1
+        
+#        print('Factor Consumo bagazo='+str(Diccionario['Factor de consumo de bagazo']))
+#        print('Area parrilla='+str(Diccionario['Área de la parrilla']))
+#        print('Eficiencia de la hornilla='+str(Diccionario_1['Eficiencia de la hornilla']))
+#        print('Factor original='+str(Factor_original))
+#        print('Q=' + str(Calor_1))
+#        print('Q0=' + str(Calor_0))
 #        print('Error='+str(Error))
 #        print('Iteracion='+str(Iteracion_actual))
-        Calor_0=Calor_1
-        Iteracion_actual=Iteracion_actual+1
+    
+    Diccionario = Diseno_inicial.datos_entrada(Diccionario_Entr,Iteracion_actual,Factor_original)
+#    Efec=Diccionario['Eficiencia de la hornilla']
+#    print(Factor_original)
+#    print('Area parrilla='+str(Diccionario['Área de la parrilla']))
+#    print(Efec)
+#    print(Propiedades(Calor_0, L_temp[0], L_temp[1], L_temp[2]))
 #    print('Fin algoritmo')
         
 #Optimizacion(Diccionario, Diccionario_2)

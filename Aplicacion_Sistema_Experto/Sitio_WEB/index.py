@@ -22,7 +22,9 @@ import Diseno_inicial                                    #Calculo preliminar de 
 import Costos_funcionamiento                             #Calculo del costo financiero de la hornilla
 import Pailas                                            #Calculo de las dimensiones de las pailas
 import Gases                                             #Calculo de las propiedades de los gases
+import Areas                                             #Calcular Areas
 import threading
+import numpy as np
 
 #Generación de la interfaz WEB
 app = Flask(__name__)
@@ -40,7 +42,7 @@ def Espera():
     global Estado_Cliente
     i=0
     while True:
-        sleep(15)
+        sleep(280)
         j=len(Lista_clientes)
         print(j)
         while j>0 and Estado_Cliente==False:
@@ -69,7 +71,6 @@ def Espera():
                 j=0
         j=0
         i=0
-   
    
 '''---Funciones de direccionamiento en la interfaz WEB---'''
 #Eliminar datos cargados en cache al actualizar la página.
@@ -178,6 +179,36 @@ def Enviar_msn(Correo):
         servidor.quit()  
     except:
         print('No se pudo enviar el informe')
+
+def Diseño_Hornilla(Nombre_Rot, Ite):
+    global Diccionario 
+    global Diccionario_2
+    conta=0
+    while(Ite==0 and conta<3):
+        """------------>>>>>>>>>>HORNILLA<<<<<<<<<<<<<<<<----------------"""
+        """Calculo de la hornilla (Diseño inicial)"""
+        Diccionario   = Diseno_inicial.datos_entrada(Diccionario,0,0)
+        Diccionario_2 = Diseno_inicial.Calculo_por_etapas(Diccionario)
+        Gases.diccionarios_sis(Diccionario,Diccionario_2)
+        Calor_0=Diccionario_2['Calor Nece Calc por Etapa [kW]']
+        Vo=np.ones(int(Diccionario_2['Etapas']))
+        Gases.Propiedades(Calor_0,Vo,Vo,Vo)
+        """Calcular volumenes iniciales"""
+        Dimensi_Pail = Pailas.Mostrar_pailas(Diccionario_2['Volumen de jugo [m^3/kg]'],
+                                                          #Diccionario_2['Volumen de jugo [L]'],
+                                                          int(Diccionario_2['Etapas']),
+                                                          Nombre_Rot,
+                                                          Diccionario['Tipo de cámara de combustión'],
+                                                          Diccionario['Capacidad estimada de la hornilla'],
+                                                          altura_media,
+                                                          Diccionario) 
+        """Optimizar valores"""
+        L_temp = Areas.Areas_lisas(Dimensi_Pail)
+        Gases.Propiedades(Calor_0,L_temp[0],L_temp[1],L_temp[2])
+        Gases.Optimizacion(Diccionario, Diccionario_2, L_temp)       
+        if(float(Diccionario['Bagazo suministrado'])<float(Diccionario['Bagazo seco'])):
+            Ite=1
+        conta=conta+1
     
 #Función para crear los diccionarios a partir de los calculos de la aplicación
 def generar_valores_informe(Cliente_actual):
@@ -309,8 +340,8 @@ def generar_valores_informe(Cliente_actual):
     df1 = pd.DataFrame(datos_temp)
     df1.to_excel('static/Temp/Temp5.xlsx')  
     #Grados brix promedio para publicar en el informe
-    G_brix_cana=round(G_brix_cana/len(Directorio),3)       
-    G_brix_panela=90.5#round(G_brix_panela/len(Directorio),3)
+    G_brix_cana=17#round(G_brix_cana/len(Directorio),3)       
+    G_brix_panela=94#round(G_brix_panela/len(Directorio),3)
     Formulario_2a_Etiquetas.append('Grados Brix de la caña (promedio)')
     Formulario_2a_Valores.append(G_brix_cana)
     Formulario_2a_Etiquetas.append('Grados Brix de la panela (promedio)')
@@ -332,41 +363,10 @@ def generar_valores_informe(Cliente_actual):
             aux_form_2.append(Formulario_1_Valores[Formulario_1_Etiquetas.index(w)])    
     Formulario_1_Etiquetas=aux_form_1
     Formulario_1_Valores=aux_form_2
-    """------------>>>>>>>>>>HORNILLA<<<<<<<<<<<<<<<<----------------"""
-    """Calculo de la hornilla"""
-    Diccionario   = Diseno_inicial.datos_entrada(Diccionario,0,0)
-    Diccionario_2 = Diseno_inicial.Calculo_por_etapas(Diccionario)
+
+    """Calculo de la hornilla (Diseño inicial)"""
+    Diseño_Hornilla(Nombre_Rot, 0)
     
-    """Estimar propiedades de los gases"""
-    Gases.Optimizacion(Diccionario,Diccionario_2)
-    """Optimizar tamaño de las pailas"""
-    Vector_volumenes=[]
-    inio=3
-    if (int(Diccionario_2['Etapas'])!=7):
-        Vector_volumenes.append(Diccionario_2['Volumen de jugo [m^3/kg]'][2])
-        Vector_volumenes.append(Diccionario_2['Volumen de jugo [m^3/kg]'][1])
-        Vector_volumenes.append(Diccionario_2['Volumen de jugo [m^3/kg]'][0])
-        inio=3
-    else:
-        Vector_volumenes.append(Diccionario_2['Volumen de jugo [m^3/kg]'][3])
-        Vector_volumenes.append(Diccionario_2['Volumen de jugo [m^3/kg]'][2])
-        Vector_volumenes.append(Diccionario_2['Volumen de jugo [m^3/kg]'][1])
-        Vector_volumenes.append(Diccionario_2['Volumen de jugo [m^3/kg]'][0])
-        inio=4
-        
-    for t in range(inio,len(Diccionario_2['Volumen de jugo [m^3/kg]'])):
-        Vector_volumenes.append(Diccionario_2['Volumen de jugo [m^3/kg]'][t])
-        
-    Pailas.Mostrar_pailas(
-            Vector_volumenes,
-            #Diccionario_2['Volumen de jugo [L]'],
-            int(Diccionario_2['Etapas']),
-            Nombre_Rot,
-            Diccionario['Tipo de cámara de combustión'],
-            Diccionario['Capacidad estimada de la hornilla'],
-            altura_media,
-            Diccionario
-            )
     """Presentar información del molino"""
     Formulario_3_Etiquetas=['Caña molida por hora [t]', 'Capacidad del molino [kg/hora]']
     Formulario_3_Valores=[]
@@ -434,6 +434,9 @@ def generar_valores_informe(Cliente_actual):
     Operaciones_db(2,usuarios)        #Usar base de datos
     sleep(1)
     Enviar_msn(str(Diccionario['Correo']))
+    
+    df2 = pd.DataFrame([[key, Diccionario_2[key]] for key in Diccionario_2.keys()])
+    df2.to_excel('static/Reporte2.xlsx')
     
 #Filtrar caracteres desconocidos de las cadenas de texto de los archivos temporales
 def Convertir(string): 

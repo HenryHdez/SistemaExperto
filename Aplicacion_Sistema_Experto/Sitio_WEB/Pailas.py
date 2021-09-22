@@ -186,6 +186,10 @@ def Fijar_pailas(canvas, Espacio, Desplazamiento1, UP, Factor, Etapas, Vector_En
                     canvas.drawString(Desplazamiento-5, UP+65, 'Concentradora')
                 elif(i==3 and Etapas>6):
                     canvas.drawString(Desplazamiento-5, UP+65, 'Concentradora')    
+                elif(i==3 and float(Diccionario['Capacidad estimada de la hornilla'])==125):
+                    canvas.drawString(Desplazamiento-5, UP+65, 'Concentradora') 
+                elif(i==3 and float(Diccionario['Capacidad estimada de la hornilla'])==150):
+                    canvas.drawString(Desplazamiento-5, UP+65, 'Concentradora') 
                 elif(i==Etapas-1):
                     canvas.drawString(Desplazamiento+90, UP-25, 'Paila: Melotera') 
                     canvas.drawString(Desplazamiento-5, UP+65, 'Recibidora')
@@ -568,6 +572,7 @@ def Dibujar_Cotas_Valvula_1(canvas,Nombre_Usuario, Capacidad_hornilla, Ancho_UP)
     return canvas
 
 def Dibujar_Cotas_Chimenea(canvas,Nombre_Usuario, Capacidad_hornilla, Altura_UP):
+    global Lista_d_chimenea
     Conv=['A','B','C','D','E','F','G']
     Valores_Dim=[]
     #A es la sección de corte
@@ -605,11 +610,13 @@ def Dibujar_Cotas_Chimenea(canvas,Nombre_Usuario, Capacidad_hornilla, Altura_UP)
     canvas.line(x_i,y_i,x_i,Puntero-2)
     canvas.line(x_i+125,y_i,x_i+125,Puntero-2)
     canvas.line(x_i+245,y_i,x_i+245,Puntero-2)        
-    canvas=Dibujar_Rotulo(canvas, Nombre_Usuario, 'Dimensiones de la chimenea')  
+    canvas=Dibujar_Rotulo(canvas, Nombre_Usuario, 'Dimensiones de la chimenea') 
+    Lista_d_chimenea=Valores_Dim
     return canvas
 
 def Dibujar_Cotas_Camara(canvas,Nombre_Usuario, Longitud_paila_1, Ancho_paila_1, Cam_Sel):
     global Dimensiones_Camara
+    global Lista_d_camara
     # 0 Ancho_seccion
     # 1 Longitud_Seccion
     # 2 Secciones_totales
@@ -729,10 +736,12 @@ def Dibujar_Cotas_Camara(canvas,Nombre_Usuario, Longitud_paila_1, Ancho_paila_1,
     canvas.line(x_i+125,y_i,x_i+125,Puntero-2)
     canvas.line(x_i+245,y_i,x_i+245,Puntero-2)        
     canvas=Dibujar_Rotulo(canvas, Nombre_Usuario, 'Dimensiones de la camára y la parrilla')  
+    Lista_d_camara=Valores_Dim
     return canvas
         
 def Dibujar_Cotas(canvas,sel_Plano,Dimensiones, Nombre_Usuario, Altura, Grados_inc, conta): 
     global Altura_snm
+    global Lista_d_ductos
     if(conta<3):
         y_ducto=(Altura_snm*0.02)-16   
         if(Altura_snm<800):
@@ -745,7 +754,6 @@ def Dibujar_Cotas(canvas,sel_Plano,Dimensiones, Nombre_Usuario, Altura, Grados_i
             y_ducto=0
         if(Altura_snm>1800):
             y_ducto=-20
-
     Conv=['A','B','Z','C','D','E','F','G','H','I','J','K','L','M','N']
     Valores_Dim=[]
     a=0
@@ -813,6 +821,7 @@ def Dibujar_Cotas(canvas,sel_Plano,Dimensiones, Nombre_Usuario, Altura, Grados_i
     canvas.line(x_i+125,y_i,x_i+125,Puntero-2)
     canvas.line(x_i+245,y_i,x_i+245,Puntero-2)        
     canvas=Dibujar_Rotulo(canvas, Nombre_Usuario, 'Dimensiones de la sección de ducto')  
+    Lista_d_ductos.append(Valores_Dim)
     return canvas
 
 #Funcion para dibujar planos acotados
@@ -1014,6 +1023,7 @@ def Cantidad_Aletas(A,B_Aletas):
 #Volumen_Total, Ang, N_Aletas_Canal ó N_Aletas, h_Aletas, Seperacion_Aletas, dT, nT, lT, N_Canales
                 
 def Semiesferica(H_fn,A,H_fl):   
+    global Temp_TACC
     #Hfn        Altura de fondo
     #Hfa o hfl  Altura falca
     #hal        Altura aletas
@@ -1034,9 +1044,12 @@ def Semiesferica(H_fn,A,H_fl):
     A2=x**2
     VFA=(H_fl*(A1+A2+math.sqrt(A1*A2)))/3
     Volumen_Total=VFA+VTJ	
+    Area_TCC=(2*math.pi)*H_fn*R
+    Temp_TACC=Area_TCC
     return [Volumen_Total, Ang, 0, 0, 0, 0, 0, 0, 0, 0]
 
 def Semicilindrica(H,Hc,A,L,Hfa,B_Aletas):
+    global Temp_TACC
     N_Aletas_Canal, Separacion_Aletas=Cantidad_Aletas(A,B_Aletas)
     h_Aletas=0.1
     Ang=68*math.pi/180
@@ -1066,9 +1079,12 @@ def Semicilindrica(H,Hc,A,L,Hfa,B_Aletas):
     VTJ=Vcil+(2*Vca)
     VFA=V
     Volumen_Total=VTJ+VFA
+    Area_TCC=(L*Hfa*2*B_Aletas)+Arco
+    Temp_TACC=Area_TCC
     return [Volumen_Total, Ang, N_Aletas_Canal, h_Aletas, Separacion_Aletas, 0, 0, 0, 0, 0]
        
 def Plana(H_fl,H_fn,A,L,B_Aletas): 
+    global Temp_TACC
     N_Aletas, Separacion_Aletas=Cantidad_Aletas(A,B_Aletas)
     h_Aletas=0.1
     Ang=68*math.pi/180
@@ -1078,9 +1094,11 @@ def Plana(H_fl,H_fn,A,L,B_Aletas):
     """Otros parámetros"""
     Porcentaje_Llenado=Volumen_Fon/Volumen_Total
     Area_TCC=(2*h_Aletas*L*N_Aletas)+Area
+    Temp_TACC=Area_TCC
     return [Volumen_Total, Ang, N_Aletas, h_Aletas, Separacion_Aletas, 0, 0, 0, 0, 0]
 	
 def Pirotubular_Circular(H_fl,H_fn,A,L,B_Aletas):
+    global Temp_TACC
     N_Aletas, Separacion_Aletas=Cantidad_Aletas(A,B_Aletas)
     h_Aletas=0.1
     Ang=68*math.pi/180
@@ -1091,9 +1109,11 @@ def Pirotubular_Circular(H_fl,H_fn,A,L,B_Aletas):
     """Otros parámetros"""
     Porcentaje_Llenado=Volumen_Fon/Volumen_Total
     Area_TCC=((((H_fn)*(A))-(2*((math.pi/4)*dT**2)*nT))+(2*(H_fn*L)+(A*L)))+(math.pi*dT*L*nT)+(2*(L*h_Aletas)+(2*(h_Aletas))*N_Aletas)
+    Temp_TACC=Area_TCC
     return [Volumen_Total, Ang, N_Aletas, h_Aletas, Separacion_Aletas, dT, nT, 0, 0, 0]
 
 def Pirotubular_Cuadrada(H_fl,H_fn,A,L,B_Aletas): 
+    global Temp_TACC
     N_Aletas, Separacion_Aletas=Cantidad_Aletas(A,B_Aletas)
     h_Aletas=0.1
     Ang=68*math.pi/180
@@ -1105,9 +1125,11 @@ def Pirotubular_Cuadrada(H_fl,H_fn,A,L,B_Aletas):
     """Otros parámetros"""
     Porcentaje_Llenado=Volumen_Fon/Volumen_Total
     Area_TCC=(h_Aletas*L*N_Aletas*2)+Area
+    Temp_TACC=Area_TCC
     return [Volumen_Total, Ang, N_Aletas, h_Aletas, Separacion_Aletas, 0, nT, lT, 0, 0]
     
 def Acanalada_Cuadrada(H_fl,H_fn,A,L,B_Aletas):
+    global Temp_TACC
     lC=H_fn/3
     N_Aletas_Canal, Separacion_Aletas=Cantidad_Aletas(lC,B_Aletas)
     h_Aletas=0.1
@@ -1119,6 +1141,7 @@ def Acanalada_Cuadrada(H_fl,H_fn,A,L,B_Aletas):
     """Otros parámetros"""
     Porcentaje_Llenado=Volumen_Fon/Volumen_Total
     Area_TCC=(h_Aletas*L*N_Aletas_Canal*N_Canales*2)+Area
+    Temp_TACC=Area_TCC
     return [Volumen_Total, Ang, N_Aletas_Canal, h_Aletas, Separacion_Aletas, 0, 0, 0, N_Canales, lC]
 
 """--->>>-------------------------------------------------------------<<<----"""
@@ -1247,6 +1270,15 @@ def Mostrar_pailas(Vol_aux, Etapas, Sitio, T_Hornilla, Cap_hornilla, altura_medi
     global An_g
     global Lo_g
     global Altura_snm
+    global Lista_d_chimenea
+    global Lista_d_camara
+    global Lista_d_ductos
+    global TACC
+    global Temp_TACC
+    TACC=[]
+    Lista_d_chimenea=[]
+    Lista_d_camara=[]
+    Lista_d_ductos=[]
     Altura_snm=altura_media
     Pailas_Planta=[] 
     Nombres_Ubi=[]
@@ -1255,57 +1287,53 @@ def Mostrar_pailas(Vol_aux, Etapas, Sitio, T_Hornilla, Cap_hornilla, altura_medi
     Lista_Falcas=[]
     Lista=[]
     Lista2=[]
-#    Tipo_paila[0].append(1)
-#    Tipo_paila[0].append(2)
-#    Tipo_paila[0].append(3)
-#    Tipo_paila[0].append(4)
-#    Tipo_paila[0].append(5)
-#    Tipo_paila[0].append(6)
-#    Tipo_paila[1].append(True)
-#    Tipo_paila[1].append(True)
-#    Tipo_paila[1].append(True)
-#    Tipo_paila[1].append(True)
-#    Tipo_paila[1].append(True)
-#    Tipo_paila[1].append(True)
-#    Tipo_paila[0].append(1)
-#    Tipo_paila[0].append(2)
-#    Tipo_paila[0].append(3)
-#    Tipo_paila[0].append(4)
-#    Tipo_paila[0].append(5)
-#    Tipo_paila[0].append(6)
-#    Tipo_paila[1].append(False)
-#    Tipo_paila[1].append(False)
-#    Tipo_paila[1].append(False)
-#    Tipo_paila[1].append(False)
-#    Tipo_paila[1].append(False)
-#    Tipo_paila[1].append(False)
+    Temp_TACC=0
+    Cap=float(Diccionario['Capacidad estimada de la hornilla [kg/hora]'])
     for i in range(Etapas):
-        #<100 litros semiesferica   0.1
-        #>100 <200 semicilindrica   0.1     0.2
-        #>200 de otras              0.2
-        if(i<Etapas-3):            
-            Tipo_paila[0].append(3)
-            Tipo_paila[1].append(False)
-        elif(float(Vol_aux[i])<=0.15):
-            Tipo_paila[0].append(3)
-            Tipo_paila[1].append(False)            
-        elif(float(Vol_aux[i])>0.15 and float(Vol_aux[i])<=0.3):            
-            Tipo_paila[0].append(4)
-            Tipo_paila[1].append(random.choice([True,False]))
+        Paila=0
+        Estado_Al=False
+        if(Diccionario['Tipo de cámara de combustión']=='doble cámara'):
+            if(i==0):
+                Paila=3
+                Estado_Al=False  
+            elif(i==1):
+                Paila=random.choice([3,4])
+                Estado_Al=False
+            elif(i==2):
+                Paila=3
+                Estado_Al=False                
+            elif(i==3 and Cap>=150):
+                Paila=3
+                Estado_Al=False
+            else:
+                Paila=random.choice([1,2,5,6])
+                Estado_Al=random.choice([True,False])
         else:
-            Paila_seleccionada=random.choice([1,2,5,6])
-            Tipo_paila[0].append(Paila_seleccionada)
-            Tipo_paila[1].append(random.choice([True,False]))  
+            if(i<=1):
+                Paila=random.choice([3,4])
+                Estado_Al=False  
+            elif(i==2):
+                Paila=3
+                Estado_Al=False
+                
+            elif(i==3 and Cap>=150):
+                Paila=3
+                Estado_Al=False
+            else:
+                Paila=random.choice([1,2,5,6])
+                Estado_Al=random.choice([True,False])
+        Tipo_paila[0].append(Paila)
+        Tipo_paila[1].append(Estado_Al)  
+
 #        print(Tipo_paila[0])
 #        print(float(Vol_aux[i]))
                    
     """---->>>>Algoritmo de optimización (Ascenso a la colina)<<<<----"""
-    for i in range(Etapas-1,-1,-1):
+    for i in range(Etapas):#(Etapas-1,-1,-1):
         f_1=10000000
         iteraciones=0
         #Vol_aux[i]=float(Vol_aux[i])
         Volumen=float(Vol_aux[i])
-        
         #Recuerde H_fl o Hfa es lo mismo
         #Asignación de valores iniciales (variables de entrada)
         #H_fl 300 y 600 todas
@@ -1412,6 +1440,7 @@ def Mostrar_pailas(Vol_aux, Etapas, Sitio, T_Hornilla, Cap_hornilla, altura_medi
         #print(Volumen)
         #print(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13,a14,a15,a16)
         #print(Lista2)
+        TACC.append(Temp_TACC)
         Lista.append(a2)
         Lista2.append([a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13,a14,a15,a16])                
         """--->>>Llamado a la función para esquematizar un plano en archivo pdf<<<----"""
@@ -1425,19 +1454,21 @@ def Mostrar_pailas(Vol_aux, Etapas, Sitio, T_Hornilla, Cap_hornilla, altura_medi
         #lista_par[7]>>>N_Canales
         #lista_par[8]>>>lC
     #print(Lista2)
-    Lista2.sort(key=lambda x: x[3])
-    Lista_Temp=[]
-    for i in range(Etapas):
-        if (Lista2[i][0]==3):
-            Lista_Temp.append(Lista2[i])
-    for i in range(Etapas):
-        if (Lista2[i][0]==4):
-            Lista_Temp.append(Lista2[i])  
-    for i in range(Etapas):
-        if (Lista2[i][0]!=3 and Lista2[i][0]!=4):
-            Lista_Temp.append(Lista2[i])
-    Lista2=Lista_Temp
-    Lista2[0], Lista2[1] = Lista2[1], Lista2[0]
+    
+#    Lista2.sort(key=lambda x: x[3])
+#    Lista_Temp=[]
+#    for i in range(Etapas):
+#        if (Lista2[i][0]==3):
+#            Lista_Temp.append(Lista2[i])
+#    for i in range(Etapas):
+#        if (Lista2[i][0]==4):
+#            Lista_Temp.append(Lista2[i])  
+#    for i in range(Etapas):
+#        if (Lista2[i][0]!=3 and Lista2[i][0]!=4):
+#            Lista_Temp.append(Lista2[i])
+#    Lista2=Lista_Temp
+#    Lista2[0], Lista2[1] = Lista2[1], Lista2[0]
+    
     a2=max(Lista)
     for i in range(Etapas):
         Lista2[i][1]=a2
@@ -1445,6 +1476,7 @@ def Mostrar_pailas(Vol_aux, Etapas, Sitio, T_Hornilla, Cap_hornilla, altura_medi
     #Lista2.reverse()
     for i in range(Etapas):
         Lista_Falcas.append(Lista2[i][4])
+        
     for i in range(Etapas):       
         if(i<9):
             Texto_etapa= "0"+str(i+1)
@@ -1464,7 +1496,6 @@ def Mostrar_pailas(Vol_aux, Etapas, Sitio, T_Hornilla, Cap_hornilla, altura_medi
                           Lista2[i][1],Lista2[i][2],Lista2[i][3],Lista2[i][4],Lista2[i][5],Lista2[i][6],
                           Lista2[i][7],Lista2[i][8],Lista2[i][9],Lista2[i][10],Lista2[i][11],Lista2[i][12],
                           Lista2[i][13],Lista2[i][14],False)
-            #>>>>>>>>
         """Eliminar comentarios para probar el algoritmo de optimización"""
         #Comprobar_diseno(float(Vol_aux[Etapas-1-i]), i, Lista2[i][0], Lista2[i][1],Lista2[i][2],Lista2[i][3],Lista2[i][4],Lista2[i][5],
         #                 Lista2[i][6],Lista2[i][15])
@@ -1477,3 +1508,5 @@ def Mostrar_pailas(Vol_aux, Etapas, Sitio, T_Hornilla, Cap_hornilla, altura_medi
     df.to_excel('static/Temp/Temp2.xlsx')
     Cantidad_pailas=[0,0,0,0,0,0,0,0,0,0,0]
     Lista_de_pailas=[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ']
+    
+    return [Lista2, Lista_d_chimenea, Lista_d_camara, Lista_d_ductos, TACC]

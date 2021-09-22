@@ -71,6 +71,7 @@ COPY __pycache__ /opt/app/__pycache__
 COPY static /opt/app/static 
 COPY templates /opt/app/templates 
 COPY COL_adm1.sf.rds /opt/app/COL_adm1.sf.rds 
+COPY Areas.py /opt/app/Areas.py
 COPY Costos_funcionamiento.py /opt/app/Costos_funcionamiento.py 
 COPY Diseno_inicial.py /opt/app/Diseno_inicial.py 
 COPY Doc_latex.py /opt/app/Doc_latex.py 

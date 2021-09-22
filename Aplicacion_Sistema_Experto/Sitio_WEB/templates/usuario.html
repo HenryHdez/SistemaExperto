@@ -7,9 +7,9 @@
       <li class="nav-item active">
         <a class="nav-link" href="usuario">Formulario<span class="sr-only">(current)</span></a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link disabled" href="informe1" aria-disabled="true">Informe</a>
-      </li>
+      <!--<li class="nav-item">-->
+      <!--  <a class="nav-link disabled" href="informe1" aria-disabled="true">Informe</a>-->
+      <!--</li>-->
       <!--<li class="nav-item">-->
       <!--<a class="nav-link disabled" href="presentar" aria-disabled="true">Mapas</a>-->
       <!--</li>-->
@@ -123,11 +123,17 @@
 
             <tr class="col-md-6 col-sm-12 form-group">
                <td class="col-12"> <p> <b>Altura del sitio (800 a 1800 metros sobre el nivel del mar):</b> </p> </td>
-               <td class="col-12"> <input id="Altura22" type = "number" name = "Altura" value="1600" step="0.5" min="800" max="1800" onchange="Editar_Almanaque()"/> </td>
+               <td class="col-12"> <input id="Altura22" type = "number" name = "Altura" value="1600" step="10" min="800" max="1800" onchange="Editar_Almanaque()"/> </td>
             </tr>
             
             <tr class="col-md-6 col-sm-12 form-group">
-
+                <td class="col-12"> <p> <b>¿Realiza corte por entresaque? (Si no conoce la respuesta seleccione NO)</b> </p> </td>
+                <td class="col-12"> 
+                    <select id="Entreza" onchange="Editar_Almanaque()">
+                      <option value="NO" selected>NO</option>
+                      <option value="SI">SI</option>
+                    </select>  
+                </td>
             </tr>  
                       
             <tr class="col-md-6 col-sm-12 form-group">
@@ -170,7 +176,7 @@
                     </select>  
                 </td>
             </tr>
-                       
+                                 
             <tr class="col-md-6 col-sm-12 form-group" id="cultivo_1" style="visibility:hidden;">
                 <td class="col-12"> <p> <b>¿Conoce las variedades de caña sembradas?</b> </p> </td>
                 <td class="col-12"> 
@@ -180,7 +186,7 @@
                     </select>  
                 </td>
             </tr> 
-            
+                                   
             </table> 
          </div>
             
@@ -235,7 +241,7 @@
                             <option>Sabado</option>
                         </select> 
                         <p><tt>&nbsp;a las &nbsp;</tt></p>
-                        <input id="Reloj_fin" type="time" value="12:00" style="width:140px; height:40px" onchange="Editar_Almanaque()" required>
+                        <input id="Reloj_fin" type="time" value="22:00" style="width:140px; height:40px" onchange="Editar_Almanaque()" required>
                     </div>
                     <div class="div2">
 
@@ -808,11 +814,15 @@
               var Rendimiento_cana = parseFloat(document.getElementById("Rendi_proy").value);
               var Per_vege=document.getElementById("Vegetativo").value;
               
+              var En1  = document.getElementById("Entreza");
+              var En2  = En1.options[En1.selectedIndex].value;        
+                    
               var FactorCorreccion=1;
               var elemento = document.getElementById("Fertiliza");
               var ITEM     = elemento.options[elemento.selectedIndex].innerText;
               if(ITEM=="NO"){FactorCorreccion=0.5;}
-             
+              if(En2=="SI"){Rendimiento_cana=Rendimiento_cana*0.3;}
+              
               Rendimiento_cana = Rendimiento_cana*FactorCorreccion;
               Produccion_anual_cana=(Crecimiento*12.0*Rendimiento_cana)/parseFloat(Per_vege);
               Produccion_jugo_crudo=60.0*Produccion_anual_cana/100.0; //Dato del molino
@@ -825,31 +835,54 @@
               var semanas_molidos_ano = 0;
               var dias_parada_molienda = 0;
               
-              if(Freq_t=="todas las semanas del mes"){dias_parada_molienda=7;camara=1;}
+              if(Freq_t=="todas las semanas del mes"){
+                                                      if(dias_sem<7){dias_parada_molienda=7;}
+                                                      else{dias_parada_molienda=30;}
+                                                      camara=1;
+                                                      }
               if(Freq_t=="1 semana (2 de descanso)"){dias_parada_molienda=21;camara=0;}
               if(Freq_t=="1 semana (1 de descanso)"){dias_parada_molienda=14;camara=1;}
               if(Freq_t=="1 semana (3 de descanso)"){dias_parada_molienda=28;camara=0;}
               
-              if(Freq_t=="2 semanas (1 de descanso)"){dias_parada_molienda=21; 
+              if(Freq_t=="2 semanas (1 de descanso)"){
+                                                      if(dias_sem<2){dias_parada_molienda=7;}
+                                                      else if(dias_sem>=2 && dias_sem<7){dias_parada_molienda=22.95;}
+                                                      else if(dias_sem>=7){dias_parada_molienda=24;} 
+                                                                   
                                                       if(dias_sem<5.5){camara=0;}
                                                       else{camara=1;}
                                                       }
                                                       
-              if(Freq_t=="2 semanas (2 de descanso)"){dias_parada_molienda=28;
+              if(Freq_t=="2 semanas (2 de descanso)"){
+                                                      if(dias_sem<2){dias_parada_molienda=10;}
+                                                      else if(dias_sem>=2 && dias_sem<7){dias_parada_molienda=15.95;}
+                                                      else if(dias_sem>=7){dias_parada_molienda=28;} 
                                                       if(dias_sem<5.5){camara=0;}
                                                       else{camara=1;}              
                                                       }
                                                       
-              if(Freq_t=="3 semanas (1 de descanso)"){dias_parada_molienda=28;camara=1;}
+              if(Freq_t=="3 semanas (1 de descanso)"){
+                                                      if(dias_sem<7){dias_parada_molienda=10;}
+                                                      else if(dias_sem>=7){dias_parada_molienda=28.3;}               
+                                                      camara=1;}
               
-              if(Freq_t=="3 semanas (2 de descanso)"){dias_parada_molienda=35;
+              if(Freq_t=="3 semanas (2 de descanso)"){
+                                                      dias_parada_molienda=35;
+                                                      if(dias_sem<2){dias_parada_molienda=8;}
+                                                      else if(dias_sem>=2 && dias_sem<7){dias_parada_molienda=24;}
+                                                      else if(dias_sem>=7){dias_parada_molienda=35;} 
                                                       if(dias_sem<5.5){camara=0;}
                                                       else{camara=1;}              
                                                       }              
               
-              if(Freq_t=="2 semanas (3 de descanso)"){dias_parada_molienda=35;camara=0;}
+              if(Freq_t=="2 semanas (3 de descanso)"){
+                                                      if(dias_sem<2){dias_parada_molienda=15;}
+                                                      else if(dias_sem>=2 && dias_sem<7){dias_parada_molienda=25.71;}
+                                                      else if(dias_sem>=7){dias_parada_molienda=35;}               
+                                                      camara=0;}
               
-              semanas_molidos_ano = (30*meses)/dias_parada_molienda;              
+              semanas_molidos_ano = (30*meses)/dias_parada_molienda;  
+                          
               var dias_molidos_ano = (dias_mes*meses);
               
               Cana_molida_hora = Produccion_anual_cana/(horas_d*dias_sem*semanas_molidos_ano);
@@ -867,8 +900,8 @@
               else if(camara==1){Tipo_horn="cámara Ward";}
               
               if(Panela_hora<=75){Etapas=5; Panela_hora_normalizado=75;Tipo_horn="cámara plana";}
-              else if((Panela_hora>75) && (Panela_hora<=100)){Etapas=6;Panela_hora_normalizado=100;Tipo_horn="cámara plana";}
-              else if((Panela_hora>100) && (Panela_hora<=125)){Etapas=6;Panela_hora_normalizado=125;Tipo_horn="cámara plana";}
+              else if((Panela_hora>75) && (Panela_hora<=100)){Etapas=6;Panela_hora_normalizado=100;}
+              else if((Panela_hora>100) && (Panela_hora<=125)){Etapas=6;Panela_hora_normalizado=125;}
               else if((Panela_hora>125) && (Panela_hora<=150)){Etapas=6;Panela_hora_normalizado=150;} //Doble punteadora
               
               else if((Panela_hora>150) && (Panela_hora<=175)){Etapas=7;Panela_hora_normalizado=175;}
@@ -877,13 +910,11 @@
               else if((Panela_hora>225) && (Panela_hora<=250)){Etapas=7;Panela_hora_normalizado=250;}
               else if((Panela_hora>250)){Etapas=7;Panela_hora_normalizado=250;} 
               
-              if(Panela_hora<=150){
-                  if(Tipo_horn=="cámara plana"){document.getElementById("Cultivo_cama").style.visibility = "visible";}
-                  else{document.getElementById("Cultivo_cama").style.visibility = "hidden";}
-              }
-              
+              if((Panela_hora<=150)&&(Tipo_horn=="cámara plana")){document.getElementById("Cultivo_cama").style.visibility = "visible";}
+              else{document.getElementById("Cultivo_cama").style.visibility = "hidden"; Elemen.value="NO"; Cam_sel="NO";}
+                  
               var bagaceras=0;             
-                            
+                             
               if(Tipo_horn == "cámara plana" && Panela_hora_normalizado<=125){bagaceras=2;}
               else if(Tipo_horn == "cámara plana" && Panela_hora_normalizado>125){bagaceras=1;}
               else if(Tipo_horn == "cámara Ward"){bagaceras=1; document.getElementById("Cultivo_cama").style.visibility = "hidden";}             
@@ -905,9 +936,7 @@
               var ancho_can=Ancho_bag;
               var pila = Math.round(Crecimiento*0.1);
               if(pila<1){pila=1;}
-
-
-                   
+                  
               //Envio a python
               document.getElementById("Tipo_camar").value=Tipo_horn;
               document.getElementById("Jorn_traba").value=Freq_t;
@@ -991,7 +1020,10 @@
               if(dia_uno=="Viernes"){dia_ini=6;}
               if(dia_uno=="Sabado"){dia_ini=7;}
               
-              if(dia_dos=="mismo día"){dia_fin=0;}
+              if(dia_dos=="mismo día"){
+                                      dia_fin=0;
+                                      document.getElementById("Rendi_proy").value=60;
+                                      }
               if(dia_dos=="Domingo"){dia_fin=1;}
               if(dia_dos=="Lunes"){dia_fin=2;}
               if(dia_dos=="Martes"){dia_fin=3;}

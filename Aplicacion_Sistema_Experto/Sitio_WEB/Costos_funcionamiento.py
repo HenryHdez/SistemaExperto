@@ -65,11 +65,11 @@ def Generar_reporte_financiero(D1, D2, D3, D4, D5, D6):
             puntero_v=640
             puntero_h=50
         elif(k==1):
-            Diccionario=D2
+            Diccionario=D3
             puntero_v=640
             puntero_h=50
         elif(k==2):
-            Diccionario=D3
+            Diccionario=D2
         Etiquetas=list(dict.keys(Diccionario))
         for i in Etiquetas:
             canvas.setFont('Helvetica-Bold', 11)
@@ -117,18 +117,18 @@ def Generar_reporte_financiero(D1, D2, D3, D4, D5, D6):
             puntero_v=640
             canvas.setFillColorRGB(0,0,0)
             canvas.setFont('Helvetica-Bold', 14)
-            canvas.drawString(140,680,'--->>>COSTO DEL RECUPERADOR DE CALOR<<<---')
+            canvas.drawString(180,680,'--->>>GASTOS DE CONSTRUCCIÓN<<<---')
         elif(k==1):
             canvas.setFillColorRGB(0,0,0)
-            canvas.setFont('Helvetica-Oblique', 10)
-            puntero_v=puntero_v-10
-            canvas.drawString(puntero_h, puntero_v, "Nota: El acero usado en la construcción del recuperador de calor es inoxidable 304.")
             canvas.setFont('Helvetica-Bold', 14)
             puntero_v=puntero_v-40
-            canvas.drawString(202, puntero_v,'--->>>GASTOS OPERATIVOS<<<---')  
+            canvas.drawString(140, puntero_v,'--->>>COSTO DEL RECUPERADOR DE CALOR<<<---')  
             puntero_v=puntero_v-40
             
     canvas.setFillColorRGB(0,0,0)       
+    canvas.setFont('Helvetica-Oblique', 10)
+    puntero_v=puntero_v-10
+    canvas.drawString(puntero_h, puntero_v, "Nota: El acero usado en la construcción del recuperador de calor es inoxidable 304.")
     canvas.setFont('Helvetica-Bold', 14)
     puntero_v=puntero_v-40
     canvas.drawString(200, puntero_v,'--->>>CONSOLIDADO PARCIAL<<<---')  
@@ -788,7 +788,7 @@ def costos():
         Retorno_inversion=[]    
         for i in Costo_produccion:
             Ingreso_esperado=Valor_panela*Produccion_anual_kg
-            Ganancia_Acumulada=(Ingreso_esperado-i)/20
+            Ganancia_Acumulada=(Ingreso_esperado-i)/100
             Valor_Proyecto=round(flujo_caja[0],3)
             if(Ganancia_Acumulada==0):
                 Ganancia_Acumulada=0.1

@@ -93,15 +93,15 @@ def Tadiabatica(Exceso , EfReaccion , Hum_bz , hum_air ):
     Tad = 2000
     DH2 = (Moles_Bz * Hf_bz) + ((Moles_H2O - Moles_h2o_air) * Hf_H2O_l) + (Moles_h2o_air * Hf_H2O_g) - (Moles_CO2_Salida * Hf_CO2) - (Moles_CO_Salida * Hf_CO) - (Moles_H2O_Salida * Hf_H2O_g)
     Error = 10000000
-
-    while Error > 0.00000001:
+    conta=0
+    while Error > 0.00000001 and conta<20:
         DH3 = Modulo1.DH_KJKmol(25, Tad, Moles_CO_Salida/1000, Moles_CO2_Salida/1000, Moles_N2_Req/1000, Moles_O2_Salida/1000, Moles_H2O_Salida/1000)
         Cpp = Modulo1.Cp(Tad, yco, yco2, yn2, yo2, yh2o) * (Moles_salida_totales * Modulo1.MasaMolecular(yco, yco2, yn2, yo2, yh2o)/1000)
         temporal = (DH3 - DH2) / Cpp
         Tad2 = Tad - temporal
         Error = abs(Tad2 - Tad)
         Tad = Tad2 
-        
+        conta=conta+1
     return Tad
 
 
@@ -123,17 +123,16 @@ def Tcalculada(Qgas , m_GAS , yco , yco2 , yn2 , yo2 , yh2o ):
     
     Tprueba = 1000
     
-    
-    while Error > 0.00000001:
-    
+    conta=0
+    while Error > 0.00000001 and conta<20:
         Qtemporal = ((Modulo1.DH_KJKmol(25, Tprueba, yco, yco2, yn2, yo2, yh2o) * Moles_gases) / 3600)
         DH = Qtemporal - Qgas
         Cpp = Modulo1.Cp(Tprueba, yco, yco2, yn2, yo2, yh2o) * m_GAS / 3600
         temporal = DH / Cpp
-        
         Tprueba2 = Tprueba - temporal
         Error = abs(Tprueba2 - Tprueba)
         Tprueba = Tprueba2
+        conta=conta+1
     Tcalculada = Tprueba
     return Tcalculada
 
@@ -161,15 +160,13 @@ def XbrixCl(m_jc , Xjc , alfa , Q , Xch , P , Tin ):
     Xt1 = Xjc
     Error = 10000
     Qsensible = CalorCl(m_jc, Xjc, alfa, Xch, P, Tin, Xjc)
-    
+    conta=0
     if Q * 3600 < Qsensible:
         Xt1 = Xjc
     else:
     
-        while Error > 0.00000001:
-        
+        while Error > 0.00000001 and conta<30:
             Q1 = CalorCl(m_jc, Xjc, alfa, Xch, P, Tin, Xt1) - Q * 3600 #' f(x)
-            
             Q22 = CalorCl(m_jc, Xjc, alfa, Xch, P, Tin, Xt1 + 0.000000001)
             Q33 = CalorCl(m_jc, Xjc, alfa, Xch, P, Tin, Xt1)
             
@@ -181,6 +178,7 @@ def XbrixCl(m_jc , Xjc , alfa , Q , Xch , P , Tin ):
 
             Error = abs(Xt2 - Xt1)
             Xt1 = Xt2
+            conta=conta+1
     XbrixCl = Xt1
     return XbrixCl
 
