@@ -426,7 +426,7 @@ def Optimizacion(Diccionario_1, Diccionario_2, L_temp):
         x1=np.linalg.norm(Calor_1)
         Error=(x1-x0)/x0
         #Error_actual=abs(Error)
-               
+        #Autosufientes y ajusar a los reales
         if(Efec<40 and Flag==True):
             Calor_0=Calor_1
             Factor_original=Factor_bagazo_nuevo

@@ -28,8 +28,6 @@ import numpy as np
 
 #Generación de la interfaz WEB
 app = Flask(__name__)
-#app.config['SERVER_NAME']='Misitio.com:5000'
-#socketio = SocketIO(app)
 #Creación de directorio temporal para almacenar archivos
 uploads_dir = os.path.join(app.instance_path, 'uploads')
 try:
@@ -588,7 +586,6 @@ def Operaciones_db(Operacion, usuarios):
                       database='SistemaExpertoPanela', 
                       user='WebSisExpPanela', 
                       password='sIuusnOsE9bLlx7g60Mz')
-        #pyodbc.connect(driver='FreeTDS',#driver='FreeTDS',
         cursor = cnxn.cursor()
         #Consulta
         if(Operacion==0):               

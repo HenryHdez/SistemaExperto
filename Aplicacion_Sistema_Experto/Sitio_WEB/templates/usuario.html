@@ -277,15 +277,33 @@
                             <input id="Molidas_ano_t" type = "number" name = "Moliendas estimadas al año" value="51" readonly/> </td>
                             </td>
                          </tr>
+
+                        <tr class="col-6 form-group">
+
+                         </tr>
                          
                          <tr class="col-6 form-group">
                             <td class="col-12">
-                                Tipo de cámara <!-- Dias de molienda Cambiar luego-->
+                                Tipo de cámara (seleccione una) <!-- Dias de molienda Cambiar luego-->
                             </td>
                             <td class="col-12">
-                            <input id="capacidad_horni" type = "text" name = "Panela producida por hora [kg/hora]" value="cámara Ward" readonly/> </td>
+                            <select id="Cam_sel_man" style="width:193px; height:40px" onchange='Editar_Almanaque()'>
+                                <option value="cámara plana">cámara plana</option>
+                                <option value="doble cámara">doble cámara</option>
+                                <option value="cámara Ward">cámara Ward</option>
+                            </select>                             
                             </td>
-                        </tr>            
+                        </tr> 
+
+                         <tr class="col-6 form-group">
+                            <td class="col-12">
+                                Sugerida (HornillApp)<!-- Dias de molienda Cambiar luego-->
+                            </td>
+                            <td class="col-12">                          
+                            <input id="capacidad_horni"  style="width:193px; height:40px" type = "text" name = "Panela producida por hora [kg/hora]" value="cámara plana" readonly/> </td>
+                            </td>
+                        </tr> 
+                                   
                     </table>
                </td> 
             </tr>       
@@ -374,27 +392,7 @@
                             </tbody>
                     </table>
                 </td>  
-            </tr>
-
-            <tr class="col-md-6 col-sm-12 form-group" id="Cultivo_cama" style="visibility:hidden;">
-                <td class="col-12"> <p> <b>¿Quiere cámara doble? (Sí desconoce la respuesta seleccione NO)</b> </p> </td>
-                <td class="col-12"> 
-                    <select id="select_camara" onchange='Editar_Almanaque()'>
-                      <option value="NO">NO</option>
-                      <option value="SI">SI</option>
-                    </select>  
-                </td>
-            </tr>
-            
-            <tr class="col-md-6 col-sm-12 form-group">
-
-            </tr>
-            
-            <tr class="col-md-6 col-sm-12 form-group">
-
-            </tr>
-            
-
+            </tr>          
                                     
         </table> 
         </div>     
@@ -510,7 +508,7 @@
         <input class="form-row" id="Melote_ano" name = "Melote por año [t]" type = "text" value="15.8" style="visibility:hidden;">
         <input class="form-row" id="Panela_anu" name = "Producción anual de panela [t]" type = "text" value="126" style="visibility:hidden;">
         <input class="form-row" id="Panela_mol" name = "Panela producida por molienda [t]" type = "text" value="2.45" style="visibility:hidden;">
-        <input class="form-row" id="Tipo_camar" name = "Tipo de cámara de combustión" type = "text" value="cámara Ward" style="visibility:hidden;">        
+        <input class="form-row" id="Tipo_camar" name = "Tipo de cámara de combustión" type = "text" value="cámara plana" style="visibility:hidden;">        
         
         <input class="form-row" id="Area_bag" name = "Área de la bagacera (m^2)" type = "number" value="294" style="visibility:hidden;">                      
         <input class="form-row" id="Ancho_bag" name = "Ancho de la bagacera (mm)" type = "number" value="23000" style="visibility:hidden;"> 
@@ -820,6 +818,10 @@
               var FactorCorreccion=1;
               var elemento = document.getElementById("Fertiliza");
               var ITEM     = elemento.options[elemento.selectedIndex].innerText;
+              
+              var Cam_usu = document.getElementById("Cam_sel_man");
+              var horni_usu  = Cam_usu.options[Cam_usu.selectedIndex].innerText;
+                            
               if(ITEM=="NO"){FactorCorreccion=0.5;}
               if(En2=="SI"){Rendimiento_cana=Rendimiento_cana*0.3;}
               
@@ -892,9 +894,6 @@
               Panela_diaria   = (Panela_Molienda/dias_sem)*1000.0;
               Panela_hora     = (Panela_anual/(horas_d*dias_sem*semanas_molidos_ano))*1000;
               var Panela_hora_normalizado=0;
-
-              var Elemen  = document.getElementById("select_camara");
-              var Cam_sel = Elemen.options[Elemen.selectedIndex].innerText;
                             
               if(camara==0){Tipo_horn="cámara plana";}
               else if(camara==1){Tipo_horn="cámara Ward";}
@@ -910,16 +909,18 @@
               else if((Panela_hora>225) && (Panela_hora<=250)){Etapas=7;Panela_hora_normalizado=250;}
               else if((Panela_hora>250)){Etapas=7;Panela_hora_normalizado=250;} 
               
-              if((Panela_hora<=150)&&(Tipo_horn=="cámara plana")){document.getElementById("Cultivo_cama").style.visibility = "visible";}
-              else{document.getElementById("Cultivo_cama").style.visibility = "hidden"; Elemen.value="NO"; Cam_sel="NO";}
-                  
+              if(horni_usu!=Tipo_horn && horni_usu!="doble cámara"){document.getElementById("Cam_sel_man").value = Tipo_horn; alert("HornillApp ha seleccionado un tipo de cámara más apropiado para usted");}
+              else if((Panela_hora<=150)&&(horni_usu=="doble cámara")&&(Tipo_horn=="cámara plana")){Tipo_horn="doble cámara";}
+              else if((Panela_hora<=150)&&(Tipo_horn=="cámara plana")){Tipo_horn="cámara plana";}
+              else if(horni_usu==Tipo_horn){Tipo_horn=horni_usu;}
+              else{document.getElementById("Cam_sel_man").value = Tipo_horn; alert("HornillApp ha seleccionado un tipo de cámara más apropiado para usted");}
+                               
               var bagaceras=0;             
-                             
+              //Colocar seleccion de usuario para el tipo de cámara y recomendar la camara
+              //Limitar la WARD a las capacidades de molienda
               if(Tipo_horn == "cámara plana" && Panela_hora_normalizado<=125){bagaceras=2;}
               else if(Tipo_horn == "cámara plana" && Panela_hora_normalizado>125){bagaceras=1;}
-              else if(Tipo_horn == "cámara Ward"){bagaceras=1; document.getElementById("Cultivo_cama").style.visibility = "hidden";}             
-                            
-              if(Tipo_horn=="cámara plana" && Cam_sel=="SI"){Tipo_horn="doble cámara";}
+              else if(Tipo_horn == "cámara Ward"){bagaceras=1;}             
 
               var largo_bag=Math.round(((0.3*Crecimiento)+1)*1000)*bagaceras;
               var Ancho_bag=Math.round(11.5*1000)*bagaceras;
