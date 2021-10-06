@@ -41,10 +41,10 @@
                     <th style="width:450px" align="center"> <b>Pais</b> </th>
                     <th style="width:450px" align="center"> <b>Departamento</b> </th>
                     <th style="width:450px" align="center"> <b>Ciudad</b> </th>
-                    <!--<th style="width:450px" align="center"> <b>Usuario</b> </th>-->
-                    <!--<th style="width:450px" align="center"> <b>Pailas</b> </th>-->
-                    <!--<th style="width:450px" align="center"> <b>Ducto</b> </th>-->
-                    <!--<th style="width:450px" align="center"> <b>Cálculos</b> </th>-->
+                    <th style="width:450px" align="center"> <b>Simulador</b> </th>
+                    <th style="width:450px" align="center"> <b>Volumenes</b> </th>
+                    <th style="width:450px" align="center"> <b>Generales</b> </th>
+                    <th style="width:450px" align="center"> <b>Informe</b> </th>
                     <th style="width:450px" align="center"> <b>Eliminar</b> </th>
                 </tr>
     
@@ -56,10 +56,10 @@
                        <td style="width:450px" align="center"> {{Eti3a[i]}}</td>
                        <td style="width:450px" align="center"> {{Eti4[i]}}</td>
                        <td style="width:450px" align="center"> {{Eti5[i]}}</td>
-                       <!--<td style="width:450px" align="center"> <a download="Informe_Usuario" href={{url_for('static', filename=Eti6[i])}}><img src="{{url_for('static', filename='Iconos/D1.png')}}" width="50" height="50" outline="1" border="1" style="border: 1px gray solid" border-radius= "10px"; /></a></td>-->
-                       <!--<td style="width:450px" align="center"> <a download="Informe_Planos" href={{url_for('static', filename=Eti7[i])}}><img src="{{url_for('static', filename='Iconos/D2.png')}}" width="50" height="50" outline="1" border="1" style="border: 1px gray solid" border-radius= "10px"; /></a></td>-->
-                       <!--<td style="width:450px" align="center"> <a download="Informe_Recinto" href={{url_for('static', filename=Eti8[i])}}><img src="{{url_for('static', filename='Iconos/D1.png')}}" width="50" height="50" outline="1" border="1" style="border: 1px gray solid" border-radius= "10px"; /></a></td>-->
-                       <!--<td style="width:450px" align="center"> <a download="Informe_Calculos" href={{url_for('static', filename=Eti9[i])}}><img src="{{url_for('static', filename='Iconos/D2.png')}}" width="50" height="50" outline="1" border="1" style="border: 1px gray solid" border-radius= "10px"; /></a></td>-->
+                       <td style="width:450px" align="center"> <a download="Simulador" href={{url_for('static', filename=Eti6[i])}}><img src="{{url_for('static', filename='Iconos/D1.png')}}" width="50" height="50" outline="1" border="1" style="border: 1px gray solid" border-radius= "10px"; /></a></td>
+                       <td style="width:450px" align="center"> <a download="Volumenes" href={{url_for('static', filename=Eti7[i])}}><img src="{{url_for('static', filename='Iconos/D2.png')}}" width="50" height="50" outline="1" border="1" style="border: 1px gray solid" border-radius= "10px"; /></a></td>
+                       <td style="width:450px" align="center"> <a download="Generales" href={{url_for('static', filename=Eti8[i])}}><img src="{{url_for('static', filename='Iconos/D1.png')}}" width="50" height="50" outline="1" border="1" style="border: 1px gray solid" border-radius= "10px"; /></a></td>
+                       <td style="width:450px" align="center"> <a download="Informe" href={{url_for('static', filename=Eti9[i])}}><img src="{{url_for('static', filename='Iconos/D2.png')}}" width="50" height="50" outline="1" border="1" style="border: 1px gray solid" border-radius= "10px"; /></a></td>
                        <td style="width:450px" align="center"> <input type="checkbox" id="CH_{{Eti0[i]}}" name="CH_{{Eti0[i]}}"></td>
                     </tr>
                 {%endfor%}

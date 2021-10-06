@@ -15,7 +15,7 @@ from time import sleep                                   #Suspensión temporal
 import pandas as pd                                      #Gestión de archivos de texto
 import os                                                #Hereda funciones del sistema operativo para su uso en PYTHON                    
 import base64                                            #Codifica contenido en base64 para su almacenamiento en una WEB
-import pyodbc                                            #Interfaz de conexión con la base de datos
+import pymssql                                           #Interfaz de conexión con la base de datos
 import Doc_latex                                         #Gestión de documentos en LATEX en PYTHON debe tener preinstalado MIKTEX
 '''---Componentes y lbrería de elaboración propia---'''
 import Diseno_inicial                                    #Calculo preliminar de la hornilla
@@ -413,9 +413,12 @@ def generar_valores_informe(Cliente_actual):
                                       Memoria_temp)
     Doc_latex.Documento_Latex.seccion1(Diccionario, Diccionario_2)
     Doc_latex.Documento_Latex.generar_pdf()
-    sleep(1)
+    sleep(5)
     """Creación del pdf"""
     Pailas.Generar_reporte(Diccionario,Diccionario_2)
+
+    df2 = pd.DataFrame([[key, Diccionario_2[key]] for key in Diccionario_2.keys()])
+    df2.to_excel('static/Reporte2.xlsx')
 
     """>>>>>>>>>>>>>>>>Actualizar base de datos<<<<<<<<<<<<<<"""        
     usuarios = (Diccionario['Nombre de usuario'],
@@ -424,17 +427,14 @@ def generar_valores_informe(Cliente_actual):
                 Diccionario['Pais'], 
                 Diccionario['Departamento'],
                 Diccionario['Ciudad'], 
-                "a","b","c","d")
-    #            Crear_archivo_base_64("static/Informe_WEB.pdf"), 
-    #            Crear_archivo_base_64("static/Planos_WEB.pdf"), 
-    #            Crear_archivo_base_64("static/B3_Etapa_Planta_WEB.pdf"), 
-    #            Crear_archivo_base_64("static/Calculos_WEB.pdf"))
-    Operaciones_db(2,usuarios)        #Usar base de datos
+                Crear_archivo_base_64('static/Reporte1.xlsx'), 
+                Crear_archivo_base_64('static/Reporte2.xlsx'), 
+                Crear_archivo_base_64('static/Reporte3.xlsx'), 
+                Crear_archivo_base_64("static/Informe.pdf")
+                )
+    Operaciones_db(2,tuple(usuarios))        #Usar base de datos
     sleep(1)
     Enviar_msn(str(Diccionario['Correo']))
-    
-    df2 = pd.DataFrame([[key, Diccionario_2[key]] for key in Diccionario_2.keys()])
-    df2.to_excel('static/Reporte2.xlsx')
     
 #Filtrar caracteres desconocidos de las cadenas de texto de los archivos temporales
 def Convertir(string): 
@@ -581,27 +581,26 @@ def Operaciones_db(Operacion, usuarios):
     r_b=[]
     Cadena_sql= "DELETE FROM Clientes WHERE ID IN "
     try:
-        cnxn = pyodbc.connect(driver='FreeTDS',
-                      host='172.16.11.44\MSSQL2016DSC', 
-                      database='SistemaExpertoPanela', 
-                      user='WebSisExpPanela', 
-                      password='sIuusnOsE9bLlx7g60Mz')
+        cnxn = pymssql.connect(host='172.16.11.44\MSSQL2016DSC', 
+                               database='SistemaExpertoPanela', 
+                               user='WebSisExpPanela', 
+                               password='sIuusnOsE9bLlx7g60Mz') 
         cursor = cnxn.cursor()
         #Consulta
-        if(Operacion==0):               
-            base_temp=cursor.execute("SELECT * FROM Clientes")
-            for tdb in base_temp:
-                    db_1.append(tdb)
+        if(Operacion==0):             
+            cursor.execute("SELECT * FROM Clientes")
+            for tdb in cursor:
+                db_1.append(tdb)
         #Borrar
         elif(Operacion==1):
             cursor.execute("DELETE FROM Clientes WHERE CONVERT(NVARCHAR(MAX), Nombre)!='NO_BORRAR'")
         #Insertar
         elif(Operacion==2):
-            cursor.execute("INSERT INTO Clientes (Nombre, Correo, Telefono, Pais, Departamento, Ciudad, Usuario, Planos, Recinto, Calculos) VALUES (?,?,?,?,?,?,?,?,?,?)", usuarios)
+            cursor.execute("INSERT INTO Clientes (Nombre, Correo, Telefono, Pais, Departamento, Ciudad, Usuario, Planos, Recinto, Calculos) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", usuarios)
         #Busqueda
         elif(Operacion==3):
-            base_temp=cursor.execute("SELECT * FROM Clientes")
-            for i,tdb in enumerate(base_temp, start=0):
+            cursor.execute("SELECT * FROM Clientes")
+            for i,tdb in enumerate(cursor, start=0):
                 try:
                     if(usuarios.get('CH_'+str(tdb[0]))=='on'):
                         r_b.append(str(tdb[0]))
@@ -708,18 +707,18 @@ def base_batos():
                 Etiquetas_Pais.append(listas_1[4])
                 Etiquetas_Departamento.append(listas_1[5])
                 Etiquetas_Ciudad.append(listas_1[6])
-                Etiquetas_U.append("pdf2/U_"+str(Cantidad_Clientes)+".pdf")
-                Etiquetas_P.append("pdf2/P_"+str(Cantidad_Clientes)+".pdf")
-                Etiquetas_R.append("pdf2/R_"+str(Cantidad_Clientes)+".pdf")
+                Etiquetas_U.append("pdf2/U_"+str(Cantidad_Clientes)+".xlsx")
+                Etiquetas_P.append("pdf2/P_"+str(Cantidad_Clientes)+".xlsx")
+                Etiquetas_R.append("pdf2/R_"+str(Cantidad_Clientes)+".xlsx")
                 Etiquetas_C.append("pdf2/C_"+str(Cantidad_Clientes)+".pdf")
-                Cantidad_Clientes=Cantidad_Clientes+1
                 try:
-                    Leer_pdf_base64("static/pdf2/U_"+str(Cantidad_Clientes)+".pdf", listas_1[7])
-                    Leer_pdf_base64("static/pdf2/P_"+str(Cantidad_Clientes)+".pdf", listas_1[8])
-                    Leer_pdf_base64("static/pdf2/R_"+str(Cantidad_Clientes)+".pdf", listas_1[9])
+                    Leer_pdf_base64("static/pdf2/U_"+str(Cantidad_Clientes)+".xlsx", listas_1[7])
+                    Leer_pdf_base64("static/pdf2/P_"+str(Cantidad_Clientes)+".xlsx", listas_1[8])
+                    Leer_pdf_base64("static/pdf2/R_"+str(Cantidad_Clientes)+".xlsx", listas_1[9])
                     Leer_pdf_base64("static/pdf2/C_"+str(Cantidad_Clientes)+".pdf", listas_1[10])         
                 except:
                     print('Error archivo')
+                Cantidad_Clientes=Cantidad_Clientes+1
             return render_template('base.html',
                                    Eti0=Etiquetas_ID,
                                    Eti1=Etiquetas_Nombres,

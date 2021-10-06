@@ -92,6 +92,7 @@ def Propiedades(Calor_transferido, AF, PF, AL):
     
     Datos_simulacion=[]
     
+    
     Q_Cedido=Q_Cedido_gas(Calor_transferido)
     Masa_Bagazo=float(Diccionario_Entr['Bagazo suministrado'])
     Cantidad_Pailas=int(Diccionario_Pailas['Etapas'])   
@@ -157,7 +158,9 @@ def Propiedades(Calor_transferido, AF, PF, AL):
    
     Energia_inicial_Gas=Modulo1.DH_KJKmol(25,Temperatura_Flama_Ad,CO_producidos/1000,CO2_producidos/1000,N2_producidos/1000,O2_producidos/1000,H2O_Totales/1000)/3600
     Perdida_total=Energia_inicial_Gas*0.14
-
+    Etiquetas_salida=['Q Cedido', 'Calor transferido', 'Masa bagazo', 'CO2 Producidos 2', 'CO producido 2', 'H2O  totales 2',
+                      'O2 producidos 2', 'N2 Producidos 2', 'Gas total', 'Flujo masico', 'Velocidad I', 'CO2 Producidos 3',
+                      'CO producidos 3', 'H2O totales 3', 'O2 producidos 3', 'N2 producidos 3', 'Gas total 2', 'Tem flama', 'Energia inicial gas']
     Datos_simulacion.append(Q_Cedido)
     Datos_simulacion.append(Calor_transferido)
     Datos_simulacion.append(Masa_Bagazo)
@@ -294,9 +297,7 @@ def Propiedades(Calor_transferido, AF, PF, AL):
         Q_Total_paila=saturador(Q_Total_paila,1300,0)
         Q_Total_estimado.append(Q_Total_paila+Calor_conv)
 
-
-    
-    df1 = pd.DataFrame(Datos_simulacion)
+    df1 = pd.DataFrame([Etiquetas_salida , Datos_simulacion])
     df1.to_excel('static/Reporte1.xlsx')
     
     return Q_Total_estimado

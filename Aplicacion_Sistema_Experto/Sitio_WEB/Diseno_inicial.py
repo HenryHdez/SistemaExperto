@@ -281,8 +281,7 @@ def datos_entrada(Diccionario,iteracion,Valor_Algoritmo):
     #Entalpia
     #Validar con las hornillas que se tienen con los datos experimentales
     df1 = pd.DataFrame([[key, Diccionario[key]] for key in Diccionario.keys()])
-    df1.to_excel('static/Reporte3.xlsx',
-                  sheet_name='Sheet_name_'+str(iteracion))
+    df1.to_excel('static/Reporte3.xlsx')
     return Diccionario
 
 def Calculo_por_etapas(Diccionario):
