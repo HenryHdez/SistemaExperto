@@ -921,8 +921,10 @@
               if((Tipo_horn == "cámara plana" || Tipo_horn == "doble cámara") && Panela_hora_normalizado<=125){bagaceras=2;}
               else if((Tipo_horn == "cámara plana" || Tipo_horn == "doble cámara") && Panela_hora_normalizado>125){bagaceras=1;}
               else if(Tipo_horn == "cámara Ward"){bagaceras=1;}             
-
-              var largo_bag=Math.round(((0.3*Crecimiento)+1)*1000)*bagaceras;
+              var aux_calcu=0;
+              if(Crecimiento<25){aux_calcu=25;}
+              else{aux_calcu=Crecimiento;}
+              var largo_bag=Math.round(((0.3*aux_calcu)+1)*1000)*bagaceras;
               var Ancho_bag=Math.round(11.5*1000)*bagaceras;
               var Area_baga=Math.round((largo_bag/1000)*(Ancho_bag/1000));
               var Area_bagm=Math.round(largo_bag*Ancho_bag);

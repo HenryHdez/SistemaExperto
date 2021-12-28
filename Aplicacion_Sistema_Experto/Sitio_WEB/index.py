@@ -168,7 +168,7 @@ def Enviar_msn(Correo):
         mensaje.attach(archivo_adjunto)
         # Datos de acceso a la cuenta de usuario
         usuario   ='hornillapp@agrosavia.co'
-        contrasena='Contrasena123456@'          
+        contrasena='Contrasena12345@'          
         #Interfaz de conexión con el servidor de gmail
         servidor = smtplib.SMTP('correo.agrosavia.co:587')
         servidor.starttls()
@@ -779,7 +779,7 @@ def contac_rta():
                 os.remove(nombre_archivo_pdf)
             # Datos de acceso a la cuenta de usuario
             usuario   ='hornillapp@agrosavia.co'
-            contrasena='Contrasena123456@'          
+            contrasena='Contrasena12345@'          
             #Interfaz de conexión con el servidor de gmail
             servidor = smtplib.SMTP('correo.agrosavia.co:587')
             servidor.starttls()

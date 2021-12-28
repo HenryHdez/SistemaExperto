@@ -1,5 +1,4 @@
 FROM ubuntu:18.04 as build
-
 WORKDIR /opt/app
 
 # apt-get Utilidades del sistema
@@ -56,18 +55,12 @@ RUN apt-get install -y texlive-latex-extra
 RUN apt-get install texlive-lang-spanish
 RUN apt-get install -y unixodbc-dev
 
-#INSTALACION DE FREETDS
-RUN apt-get install -y unixodbc-dev freetds-dev freetds-bin tdsodbc
-
 #INSTALACIÓN DE PAQUETES
 COPY requirements.txt /opt/app/requirements.txt
 RUN pip3 install -r requirements.txt
 
 #Correr python
-COPY odbcinst.ini /etc/odbcinst.ini
 COPY __pycache__ /opt/app/__pycache__
-#COPY instance /opt/app/instance 
-#COPY otros /opt/app/otros 
 COPY static /opt/app/static 
 COPY templates /opt/app/templates 
 COPY COL_adm1.sf.rds /opt/app/COL_adm1.sf.rds 
