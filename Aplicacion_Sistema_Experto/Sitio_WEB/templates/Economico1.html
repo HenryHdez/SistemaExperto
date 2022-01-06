@@ -1,0 +1,247 @@
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+       
+    <div class="jumbotron">
+        <h1 class="display-4">SIMULADOR DE CRÉDITO</h1>
+        <hr class="hr-titulo">
+        <p>
+            <label>Pasos para usar el simulador de crédito</label>
+        </p>        
+        <ol>
+            <li>Seleccione el tipo de productor, en el que usted se encuentra calificado.</li>
+            <li>Elija el plazo hasta 240 meses (20 años)</li>
+            <li>Escoja el periodo de amortización (mensual, bimensual, Trimestral, semestral, anual)</li>
+            <li>Revise en pantalla los detalles de tipo de productor, valor del crédito, plazo, y periodo de amortización y haga clic en “Calcular” para visualizar el detalle.</li>
+            <li>Elija una opción para generar un pdf, imprimir el detalle o enviar los resultados al correo.</li>
+        </ol>
+        <hr class="my-4"> 
+
+        <div class="row">
+            <div class="col-md-6 col-sm-12">
+                <table style="text-align:left; width: 100%;">
+                    <tbody style="display: flex; justify-content: space-around; padding: 13px;">
+
+                        <tr style="width: 100%; display: flex; justify-content: space-around;">
+                            <td>
+                                <div class="panel panel-primary">
+                                  <div class="panel-heading">Seleccione el tipo de productor</div>
+                                  <div class="panel-body">
+                                      <input type="radio" id="P1" name= "Prod_tipo" onchange="seleccion_pro()">
+                                      <label for="P1">Pequeño productor</label><br>
+                                      <input type="radio" id="P2" name= "Prod_tipo" onchange="seleccion_pro()">
+                                      <label for="P2">Mediano productor</label><br>
+                                      <input type="radio" id="P3" name= "Prod_tipo" onchange="seleccion_pro()">
+                                      <label for="P3">Gran Productor</label><br>          
+                                      <input type="radio" id="P4" name= "Prod_tipo" onchange="seleccion_pro()">
+                                      <label for="P4">Esquema asociativo</label><br>  
+                                      <label id="Desc_prod" style="color: navy; text-align:justify; font-weight: normal;">Seleccione una opción para proyectar el valor de la cuota para el pago del crédito durante un plazo determinado.</label><br> 
+                                  </div>
+                                </div>                    
+                            </td>
+                        </tr> 
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="col-md-6 col-sm-12">
+                <table style="text-align:left; width: 100%;">
+                    <tbody style="display: flex; justify-content: space-around; padding: 13px;">
+                    
+                        <tr style="width: 100%; display: flex; justify-content: space-around;">
+                            <td>
+                                <div class="panel panel-success">
+                                    <div class="panel-heading">Datos del crédito</div>
+                                    <div class="panel-body">
+                                        <label for="Ingreso">Tipo de inversión: </label>
+                                        <select id="Ingreso" style="width:250px;" onclick="Presentar()" disabled>
+                                            <option selected>Hornilla sin recuperador</option>
+                                            <option>Hornilla con recuperador</option>
+                                            <option>Otro valor</option>
+                                        </select> 
+                                        <br>
+                                        <label for="Valor_Financi">Valor a financiar</label>
+                                        <input id="Valor_Financi" value="$0" disabled></input>
+                                        <br>
+                                        <label for="Meses_Financi">Plazo</label>
+                                        <input id="Meses_Financi" type = "number" step="1" value="12" min="1" max="240" disabled></input> 
+                                        <br>
+                                        <label for="Amortiza">Período de amortización: </label>
+                                        <select id="Amortiza" style="width:200px;" onclick="Fijar_Valor()" disabled>
+                                            <option selected>Mensual</option>
+                                            <option >Bimensual</option>
+                                            <option >Trimestral</option>
+                                            <option >Semestral</option>
+                                            <option >Anual</option>
+                                        </select> 
+                                        <br>
+                                            <label for="IBR_Plus">IBR+:</label>
+                                            <input id="IBR_Plus" type = "number" step="0.1" value="0" min="0" max="100" disabled></input>  
+                                        <br>                                      
+                                        <button class="btn btn-success" id="Calc_IBR" onclick="Estimar_Cuota()" disabled>Calcular</button>
+                                  </div>
+                                </div>                   
+                            </td>
+                        </tr> 
+                    </tbody>
+                </table>
+            </div>
+        </div>           
+        <hr class="my-4"> 
+    </div>
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+      
+    <script>
+        var V_sin_rec = '{{a}}';
+        var V_con_rec = '{{b}}';
+        var contt_ini = 0;
+        
+        function Conv_Moneda(Numero_conv){
+            const formatter = new Intl.NumberFormat('en-US', {
+                                                     style: 'currency',
+                                                     currency: 'USD',
+                                                     minimumFractionDigits: 2
+                                                    })
+            let conv=formatter.format(Numero_conv);
+            return conv;
+        }
+        
+        function Presentar(){
+            let num1=Number(V_sin_rec);
+            let num2=Number(V_con_rec);            
+            let com = document.getElementById('Ingreso').selectedIndex;                                                          
+            if(com===0){document.getElementById("Valor_Financi").value=Conv_Moneda(num1);}
+            else if(com===1){document.getElementById("Valor_Financi").value=Conv_Moneda(num2);}
+            else{document.getElementById("Valor_Financi").value=Conv_Moneda(0);}        
+        }
+        
+        function seleccion_pro(){
+            let o1=document.getElementById('P1').checked;
+            let o2=document.getElementById('P2').checked;
+            let o3=document.getElementById('P3').checked;
+            let o4=document.getElementById('P4').checked;
+            if(o1===true){document.getElementById("IBR_Plus").value=6.7;document.getElementById('Desc_prod').innerHTML="Usted es pequeño productor si cuenta con activos menores a $ 258.021.384";}   
+            if(o2===true){document.getElementById("IBR_Plus").value=9.5;document.getElementById('Desc_prod').innerHTML="Usted es mediano productor si cuenta con activos menores a $ 4.542’630.000";} 
+            if(o3===true){document.getElementById("IBR_Plus").value=9.5;document.getElementById('Desc_prod').innerHTML="Usted es Gran productor si cuenta con activos superiores a $ 4.542’630.000";} 
+            if(o4===true){document.getElementById("IBR_Plus").value=4.8;document.getElementById('Desc_prod').innerHTML="Usted pertenece al esquema asociativo si corresponde al titular y responsable del pago del crédito de una asociación, cooperativa u organización del sector solidario, que agrupe a productores agropecuarios clasificados como pequeños y medianos.";} 
+            document.getElementById("Amortiza").disabled=false;
+            document.getElementById("Meses_Financi").disabled=false;
+            document.getElementById("Valor_Financi").disabled=false;
+            document.getElementById("Ingreso").disabled=false;
+            document.getElementById("Calc_IBR").disabled=false;
+            document.getElementById("IBR_Plus").disabled=false;
+            Presentar();
+        }
+        
+        function Fijar_Valor(){
+            var Amort=document.getElementById("Amortiza").selectedIndex;
+                 if(Amort===0){document.getElementById("Meses_Financi").max=240;}
+            else if(Amort===1){document.getElementById("Meses_Financi").max=120;}      
+            else if(Amort===2){document.getElementById("Meses_Financi").max=80;}    
+            else if(Amort===3){document.getElementById("Meses_Financi").max=40;}    
+            else if(Amort===4){document.getElementById("Meses_Financi").max=20;}
+        }
+        
+        function Estimar_Cuota(){
+            //Leer variables desde el HTML
+            var plazo=document.getElementById("Meses_Financi").value;
+            var Valor_f=document.getElementById("Valor_Financi").value;
+            var IBR=document.getElementById("IBR_Plus").value;
+            var Amort=document.getElementById("Amortiza").selectedIndex;
+            var Amortiza=1;
+            let interes_pag=0;
+            let per_Amor="Mes";
+                 if(Amort===0){Amortiza=1; per_Amor="Mes ";}
+            else if(Amort===1){Amortiza=2; per_Amor="Bimestre ";}      
+            else if(Amort===2){Amortiza=3; per_Amor="Trimestre ";}    
+            else if(Amort===3){Amortiza=6; per_Amor="Semestre ";}    
+            else if(Amort===4){Amortiza=12;per_Amor="Año ";}
+            else{Amortiza=1;}   
+            let titulos = ["Cuota N°", "Saldo inicial", "Cuota", "Interes", "Abono deuda", "Saldo final"];
+            var Interes=(2.914*Amortiza)+parseFloat(IBR);
+            var Interes_mes=((Interes/100.0)/12);
+            var capital=parseFloat(Valor_f.replace(/\$|,/g, ''));
+            //anticipados: =(capital*(1+interes)**-1)*interes/(1-(1+interes)^-plazo)
+            var Op1=(1+Interes_mes)**-1;
+            Op1=capital*Interes_mes;
+            var Op2=(1+Interes_mes)**(-1*parseFloat(plazo*Amortiza));
+            Op2=1-Op2;
+            var cuota=Op1/Op2;
+            cuota = cuota*Amortiza;
+            let abono_cap=capital/plazo;
+            
+            var body = document.getElementsByTagName("body")[0];
+            // Crea un elemento <table> y un elemento <tbody>
+            var tabla   = document.createElement("table");
+            var tblBody = document.createElement("tbody");
+            
+            //Crear titulo
+            var tit = document.createElement("H1");
+            var tet = document.createTextNode("Resultado de la simulación");
+            tit.appendChild(tet);             
+            tit.setAttribute("class", "display-4");
+            tit.setAttribute("id", "tit_amor");
+
+            // Crea las celdas
+            for (var i = 0; i < parseFloat(plazo)+1; i++) {
+            // Crea las hileras de la tabla
+                var hilera = document.createElement("tr");
+                if(i===0){
+                    for(var j=0;j < titulos.length; j++){
+                        var celda = document.createElement("td");
+                        var textoCelda = document.createTextNode(titulos[j]);
+                        celda.appendChild(textoCelda);
+                        hilera.appendChild(celda);                     
+                    } 
+                }
+                else{
+                    let interes_sal=capital*Interes_mes;
+                    cuota = abono_cap+interes_sal;
+                    let sal_final=capital-abono_cap;      
+                    for(var j=0;j < titulos.length; j++){
+                        let cel_text=" ";
+                        var celda = document.createElement("td");
+                        if(j===0){cel_text=String(per_Amor+i);}
+                        else if(j===1){cel_text=Conv_Moneda(Math.round(capital));}
+                        else if(j===2){cel_text=Conv_Moneda(Math.round(cuota));}
+                        else if(j===3){cel_text=Conv_Moneda(Math.round(interes_sal));}
+                        else if(j===4){cel_text=Conv_Moneda(Math.round(abono_cap));}
+                        else if(j===5){cel_text=Conv_Moneda(Math.round(sal_final));}
+                        else{cel_text="a";}
+                        var textoCelda = document.createTextNode(cel_text);
+                        celda.appendChild(textoCelda);
+                        hilera.appendChild(celda);                     
+                    }
+                    capital=sal_final; 
+                    interes_pag=interes_sal+interes_pag;
+                }
+                // agrega la hilera al final de la tabla (al final del elemento tblbody)
+                tblBody.appendChild(hilera);
+            }
+            // posiciona el <tbody> debajo del elemento <table>
+            tabla.appendChild(tblBody);
+            // appends <table> into <body>
+            if(contt_ini==1){
+                var tit_tab = document.getElementById("tit_amor");
+                var tabla_a = document.getElementById("Tab_Amortiza");
+                body.removeChild(tit_tab);
+                body.removeChild(tabla_a);
+                body.appendChild(tit);
+                body.appendChild(tabla);
+                }
+            else{
+                body.appendChild(tit);
+                body.appendChild(tabla);    
+            }
+
+
+            // modifica el atributo "border" de la tabla y lo fija a "2";
+            tabla.setAttribute("border", "2");
+            tabla.setAttribute("id", "Tab_Amortiza");  
+            tabla.setAttribute("class", "table table-striped");
+            contt_ini=1; 
+            
+        }
+    </script>   

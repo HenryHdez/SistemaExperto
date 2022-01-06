@@ -1,0 +1,50 @@
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <div class="jumbotron">
+        <h3 class="display-2">VISTA PREVIA DEL INFORME ECONÓMICO</h3>
+        <hr class="hr-titulo">
+        <h4 class="display-1">VALOR DE LA CONSTRUCCIÓN</h4>
+        <hr class="hr-titulo">
+        <table align="center">
+        
+            <tr class="row">
+               <td class="col-md-6 col-sm-12"> <b>{{ eti1[0] }}</b> </td>
+               <td class="col-md-6 col-sm-12 mb-4"> {{ eti2[0] }} </td>
+            </tr>        
+        {% for i in range(1,L1) %}
+            <tr class="row">
+               <td class="col-md-6 col-sm-12"> <b>{{ eti1[i] }}</b> </td>
+               <td class="col-md-6 col-sm-12 mb-4"> {{ eti2[i] }} </td>
+            </tr>
+        {% endfor %}
+        </table>
+        
+        <hr class="my-4">
+        <h4 class="container"><b>GASTOS DE FINANCIACIÓN</b></h4>
+        <hr class="my-4">
+        <table align="center">      
+        {% for i in range(0,L2) %}
+            <tr class="row">
+               <td class="col-md-4 col-sm-12"> <b>{{ eti3[i] }}</b> </td>
+               <td class="col-md-4 col-sm-12"> {{ eti4[i] }} </td>
+               <td class="col-md-4 col-sm-12 mb-4"> {{ eti5[i] }} </td>
+            </tr>
+        {% endfor %} 
+        </table>
+
+        <hr class="my-4">
+        <h4 class="container"><b>VALOR OPERATIVO</b></h4>
+        <hr class="my-4">
+        <table align="center">      
+        {% for i in range(0,L3) %}
+            <tr class="row">
+               <td class="col-md-4 col-sm-12"> <b>{{ eti6[i] }}</b> </td>
+               <td class="col-md-4 col-sm-12"> {{ eti7[i] }} </td>
+               <td class="col-md-4 col-sm-12 mb-4"> {{ eti8[i] }} </td>
+            </tr>
+        {% endfor %} 
+        </table>
+                
+    </div>
+
+

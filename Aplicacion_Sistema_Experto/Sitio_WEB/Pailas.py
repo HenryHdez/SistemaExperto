@@ -42,7 +42,7 @@ def Unir_Informe(nombre, ruta_carp, borrar_F):
     if(borrar_F!=2 and borrar_F!=3):
         for file in listaPdfs:
             merger.append(PdfFileReader(ruta_carp+file))
-        merger.write('static/'+nombre+'.pdf')
+        merger.write('static/Descarga/'+nombre+'.pdf')
     else:
         caracter=' '
         if(borrar_F==2):
@@ -52,14 +52,16 @@ def Unir_Informe(nombre, ruta_carp, borrar_F):
         for file in listaPdfs:
             if(file[0]==caracter):
                 merger.append(PdfFileReader(ruta_carp+file))
-        merger.write('static/'+nombre+'.pdf')
+        merger.write('static/Descarga/'+nombre+'.pdf')
     """Borrar datos cargados temporalmente"""
     if(borrar_F==1):
         try:
             rmtree('static/Temp')
+            rmtree('static/pdf00')
             rmtree('static/pdf01')
             rmtree('static/pdf02')
             os.mkdir('static/Temp')
+            os.mkdir('static/pdf00')
             os.mkdir('static/pdf01')
             os.mkdir('static/pdf02')
         except:
@@ -91,7 +93,7 @@ def Generar_portada():
     canvas.save()
     
 #Función para generar la parte escrita del informe
-def Generar_reporte(D1,D2):
+def Generar_reporte(D1, D2, Nombre_cli):
     """----------->>>>>>> Publicar Calculos por etapa<<<<<<<<<<<------------"""
     from reportlab.lib.pagesizes import letter
     from reportlab.pdfgen import canvas
@@ -140,10 +142,11 @@ def Generar_reporte(D1,D2):
     #Gruardas informe en pdf
     Generar_portada()
     canvas.save()
-    Unir_Informe('Informe_WEB', 'static/pdf01/', 2)
-    Unir_Informe('Planos_WEB', 'static/pdf01/', 3)
-    Unir_Informe('Calculos_WEB', 'static/pdf02/', 0)
-    Unir_Informe('Informe', 'static/pdf01/', 1)
+    Unir_Informe('Resumen'+Nombre_cli, 'static/pdf00/', 2)
+    Unir_Informe('Financiero'+Nombre_cli, 'static/pdf01/', 2)
+    Unir_Informe('Planos_WEB'+Nombre_cli, 'static/pdf01/', 3)
+    Unir_Informe('Calculos_WEB'+Nombre_cli, 'static/pdf02/', 0)
+    Unir_Informe('Informe'+Nombre_cli, 'static/pdf01/', 1)
     
 def Dimensiones_parrilla(Ancho_seccion, Longitud_Seccion, Secciones_totales, Ancho_camara, Longitud_Camara, Altura_camara):
     global Dimensiones_Camara

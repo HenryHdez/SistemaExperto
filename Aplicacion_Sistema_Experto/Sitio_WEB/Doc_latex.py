@@ -426,7 +426,7 @@ class Documento_Latex():
     def generar_pdf():  
         global doc
         doc.generate_pdf('static/Latex/A0_Cotizacion', clean_tex=False) 
-        shutil.copy('static/Latex/A0_Cotizacion.pdf', 'static/pdf01/A0_Cotizacion.pdf')
+        shutil.copy('static/Latex/A0_Cotizacion.pdf', 'static/pdf00/A0_Cotizacion.pdf')
 
 
 

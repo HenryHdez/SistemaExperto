@@ -30,18 +30,37 @@
         <h1 class="display-4">INFORME</h1>
         <hr class="hr-titulo">
         <p align="justify" class="lead">Esta es una vista preliminar del informe, utilice los botones con números para ver más información o los botones de descarga e impresión para guardar la información de interes (NOTA: si requiere generar un nuevo informe vuelva a iniciar la aplicación).</p>
-        <hr class="my-4">    
+        <hr class="my-4">   
+         
         <nav aria-label="...">
           <ul class="pagination pagination-lg justify-content-center">
-            <li class="page-item"><a class="page-link" href="informe1" target="pag">1</a></li>
-            <li class="page-item"><a class="page-link" href="informe3" target="pag">2</a></li>
-            <li class="page-item"><a class="page-link" href="informe4" target="pag">3</a></li>
-            <li class="page-item"><a class="page-link" href="informe5" target="pag">4</a></li>
-            <!--<li class="page-item"><a class="page-link" href="informe5" target="pag">5</a></li>-->
+            <li class="page-item"><a class="page-link" onclick="Ocultar_iframe1();" target="pag" href="Economico1">Proyección económica</a></li>
+            <li class="page-item"><a class="page-link" onclick="Ocultar_iframe2();" target="pag" href={{Nom2}}>Pre-informe de construcción</a></li>
+            <li class="page-item"><a class="page-link" onclick="Ocultar_iframe2();" target="pag" href={{Nom3}}>Ensamblaje</a></li>
           </ul>
-        </nav>  
-             
-        <iframe class="m-auto shadow-sm p-3 mb-5 bg-light rounded" id="frame123" width="100%" height="900" src="informe1" name="pag" marginheight="0" marginwidth="0" scrolling="yes"></iframe>
+        </nav>
+        <hr class="my-4"> 
+
+        <nav aria-label="..." style="display: block" id="Nav1" >
+          <ul class="pagination pagination-lg justify-content-center">
+            <li class="page-item"><a class="page-link" href="Economico1" target="pag">A</a></li>
+            <li class="page-item"><a class="page-link" href={{Nom1}} target="pag">B</a></li>
+            <li class="page-item"><a class="page-link" href="Economico3" target="pag">C</a></li>
+            <li class="page-item"><a class="page-link" href="Economico4" target="pag">D</a></li>
+          </ul>
+        </nav> 
+                
+        <!--<nav aria-label="..." style="display: none" id="Nav2">-->
+        <!--  <ul class="pagination pagination-lg justify-content-center">-->
+        <!--    <li class="page-item"><a class="page-link" href="informe1" target="pag">1</a></li>-->
+        <!--    <li class="page-item"><a class="page-link" href="informe3" target="pag">2</a></li>-->
+        <!--    <li class="page-item"><a class="page-link" href="informe4" target="pag">3</a></li>-->
+        <!--    <li class="page-item"><a class="page-link" href="informe5" target="pag">4</a></li>-->
+        <!--  </ul>-->
+        <!--</nav>-->  
+                
+        <!--<iframe class="m-auto shadow-sm p-3 mb-5 bg-light rounded" id="Econo1" display="block" width="100%" height="900" src="Economico1" name="pag1" marginheight="0" marginwidth="0" scrolling="yes"></iframe>     -->
+        <iframe class="m-auto shadow-sm p-3 mb-5 bg-light rounded" id="frame123" display="none" width="100%" height="900" src="Economico1" name="pag" marginheight="0" marginwidth="0" scrolling="yes"></iframe>
         <br/>
         <center>
             <p><b>IMPRIMA LA VISTA ACTUAL O DESCARGUE UNA VERSIÓN EXTENDIDA DEL DISEÑO DE LA HORNILLA CON LOS SIGUIENTES BOTONES.</b></p>
@@ -52,14 +71,49 @@
             <!--  </svg> -->
             <!--  Imprimir -->
             <!-- </button> -->
-            <a class="btn-usuario-corp mx-1" download="Informe" href="{{url_for('static', filename='/Informe.pdf')}}">
+            <a class="btn-usuario-corp mx-1" download="Inf_Economico" href={{Nom1}}>
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
                 <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
                 <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
               </svg>
-              Descargar
+              Análisis económico
             </a>
+            
+            <a class="btn-usuario-corp mx-1" download="Inf_Hornilla" href={{Nom2}}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+              </svg>
+              Descripción de la hornilla
+            </a>
+            
+            <a class="btn-usuario-corp mx-1" download="Inf_Planos" href={{Nom3}}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+              </svg>
+              Diagramas de construcción
+            </a>            
         </center>
+
+        <script type="text/javascript">
+               
+         function Ocultar_iframe1(){                            
+              document.getElementById("Nav1").style.display="block";
+              //document.getElementById("Nav2").style.display="block"; 
+			}     
+
+         function Ocultar_iframe2(){                            
+              document.getElementById("Nav1").style.display="none";
+              //document.getElementById("Nav2").style.display="block"; 
+			}     
+
+         function Ocultar_iframe3(){                            
+              document.getElementById("Nav1").style.display="none";
+              //document.getElementById("Nav2").style.display="none"; 
+			}     
+        </script>
+        
 {% endblock %}
 
 

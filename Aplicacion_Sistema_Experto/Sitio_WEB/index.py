@@ -17,13 +17,13 @@ import os                                                #Hereda funciones del s
 import base64                                            #Codifica contenido en base64 para su almacenamiento en una WEB
 import pymssql                                           #Interfaz de conexión con la base de datos
 import Doc_latex                                         #Gestión de documentos en LATEX en PYTHON debe tener preinstalado MIKTEX
-'''---Componentes y lbrería de elaboración propia---'''
+'''---Componentes y librería de elaboración propia---'''
 import Diseno_inicial                                    #Calculo preliminar de la hornilla
 import Costos_funcionamiento                             #Calculo del costo financiero de la hornilla
 import Pailas                                            #Calculo de las dimensiones de las pailas
 import Gases                                             #Calculo de las propiedades de los gases
 import Areas                                             #Calcular Areas
-import threading
+import random
 import numpy as np
 
 #Generación de la interfaz WEB
@@ -35,40 +35,43 @@ try:
 except OSError: 
     print('Directorio existente')
 
-def Espera():
-    global Lista_clientes
-    global Estado_Cliente
-    i=0
-    while True:
-        sleep(280)
-        j=len(Lista_clientes)
-        print(j)
-        while j>0 and Estado_Cliente==False:
-            #Limpiar directorios de uso temporal
-            try:
-                rmtree('static/Temp')
-                os.mkdir('static/Temp')
-            except:
-                os.mkdir('static/Temp')
-            try:    
-                rmtree('static/pdf01')
-                rmtree('static/pdf02')
-                os.mkdir('static/pdf01')
-                os.mkdir('static/pdf02')
-            except:
-                os.mkdir('static/pdf01')
-                os.mkdir('static/pdf02')
-            try:
-                generar_valores_informe(Lista_clientes[0][0])
-                sleep(10)
-                Lista_clientes.pop(0)
-                sleep(10)
-                i=i+1
-            except:
-                print("Error")
-                j=0
-        j=0
-        i=0
+#def Espera():
+#    global Lista_clientes
+#    global Estado_Cliente
+#    i=0
+#    while True:
+#        sleep(280)
+#        j=len(Lista_clientes)
+#        print(j)
+#        while j>0 and Estado_Cliente==False:
+#            #Limpiar directorios de uso temporal
+#            try:
+#                rmtree('static/Temp')
+#                os.mkdir('static/Temp')
+#            except:
+#                os.mkdir('static/Temp')
+#            try:  
+#                rmtree('static/pdf00')
+#                rmtree('static/pdf01')
+#                rmtree('static/pdf02')
+#                os.mkdir('static/pdf00')
+#                os.mkdir('static/pdf01')
+#                os.mkdir('static/pdf02')
+#            except:
+#                os.mkdir('static/pdf00')
+#                os.mkdir('static/pdf01')
+#                os.mkdir('static/pdf02')
+#            try:
+#                generar_valores_informe(Lista_clientes[0][0])
+#                sleep(10)
+#                Lista_clientes.pop(0)
+#                sleep(10)
+#                i=i+1
+#            except:
+#                print("Error")
+#                j=0
+#        j=0
+#        i=0
    
 '''---Funciones de direccionamiento en la interfaz WEB---'''
 #Eliminar datos cargados en cache al actualizar la página.
@@ -78,6 +81,7 @@ def after_request(response):
     response.headers["Expires"] = '0'
     response.headers["Pragma"] = "no-cache"
     return response
+
 #Directorio raíz (página principal)
 @app.route('/')
 def index():
@@ -209,7 +213,7 @@ def Diseño_Hornilla(Nombre_Rot, Ite):
         conta=conta+1
     
 #Función para crear los diccionarios a partir de los calculos de la aplicación
-def generar_valores_informe(Cliente_actual):
+def generar_valores_informe(Cliente_actual, Nombre_cli):
     #----------->>>>>>>>>>>Variables globales<<<<<<<<<<<<<<<---------
     global df
     global altura_media
@@ -415,26 +419,26 @@ def generar_valores_informe(Cliente_actual):
     Doc_latex.Documento_Latex.generar_pdf()
     sleep(5)
     """Creación del pdf"""
-    Pailas.Generar_reporte(Diccionario,Diccionario_2)
+    Pailas.Generar_reporte(Diccionario, Diccionario_2, Nombre_cli)
 
     df2 = pd.DataFrame([[key, Diccionario_2[key]] for key in Diccionario_2.keys()])
     df2.to_excel('static/Reporte2.xlsx')
 
     """>>>>>>>>>>>>>>>>Actualizar base de datos<<<<<<<<<<<<<<"""        
-    usuarios = (Diccionario['Nombre de usuario'],
-                Diccionario['Correo'],
-                int(float(Diccionario['Telefono'])),
-                Diccionario['Pais'], 
-                Diccionario['Departamento'],
-                Diccionario['Ciudad'], 
-                Crear_archivo_base_64('static/Reporte1.xlsx'), 
-                Crear_archivo_base_64('static/Reporte2.xlsx'), 
-                Crear_archivo_base_64('static/Reporte3.xlsx'), 
-                Crear_archivo_base_64("static/Informe.pdf")
-                )
-    Operaciones_db(2,tuple(usuarios))        #Usar base de datos
-    sleep(1)
-    Enviar_msn(str(Diccionario['Correo']))
+#    usuarios = (Diccionario['Nombre de usuario'],
+#                Diccionario['Correo'],
+#                int(float(Diccionario['Telefono'])),
+#                Diccionario['Pais'], 
+#                Diccionario['Departamento'],
+#                Diccionario['Ciudad'], 
+#                Crear_archivo_base_64('static/Reporte1.xlsx'), 
+#                Crear_archivo_base_64('static/Reporte2.xlsx'), 
+#                Crear_archivo_base_64('static/Reporte3.xlsx'), 
+#                Crear_archivo_base_64("static/Informe.pdf")
+#                )
+#    Operaciones_db(2,tuple(usuarios))        #Usar base de datos
+#    sleep(1)
+#    Enviar_msn(str(Diccionario['Correo']))
     
 #Filtrar caracteres desconocidos de las cadenas de texto de los archivos temporales
 def Convertir(string): 
@@ -457,11 +461,81 @@ def Convertir_lista(li,ini):
             li[i]
     return(li)
     
+#>>>>>>>>>>>------------Enlaces para la generación del informe económico------<<<<<<<<<<
+
+#Segmento 4 del informe (presentación de la vista previa del informe financiero)
+@app.route('/Economico4')
+def Eco4():
+    Valores_Informe=pd.read_excel('static/Graficas/Temp6.xlsx',skipcolumn = 0,)
+    Consolidado = Valores_Informe.iloc[0].values
+    l1=Convertir(Consolidado[1])
+    l2=Convertir(Consolidado[2])
+    Funcionamie = Valores_Informe.iloc[1].values
+    l5=Convertir(Funcionamie[1])
+    l6=Convertir(Funcionamie[2])
+    l6a=l6[0::2]
+    l6b=l6[1::2]
+    Depreciacio = Valores_Informe.iloc[2].values
+    l3=Convertir(Depreciacio[1])
+    l4=Convertir(Depreciacio[2])
+    l4a=l4[0::2]
+    l4b=l4[1::2]
+    l2=Convertir_lista(l2,1)
+    l4a[1:7]=Convertir_lista(l4a[1:7],3)
+    l4b[1:7]=Convertir_lista(l4b[1:7],3)
+    l4a[8:11]=Convertir_lista(l4a[8:11],1)
+    l4b[8:11]=Convertir_lista(l4b[8:11],1)
+    l6a=Convertir_lista(l6a,2)
+    l6b=Convertir_lista(l6b,2)
+    return render_template('Economico4.html',eti1=l1,eti2=l2,L1=len(l1),
+                                           eti3=l3,eti4=l4a,eti5=l4b,L2=len(l3),
+                                           eti6=l5,eti7=l6a,eti8=l6b,L3=len(l5)) 
+    
+#Segmento 3 del informe (presentación de los modelos de molino)
+@app.route('/Economico3')
+def Eco3():
+    global Diccionario_3
+    global Diccionario_4
+    return render_template('Economico3.html',result=Diccionario_3, Molinos=Diccionario_4) 
+
+#Segmento 2 del informe (presentación de las caracteristicas de la caña)
+@app.route('/Economico2')
+def Eco2():
+    global Formulario_2_Etiquetas
+    global Formulario_2_Valores
+    global Directorio
+    return render_template('Economico2.html', 
+                           Etiquetas = Formulario_2_Etiquetas, 
+                           Valores = Formulario_2_Valores,
+                           Dir = Directorio,
+                           Cant_fotos=len(Directorio))  
+
+#Segmento 2 del informe (presentación de las caracteristicas de la caña)
+@app.route('/Economico1')
+def Eco1():
+    Valores_Informe=pd.read_excel('static/Graficas/Temp6.xlsx',skipcolumn = 0,)
+    Consolidado = Valores_Informe.iloc[0].values
+    l1=Convertir(Consolidado[1])
+    l2=Convertir(Consolidado[2])
+    Funcionamie = Valores_Informe.iloc[1].values
+    l5=Convertir(Funcionamie[1])
+    l6=Convertir(Funcionamie[2])
+    
+    lon=len(l1)
+    a=l2[lon-1]
+    b=l2[lon-2]
+    #[l1[lon-1], l1[lon-2]]
+    #b=[l2[lon-1], l2[lon-2]]
+
+    return render_template('Economico1.html',
+                           a=a ,b=b
+                           ) 
+
 #>>>>>>>>>>>------------Enlaces para la generación del informe------<<<<<<<<<<
 #Segmento 5 del informe (presentación de la vista previa del pdf)
 @app.route('/informe5')
 def infor5():
-    return render_template('informe5.html') 
+    return render_template('informe5.html')
 
 #Segmento 4 del informe (presentación de la vista previa del informe financiero)
 @app.route('/informe4')
@@ -538,9 +612,34 @@ def infor1():
                            Etiquetas = lista_etiquetas_filtradas, 
                            Valores = lista_valores_filtrados)     
 
+
+def Arch_hilo():
+    try:
+        rmtree('static/Temp')
+        os.mkdir('static/Temp')
+    except:
+        os.mkdir('static/Temp')
+    try:  
+        rmtree('static/pdf00')
+        os.mkdir('static/pdf00')
+    except:
+        os.mkdir('static/pdf00')
+    try:  
+        rmtree('static/pdf01')
+        os.mkdir('static/pdf01')
+    except:
+        os.mkdir('static/pdf01')
+    try:  
+        rmtree('static/pdf02')
+        os.mkdir('static/pdf02')
+    except:
+        os.mkdir('static/pdf02')
+    
 #Segmento 1 del informe (presentación de los datos del usuario)    
 @app.route('/informe', methods = ['POST','GET'])
 def infor():
+    global cliente
+    global cuenta_cliente
     global result
     global Lista_clientes
     global Estado_Cliente
@@ -548,30 +647,71 @@ def infor():
     #Continuar ejecución
     if request.method == 'POST':
         result = request.form
-        Lista_clientes.append([result])
-        if(len(Lista_clientes)<=1):
-            try:
-                rmtree('static/Temp')
-                os.mkdir('static/Temp')
-            except:
-                os.mkdir('static/Temp')
-            try:    
-                rmtree('static/pdf01')
-                rmtree('static/pdf02')
-                os.mkdir('static/pdf01')
-                os.mkdir('static/pdf02')
-            except:
-                os.mkdir('static/pdf01')
-                os.mkdir('static/pdf02')
-            Estado_Cliente=True
-            generar_valores_informe(Lista_clientes[0][0])
-            sleep(5)
-            Lista_clientes.pop(0)
-            sleep(5)
-            Estado_Cliente=False
-            return render_template('informe.html') 
+        cliente=cliente+1
+        temp_cli="c"+str(cliente)
+        cuenta_cliente.append(temp_cli)
+        Lista_clientes.append(result)
+        
+        if(cliente>1):
+            globals()[temp_cli]=True
         else:
-            return render_template('respuesta.html', rta="El informe generado con HornillAPP llegará a su correo electrónico en una hora aproximadamente.")
+            globals()[temp_cli]=False
+            
+        while(globals()[temp_cli]==True):
+            print("Espere: "+temp_cli+"Estado="+str(globals()[temp_cli]))
+            print(cliente)
+            print(cuenta_cliente)
+            sleep(1)
+        
+        Nombre_cli="cli_"+str(random.randint(0, 100))
+        Arch_hilo()
+        generar_valores_informe(Lista_clientes[0], Nombre_cli)
+        
+        try:
+            Lista_clientes.pop(0)
+            cuenta_cliente.pop(0)
+            globals()[cuenta_cliente[0]]=False     
+        except:
+            print("Cliente no disponible")   
+        cliente=cliente-1
+        
+        return render_template('informe.html', 
+                               Nom1="/static/Descarga/Financiero"+Nombre_cli+".pdf",
+                               Nom2="/static/Descarga/Resumen"+Nombre_cli+".pdf",
+                               Nom3="/static/Descarga/Planos_WEB"+Nombre_cli+".pdf"
+                               )
+#        Lista_clientes.append([result])
+#        if(len(Lista_clientes)<=1):
+#            try:
+#                rmtree('static/Temp')
+#                os.mkdir('static/Temp')
+#            except:
+#                os.mkdir('static/Temp')
+#            try:  
+#                rmtree('static/pdf00')
+#                os.mkdir('static/pdf00')
+#            except:
+#                os.mkdir('static/pdf00')
+#            try:  
+#                rmtree('static/pdf01')
+#                os.mkdir('static/pdf01')
+#            except:
+#                os.mkdir('static/pdf01')
+#            try:  
+#                rmtree('static/pdf02')
+#                os.mkdir('static/pdf02')
+#            except:
+#                os.mkdir('static/pdf02')
+#                
+#            Estado_Cliente=True
+#            generar_valores_informe(Lista_clientes[0][0])
+#            sleep(5)
+#            Lista_clientes.pop(0)
+#            sleep(5)
+#            Estado_Cliente=False
+#            return render_template('informe.html') 
+#        else:
+#            return render_template('respuesta.html', rta="El informe generado con HornillAPP llegará a su correo electrónico en una hora aproximadamente.")
         
         
 
@@ -759,9 +899,9 @@ def contac_rta():
             Mensaje_HTML = request.form['mensaje_usuario']
             # Crear el objeto mensaje
             mensaje = MIMEMultipart()             
-            mensaje['From']     = 'hornillapp@agrosavia.co'       #Correo de prueba para enviar algo desde la página
-            mensaje['To']   = 'hornillapp@agrosavia.co'  #Correo funcionario a cargo        
-            mensaje['Subject'] = 'Información clientes'  #Correo funcionario a cargo   
+            mensaje['From']    = 'hornillapp@agrosavia.co'  #Correo de prueba para enviar algo desde la página
+            mensaje['To']      = 'hornillapp@agrosavia.co'  #Correo funcionario a cargo        
+            mensaje['Subject'] = 'Información clientes'     #Correo funcionario a cargo   
             #Cuerpo del mensaje
             msn = ('Este mensaje fue enviado por: '+Nombre+'\n'
                   +'Responder al correo electronico: '+Correo+'\n'
@@ -793,10 +933,16 @@ def contac_rta():
 
 #Función principal    
 if __name__ == '__main__':
+    global cliente
+    global cuenta_cliente
     global Lista_clientes
-    global Estado_Cliente
-    Estado_Cliente=False
+    cliente = 0
+    cuenta_cliente = []
     Lista_clientes=[]
-    t = threading.Thread(target=Espera)
-    t.start()
+    
+#    global Estado_Cliente
+#    Estado_Cliente=False
+
+#    t = threading.Thread(target=Espera)
+#    t.start()
     app.run(host='0.0.0.0', port='7000')
