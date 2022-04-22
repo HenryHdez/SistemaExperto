@@ -71,7 +71,7 @@ pymssql==2.2.2
 sqlalchemy
 pyOpenSSL==19.0.0
 pyparsing==2.4.7
-PyPDF2==1.26.0
+PyPDF2==1.27.5
 pyrsistent==0.16.0
 pyshp==2.1.0
 PySocks==1.7.1
