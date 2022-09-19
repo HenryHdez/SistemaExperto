@@ -9,8 +9,8 @@
         </p>        
         <ol>
             <li>Seleccione el tipo de productor, en el que usted se encuentra calificado.</li>
-            <li>Elija el plazo hasta 240 meses (20 años)</li>
-            <li>Escoja el periodo de amortización (mensual, bimensual, Trimestral, semestral, anual)</li>
+            <li>Elija el plazo hasta 240 meses (20 años).</li>
+            <li>Escoja el periodo de amortización (mensual, bimensual, Trimestral, semestral, anual).</li>
             <li>Revise en pantalla los detalles de tipo de productor, valor del crédito, plazo, y periodo de amortización y haga clic en “Calcular” para visualizar el detalle.</li>
             <li>Elija una opción para generar un pdf, imprimir el detalle o enviar los resultados al correo.</li>
         </ol>
@@ -54,9 +54,11 @@
                                     <div class="panel-body">
                                         <label for="Ingreso">Tipo de inversión: </label>
                                         <select id="Ingreso" style="width:250px;" onclick="Presentar()" disabled>
-                                            <option selected>Hornilla sin recuperador</option>
-                                            <option>Hornilla con recuperador</option>
-                                            <option>Otro valor</option>
+                                            <option value="0" selected>Hornilla sin recuperador</option>
+                                            {% if(Activa==0) %}                                            
+                                                <option value="1">Hornilla con recuperador</option>
+                                            {% endif %}
+                                            <option value="2">Otro valor</option>
                                         </select> 
                                         <br>
                                         <label for="Valor_Financi">Valor a financiar</label>
@@ -111,9 +113,9 @@
         function Presentar(){
             let num1=Number(V_sin_rec);
             let num2=Number(V_con_rec);            
-            let com = document.getElementById('Ingreso').selectedIndex;                                                          
-            if(com===0){document.getElementById("Valor_Financi").value=Conv_Moneda(num1);}
-            else if(com===1){document.getElementById("Valor_Financi").value=Conv_Moneda(num2);}
+            let com = document.getElementById('Ingreso').value;                                                          
+            if(com==="0"){document.getElementById("Valor_Financi").value=Conv_Moneda(num1);}
+            else if(com==="1"){document.getElementById("Valor_Financi").value=Conv_Moneda(num2);}
             else{document.getElementById("Valor_Financi").value=Conv_Moneda(0);}        
         }
         

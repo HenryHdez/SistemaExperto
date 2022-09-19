@@ -16,6 +16,9 @@ import pandas as pd
 import shutil
 global Cantidad_pailas
 global Lista_de_pailas
+global Cantidad_pailas_rec
+global Lista_de_pailas_rec
+import Diagramas_mecanicos
 #Cantidad_pailas[0] es plana
 #Cantidad_pailas[1] es plana sin aletas
 #Cantidad_pailas[2] es pirotubular circular
@@ -29,6 +32,8 @@ global Lista_de_pailas
 #Cantidad_pailas[10] es acanalada SA
 Cantidad_pailas=[0,0,0,0,0,0,0,0,0,0,0]
 Lista_de_pailas=[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ']
+Cantidad_pailas_rec=[0,0,0,0,0,0,0,0,0,0,0]
+Lista_de_pailas_rec=[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ']
 "Librería para realizar los calculos de la geometría de las pailas de una hornilla"
 
 """--->>>Generar informe en pdf<<<<---"""
@@ -56,97 +61,35 @@ def Unir_Informe(nombre, ruta_carp, borrar_F):
     """Borrar datos cargados temporalmente"""
     if(borrar_F==1):
         try:
+            print('Sistema ocupado2')
             rmtree('static/Temp')
             rmtree('static/pdf00')
             rmtree('static/pdf01')
             rmtree('static/pdf02')
+            rmtree('static/pdf03')
+            rmtree('static/pdf04')
             os.mkdir('static/Temp')
             os.mkdir('static/pdf00')
             os.mkdir('static/pdf01')
             os.mkdir('static/pdf02')
+            os.mkdir('static/pdf03')
+            os.mkdir('static/pdf04')
         except:
             print('Sistema ocupado')
-    
-#Función para generar las portadas
-def Generar_portada():
-    #Espacio de trabajo disponible desde 20 hasta 650
-    from reportlab.lib.pagesizes import letter
-    #Sección 2
-    from reportlab.pdfgen import canvas
-    canvas = canvas.Canvas("static/pdf01/B0_portada.pdf", pagesize=letter)
-    Fondo(canvas)
-    canvas.drawImage('static/Iconos/Fondo_otros.png', 50, 220, width=500, height=350)
-    canvas.setFont('Helvetica-Bold', 30)
-    canvas.drawString(20,435,'                         SECCIÓN 2:     ') 
-    canvas.drawString(20,400,'              DIAGRAMAS MECÁNICOS   ') 
-    canvas.showPage() #Salto de página    
-    canvas.save()
-    #Sección 3
-    from reportlab.pdfgen import canvas
-    canvas = canvas.Canvas("static/pdf02/C0_portada.pdf", pagesize=letter)
-    Fondo(canvas)
-    canvas.drawImage('static/Iconos/Fondo_otros.png', 50, 220, width=500, height=350)
-    canvas.setFont('Helvetica-Bold', 30)
-    canvas.drawString(20,390,'                         SECCIÓN 1:     ') 
-    canvas.drawString(20,355,'  INFORMACIÓN TÉCNICA DETALLADA   ') 
-    canvas.showPage() #Salto de página    
-    canvas.save()
-    
+       
 #Función para generar la parte escrita del informe
 def Generar_reporte(D1, D2, Nombre_cli):
-    """----------->>>>>>> Publicar Calculos por etapa<<<<<<<<<<<------------"""
-    from reportlab.lib.pagesizes import letter
-    from reportlab.pdfgen import canvas
-    canvas = canvas.Canvas("static/pdf02/C2_informe.pdf", pagesize=letter)
-    #Estructura para imprimir los calculos por Etapa
-    Fondo(canvas)
-    puntero_v=450
-    canvas.setFont('Helvetica-Bold', 12)
-    canvas.drawString(200,700,'--->>>PARÁMETROS DE DISEÑO<<<---')  
-    Etiquetas=list(dict.keys(D2))
-    Etiquetas.insert(0,'Orden de las pailas según el flujo del gas')
-    for i in range(len(Etiquetas)-1):
-        canvas.saveState()
-        canvas.translate(puntero_v, 680)
-        canvas.rotate(-90)
-        canvas.setFont('Helvetica-Bold', 12)
-        canvas.drawString(0, 0, str(Etiquetas[i]))
-        puntero_v=puntero_v-25
-        canvas.restoreState()     
-    #Función para dibujar los valores de la Tabla    
-    Valores=list(dict.values(D2))
-    puntero_h=400
-    for i in range(int(D2['Etapas'])): #Etapas
-        puntero_v=450
-        canvas.saveState()
-        canvas.translate(puntero_v, puntero_h)
-        canvas.rotate(-90)
-        canvas.setFont('Helvetica-Bold', 12)
-        canvas.drawString(0, 0, str(int(D2['Etapas'])-i)) #orden segun el flujo
-        puntero_v=puntero_v-25
-        canvas.restoreState()
-        for j in range(13):#Literales de la tabla
-            canvas.saveState()
-            canvas.translate(puntero_v, puntero_h)
-            canvas.rotate(-90)
-            canvas.drawString(0, 0, str(Valores[j][i]))
-            puntero_v=puntero_v-25
-            canvas.restoreState()
-        if(puntero_h<200):
-            puntero_h=700
-            canvas.showPage()
-            Fondo(canvas)
-            canvas.setFont('Helvetica-Bold', 12)
-        else:
-            puntero_h=puntero_h-80
-    #Gruardas informe en pdf
-    Generar_portada()
-    canvas.save()
+    #Guardas informe en pdf
+    Diagramas_mecanicos.Documento_Latex.portada(0)
+    Diagramas_mecanicos.Documento_Latex.generar_pdf('B0_portada', 'pdf01/')
+    Diagramas_mecanicos.Documento_Latex.portada(1)
+    Diagramas_mecanicos.Documento_Latex.generar_pdf('B0_portada', 'pdf04/')
+    #Unir informes
     Unir_Informe('Resumen'+Nombre_cli, 'static/pdf00/', 2)
-    Unir_Informe('Financiero'+Nombre_cli, 'static/pdf01/', 2)
-    Unir_Informe('Planos_WEB'+Nombre_cli, 'static/pdf01/', 3)
-    Unir_Informe('Calculos_WEB'+Nombre_cli, 'static/pdf02/', 0)
-    Unir_Informe('Informe'+Nombre_cli, 'static/pdf01/', 1)
+    Unir_Informe('Financiero1'+Nombre_cli, 'static/pdf01/', 2)
+    Unir_Informe('Financiero2'+Nombre_cli, 'static/pdf03/', 2)
+    Unir_Informe('Planos_WEB1'+Nombre_cli, 'static/pdf01/', 3)
+    Unir_Informe('Planos_WEB2'+Nombre_cli, 'static/pdf04/', 1)
     
 def Dimensiones_parrilla(Ancho_seccion, Longitud_Seccion, Secciones_totales, Ancho_camara, Longitud_Camara, Altura_camara):
     global Dimensiones_Camara
@@ -179,13 +122,16 @@ def Fijar_pailas(canvas, Espacio, Desplazamiento1, UP, Factor, Etapas, Vector_En
             canvas.drawImage('static/Vistas/Planta/Arquitectonico1b.jpg', 0, 0, width=970, height=628)
         else:
             canvas.drawImage('static/Vistas/Planta/Arquitectonico3b.jpg', 0, 0, width=970, height=628) 
+    
     #Fija pailas    
     if(Tipo_Hornilla=='cámara Ward' or Tipo_Hornilla=='cámara plana'):
         for i in range (Etapas):
             if(itera==2):
                 canvas.setFont('Helvetica-Bold', 10)
                 canvas.drawString(Desplazamiento+12, UP-25, 'Paila: '+str(i+1))                              
-                if(i==2):
+                if(i==2 and Etapas!=4):
+                    canvas.drawString(Desplazamiento-5, UP+65, 'Concentradora')
+                elif(i==1 and Etapas==4):
                     canvas.drawString(Desplazamiento-5, UP+65, 'Concentradora')
                 elif(i==3 and Etapas>6):
                     canvas.drawString(Desplazamiento-5, UP+65, 'Concentradora')    
@@ -200,7 +146,7 @@ def Fijar_pailas(canvas, Espacio, Desplazamiento1, UP, Factor, Etapas, Vector_En
                     canvas.drawString(Desplazamiento-5, UP+65, 'Clarificadora')
                 else:
                     canvas.drawString(Desplazamiento-5, UP+65, 'Evaporadora')
-                    
+            
             if Vector_Entrada[i][0]==1:
                 #Nombre_ducto='static/Vistas/Ductos/'+'Dplana_superior.png'
                 if Vector_Entrada[i][1]==True:
@@ -238,6 +184,7 @@ def Fijar_pailas(canvas, Espacio, Desplazamiento1, UP, Factor, Etapas, Vector_En
             canvas=Dibujar_Rotulo(canvas, 'Representación de la hornilla', 'Pictórico')
             Desplazamiento=Desplazamiento+Espacio-Factor
             canvas.drawImage('static/Vistas/Superior/'+'Plana_sin_aletas.png', Desplazamiento, UP, width=Espacio*0.19, height=Espacio*0.19)  
+    
     else:
         #Doble
         for i in range (Etapas):
@@ -309,145 +256,165 @@ def Fijar_pailas(canvas, Espacio, Desplazamiento1, UP, Factor, Etapas, Vector_En
     if(itera<=1):
         canvas.showPage()
     return canvas
-    
-def Dibujar_planta(Vector_Entrada, Tipo_Hornilla, Etapas, Nombres_Ubicaciones, Capacidad_hornilla, Altura_UP, Ancho_UP, Lista_Falcas, Diccionario):
+   
+def Dibujar_planta(Vector_Entrada, Tipo_Hornilla, Etapas, Nombres_Ubicaciones, Capacidad_hornilla, Altura_UP, Ancho_UP, Lista_Falcas, Diccionario, Rec_opt):
     global Dimensiones_Pailas
     global Dimensiones_Camara
-#    print(Dimensiones_Pailas)
-#    print(Vector_Entrada)
-#    print(Tipo_Hornilla)
-#    print(Etapas)
-    for inter in range(2):      
+    
+    from reportlab.lib.pagesizes import letter
+    from reportlab.pdfgen import canvas
+    dire_pin="static/pdf01/B1_Etapa_Planta_WEB.pdf"
+    dire_pin_2="static/pdf04/B1_Etapa_Planta_WEB_B.pdf"
+    Aux_etapas=Etapas
+    Aux_Vec=Vector_Entrada 
+    if(Rec_opt==0):
+        dire_pin="static/pdf01/B1_Etapa_Planta_WEB_A.pdf"   
+        dire_pin_2="static/pdf01/B1_Etapa_Planta_WEB_B.pdf"  
+    else:
+        dire_pin="static/pdf04/B1_Etapa_Planta_WEB_A.pdf" 
+        dire_pin_2="static/pdf04/B1_Etapa_Planta_WEB_B.pdf" 
+    canvas = canvas.Canvas(dire_pin, pagesize=letter)
+    canvas.setPageSize((970,628))
+    
+    if(Tipo_Hornilla=='cámara Ward' or Tipo_Hornilla=='cámara plana'):
+        if(Aux_etapas==4):
+            canvas=Fijar_pailas(canvas, 160, 250, 360, 105, Aux_etapas, Aux_Vec, Tipo_Hornilla, 0, Diccionario)
+            canvas=Fijar_pailas(canvas, 128, 275, 364,  73, Aux_etapas, Aux_Vec, Tipo_Hornilla, 1, Diccionario)
+            canvas=Fijar_pailas(canvas, 290, 190, 296, 165, Aux_etapas, Aux_Vec, Tipo_Hornilla, 2, Diccionario)
+        if(Aux_etapas==5):
+            canvas=Fijar_pailas(canvas, 130, 240, 362,  80, Aux_etapas, Aux_Vec, Tipo_Hornilla, 0, Diccionario)
+            canvas=Fijar_pailas(canvas, 110, 265, 368,  63, Aux_etapas, Aux_Vec, Tipo_Hornilla, 1, Diccionario)
+            canvas=Fijar_pailas(canvas, 260, 180, 296, 150, Aux_etapas, Aux_Vec, Tipo_Hornilla, 2, Diccionario)
+        if(Aux_etapas==6):
+            canvas=Fijar_pailas(canvas, 100, 260, 364, 60, Aux_etapas, Aux_Vec, Tipo_Hornilla, 0, Diccionario)
+            canvas=Fijar_pailas(canvas, 80, 280, 370, 43, Aux_etapas, Aux_Vec, Tipo_Hornilla, 1, Diccionario)
+            canvas=Fijar_pailas(canvas, 230, 150, 300, 135, Aux_etapas, Aux_Vec, Tipo_Hornilla, 2, Diccionario)
+        if(Aux_etapas==7):
+            canvas=Fijar_pailas(canvas, 80, 250, 366, 45, Aux_etapas, Aux_Vec, Tipo_Hornilla, 0, Diccionario)
+            canvas=Fijar_pailas(canvas, 60, 300, 372, 33, Aux_etapas, Aux_Vec, Tipo_Hornilla, 1, Diccionario)
+            canvas=Fijar_pailas(canvas, 200, 140, 304, 110, Aux_etapas, Aux_Vec, Tipo_Hornilla, 2, Diccionario)
+    else:
+        if(Aux_etapas==5):
+            canvas=Fijar_pailas(canvas, 130, 275, 358, 80, Aux_etapas, Aux_Vec, Tipo_Hornilla, 0, Diccionario)
+            canvas=Fijar_pailas(canvas, 110, 275, 358, 60, Aux_etapas, Aux_Vec, Tipo_Hornilla, 1, Diccionario)
+            canvas=Fijar_pailas(canvas, 260, 125, 275, 100, Aux_etapas, Aux_Vec, Tipo_Hornilla, 2, Diccionario)
+        if(Aux_etapas==6):
+            canvas=Fijar_pailas(canvas, 100, 280, 361, 55, Aux_etapas, Aux_Vec, Tipo_Hornilla, 0, Diccionario)
+            canvas=Fijar_pailas(canvas, 80, 280, 361, 35, Aux_etapas, Aux_Vec, Tipo_Hornilla, 1, Diccionario)
+            canvas=Fijar_pailas(canvas, 230, 140, 275, 105, Aux_etapas, Aux_Vec, Tipo_Hornilla, 2, Diccionario)
+    canvas.showPage()        
+    canvas.save()             
+    
+    from reportlab.pdfgen import canvas        
+    canvas = canvas.Canvas(dire_pin_2, pagesize=letter) 
+    canvas.setPageSize((970,628))
+    canvas.drawImage('static/Vistas/Otros/Formato.png', 0, 0, width=970, height=628)
+    if(Tipo_Hornilla=='cámara plana'):    
+        canvas.drawImage('static/Vistas/Camaras/Plana2_cotas.png', 0, 0,  width=970, height=628)  
+        canvas=Dibujar_Cotas_Camara(canvas,'Cámara hornilla', Dimensiones_Pailas[0][4], Dimensiones_Pailas[0][3], 3)               
+    elif(Tipo_Hornilla=='doble cámara'):
+        canvas.drawImage('static/Vistas/Camaras/Doble_cotas.png', 0, 0,  width=970, height=628)  
+        canvas=Dibujar_Cotas_Camara(canvas,'Cámara hornilla', Dimensiones_Pailas[0][4], Dimensiones_Pailas[0][3], 1) 
+    elif(Tipo_Hornilla=='cámara Ward'):
+        canvas.drawImage('static/Vistas/Camaras/Cimpa_cotas.png', 0, 0,  width=970, height=628)
+        canvas=Dibujar_Cotas_Camara(canvas,'Cámara hornilla', Dimensiones_Pailas[0][4], Dimensiones_Pailas[0][3], 2)
+    
+    if(Rec_opt==0):
+        canvas.showPage()
+        Tipo_chi='static/Vistas/Chimeneas/Chimenea1_cotas.png'
+        canvas.drawImage(Tipo_chi, 0, 0,  width=970, height=628)
+        canvas=Dibujar_Cotas_Chimenea(canvas,'Chimenea hornilla', Capacidad_hornilla, Altura_UP)
+        canvas.showPage()
+        canvas.drawImage('static/Vistas/Chimeneas/Valvula_1.png', 0, 0,  width=970, height=628)   
+        Dibujar_Cotas_Valvula_1(canvas,'Válvula de tiro para la chimenea', Capacidad_hornilla, Ancho_UP)        
+        canvas.save()
+    else:
+        Lim_superior=17
+        Tipo_chi='static/Vistas/Recuperador/Recu_75_100/Recu_75_100_0'
+        exten='01.png'
+        if(Capacidad_hornilla<125):
+            Lim_superior=17
+            Tipo_chi='static/Vistas/Recuperador/Recu_75_100/Recu_75_100_0'
+        else:
+            Lim_superior=33    
+            Tipo_chi='static/Vistas/Recuperador/Recu_120_150/Recu_120_150_0'
+        for i in range(1,Lim_superior):
+            canvas.showPage()
+            if(i<10):
+                exten='0'+str(i)+'.png'
+            else:
+                exten=str(i)+'.png'
+            Name_chime=Tipo_chi+exten
+            canvas.drawImage(Name_chime, 0, 0,  width=970, height=628)
+            canvas=Dibujar_Rotulo(canvas, 'Recuperador de calor', 'Partes del recuperador de calor')
+        canvas.showPage()      
+        canvas.save()            
+    
+    Altura=0.0
+    Grados_inc=0.06
+    Memoria=0.0
+    if(Rec_opt==0):
+        Texto_etp="static/pdf01/B2_Etapa_"
+    else:
+        Texto_etp="static/pdf04/B2_Etapa_"
+            
+    for i in range(Etapas):    
+        if(i<9):
+            Texto_etapa= "0"+str(i+1)+"_B"
+        else:
+            Texto_etapa= str(i+1)+"_B"           
         from reportlab.lib.pagesizes import letter
         from reportlab.pdfgen import canvas
-        if(inter==0):
-            canvas = canvas.Canvas("static/B1_Etapa_Planta_WEB.pdf", pagesize=letter)
-            canvas.setPageSize((970,628))
-            if(Tipo_Hornilla=='cámara Ward' or Tipo_Hornilla=='cámara plana'):
-                if(Etapas==5):
-                    canvas=Fijar_pailas(canvas, 130, 240, 362, 80, Etapas, Vector_Entrada, Tipo_Hornilla, 0, Diccionario)
-                    canvas=Fijar_pailas(canvas, 110, 265, 368, 63, Etapas, Vector_Entrada, Tipo_Hornilla, 1, Diccionario)
-                    canvas=Fijar_pailas(canvas, 260, 180, 296, 150, Etapas, Vector_Entrada, Tipo_Hornilla, 2, Diccionario)
-                if(Etapas==6):
-                    canvas=Fijar_pailas(canvas, 100, 260, 364, 60, Etapas, Vector_Entrada, Tipo_Hornilla, 0, Diccionario)
-                    canvas=Fijar_pailas(canvas, 80, 280, 370, 43, Etapas, Vector_Entrada, Tipo_Hornilla, 1, Diccionario)
-                    canvas=Fijar_pailas(canvas, 230, 150, 300, 135, Etapas, Vector_Entrada, Tipo_Hornilla, 2, Diccionario)
-                if(Etapas==7):
-                    canvas=Fijar_pailas(canvas, 80, 250, 366, 45, Etapas, Vector_Entrada, Tipo_Hornilla, 0, Diccionario)
-                    canvas=Fijar_pailas(canvas, 60, 300, 372, 33, Etapas, Vector_Entrada, Tipo_Hornilla, 1, Diccionario)
-                    canvas=Fijar_pailas(canvas, 200, 140, 304, 110, Etapas, Vector_Entrada, Tipo_Hornilla, 2, Diccionario)
-            else:
-                if(Etapas==5):
-                    canvas=Fijar_pailas(canvas, 130, 275, 358, 80, Etapas, Vector_Entrada, Tipo_Hornilla, 0, Diccionario)
-                    canvas=Fijar_pailas(canvas, 110, 275, 358, 60, Etapas, Vector_Entrada, Tipo_Hornilla, 1, Diccionario)
-                    canvas=Fijar_pailas(canvas, 260, 125, 275, 100, Etapas, Vector_Entrada, Tipo_Hornilla, 2, Diccionario)
-                if(Etapas==6):
-                    canvas=Fijar_pailas(canvas, 100, 280, 361, 55, Etapas, Vector_Entrada, Tipo_Hornilla, 0, Diccionario)
-                    canvas=Fijar_pailas(canvas, 80, 280, 361, 35, Etapas, Vector_Entrada, Tipo_Hornilla, 1, Diccionario)
-                    canvas=Fijar_pailas(canvas, 230, 140, 275, 105, Etapas, Vector_Entrada, Tipo_Hornilla, 2, Diccionario)
-            
-            canvas.showPage()        
-            if(Tipo_Hornilla=='cámara plana'):    
-                canvas.drawImage('static/Vistas/Camaras/Plana2_cotas.png', 0, 0,  width=970, height=628)  
-                canvas=Dibujar_Cotas_Camara(canvas,'Cámara hornilla', Dimensiones_Pailas[0][4], Dimensiones_Pailas[0][3], 3)
-                canvas.showPage()
-                canvas.drawImage('static/Vistas/Chimeneas/Chimenea1_cotas.png', 0, 0,  width=970, height=628)
-                canvas=Dibujar_Cotas_Chimenea(canvas,'Chimenea hornilla', Capacidad_hornilla, Altura_UP)
-                canvas.showPage()
-                canvas.drawImage('static/Vistas/Chimeneas/Valvula_1.png', 0, 0,  width=970, height=628)   
-                Dibujar_Cotas_Valvula_1(canvas,'Válvula de tiro para la chimenea', Capacidad_hornilla, Ancho_UP)               
-            elif(Tipo_Hornilla=='doble cámara'):
-                canvas.drawImage('static/Vistas/Camaras/Doble_cotas.png', 0, 0,  width=970, height=628)  
-                canvas=Dibujar_Cotas_Camara(canvas,'Cámara hornilla', Dimensiones_Pailas[0][4], Dimensiones_Pailas[0][3], 1)
-                canvas.showPage()
-                canvas.drawImage('static/Vistas/Chimeneas/Chimenea1_cotas.png', 0, 0,  width=970, height=628)
-                canvas=Dibujar_Cotas_Chimenea(canvas,'Chimenea hornilla', Capacidad_hornilla, Altura_UP)
-                canvas.showPage()
-                canvas.drawImage('static/Vistas/Chimeneas/Valvula_1.png', 0, 0,  width=970, height=628)   
-                Dibujar_Cotas_Valvula_1(canvas,'Válvula de tiro para la chimenea', Capacidad_hornilla, Ancho_UP) 
-            elif(Tipo_Hornilla=='cámara Ward'):
-                canvas.drawImage('static/Vistas/Camaras/Cimpa_cotas.png', 0, 0,  width=970, height=628)
-                canvas=Dibujar_Cotas_Camara(canvas,'Cámara hornilla', Dimensiones_Pailas[0][4], Dimensiones_Pailas[0][3], 2)
-                canvas.showPage()
-                canvas.drawImage('static/Vistas/Chimeneas/Chimenea1_cotas.png', 0, 0,  width=970, height=628)
-                canvas=Dibujar_Cotas_Chimenea(canvas,'Chimenea hornilla', Capacidad_hornilla, Altura_UP)
-                canvas.showPage()
-                canvas.drawImage('static/Vistas/Chimeneas/Valvula_1.png', 0, 0,  width=970, height=628)   
-                Dibujar_Cotas_Valvula_1(canvas,'Válvula de tiro para la chimenea', Capacidad_hornilla, Ancho_UP) 
-            canvas.save()
-
-            from reportlab.lib.pagesizes import letter
-            from reportlab.pdfgen import canvas
-            canvas = canvas.Canvas("static/B3_Etapa_Planta_WEB.pdf", pagesize=letter)
-            canvas.setPageSize((970,628))
-            canvas.drawImage('static/Vistas/Otros/Formato.png', 0, 0, width=970, height=628)
-            Altura=0.0
-            Grados_inc=0.06
-            Memoria=0.0
-            for i in range(Etapas):    
-                Grados_inc=float(math.atan(Grados_inc))
-                Falca_actual=float(Lista_Falcas[i]*1000)
-                Longitud=1300.0+Memoria+(Falca_actual/2)
-                Memoria=Memoria+Falca_actual+50
-                Altura=Dimensiones_Camara[5]-(Longitud*Grados_inc)
-                if(i>0):
-                    canvas.showPage()
-                if Vector_Entrada[i][0]==1:
-                    canvas=Dibujar_Cotas(canvas,1,Dimensiones_Pailas[i], Nombres_Ubicaciones[i], Altura, Grados_inc, i)
-                    ruta_ladrillos='static/Vistas/Ductos/Dplana_ladrillos.png'
-                    ruta_ladrillos_2='static/Vistas/Ductos/Dplana_ladrillos_2.png'
-                    ruta_ladrillos_3='static/Vistas/Ductos/Dplana_ladrillos_3.png'
-                elif Vector_Entrada[i][0]==2: 
-                    canvas=Dibujar_Cotas(canvas,1,Dimensiones_Pailas[i], Nombres_Ubicaciones[i], Altura, Grados_inc, i)
-                    ruta_ladrillos='static/Vistas/Ductos/Dplana_ladrillos.png'
-                    ruta_ladrillos_2='static/Vistas/Ductos/Dplana_ladrillos_2.png'
-                    ruta_ladrillos_3='static/Vistas/Ductos/Dplana_ladrillos_3.png'
-                elif Vector_Entrada[i][0]==3:
-                    canvas=Dibujar_Cotas(canvas,3,Dimensiones_Pailas[i], Nombres_Ubicaciones[i], Altura, Grados_inc, i)
-                    ruta_ladrillos='static/Vistas/Ductos/Dsemiesferica_ladrillos.png' 
-                    ruta_ladrillos_2='static/Vistas/Ductos/Dsemiesferica_ladrillos_2.png'
-                    ruta_ladrillos_3='static/Vistas/Ductos/Dsemiesferica_ladrillos_3.png'
-                elif Vector_Entrada[i][0]==4:
-                    canvas=Dibujar_Cotas(canvas,2,Dimensiones_Pailas[i], Nombres_Ubicaciones[i], Altura, Grados_inc, i)
-                    ruta_ladrillos='static/Vistas/Ductos/Dsemicilindrica_ladrillos.png' 
-                    ruta_ladrillos_2='static/Vistas/Ductos/Dsemicilindrica_ladrillos_2.png'
-                elif Vector_Entrada[i][0]==5:
-                    canvas=Dibujar_Cotas(canvas,1,Dimensiones_Pailas[i], Nombres_Ubicaciones[i], Altura, Grados_inc, i)
-                    ruta_ladrillos='static/Vistas/Ductos/Dplana_ladrillos.png'
-                    ruta_ladrillos_2='static/Vistas/Ductos/Dplana_ladrillos_2.png'
-                    ruta_ladrillos_3='static/Vistas/Ductos/Dplana_ladrillos_3.png'
-                elif Vector_Entrada[i][0]==6:
-                    canvas=Dibujar_Cotas(canvas,1,Dimensiones_Pailas[i], Nombres_Ubicaciones[i], Altura, Grados_inc, i)
-                    ruta_ladrillos='static/Vistas/Ductos/Dplana_ladrillos.png'
-                    ruta_ladrillos_2='static/Vistas/Ductos/Dplana_ladrillos_2.png'
-                    ruta_ladrillos_3='static/Vistas/Ductos/Dplana_ladrillos_3.png' 
-                canvas.showPage()
-                canvas.drawImage(ruta_ladrillos, 0, 0,  width=970, height=628) 
-                canvas=Dibujar_Rotulo(canvas, Nombres_Ubicaciones[i], 'Ubicación de los ladrillos')                
-                canvas.showPage()
-                canvas.drawImage(ruta_ladrillos_2, 0, 0,  width=970, height=628) 
-                canvas=Dibujar_Rotulo(canvas, Nombres_Ubicaciones[i], 'Ubicación de los ladrillos')
-                if(Vector_Entrada[i][0]!=4):
-                    canvas.showPage()
-                    canvas.drawImage(ruta_ladrillos_3, 0, 0,  width=970, height=628) 
-                    canvas=Dibujar_Rotulo(canvas, Nombres_Ubicaciones[i], 'Ubicación de los ladrillos')
-            canvas.save()
-
-        if(inter==1):
-            canvas = canvas.Canvas("static/B4_Etapa_Planta_WEB.pdf", pagesize=letter)
-            canvas.setPageSize((970,628))
-            canvas.drawImage('static/Vistas/Otros/Formato.png', 0, 0, width=970, height=628)  
-            canvas.setFont('Helvetica-Bold', 48)
-            canvas.drawString(30, 320, 'A continuación se presenta una hornilla')
-            canvas.drawString(30, 220, 'con recuperador')
-            canvas=Dibujar_Rotulo(canvas, 'Aviso', 'Aviso')
+        canvas = canvas.Canvas(Texto_etp+Texto_etapa+".pdf", pagesize=letter)
+        canvas.setPageSize((970,628))
+        canvas.drawImage('static/Vistas/Otros/Formato.png', 0, 0, width=970, height=628)
+        Grados_inc=float(math.atan(Grados_inc))
+        Falca_actual=float(Lista_Falcas[i]*1000)
+        Longitud=1300.0+Memoria+(Falca_actual/2)
+        Memoria=Memoria+Falca_actual+50
+        Altura=Dimensiones_Camara[5]-(Longitud*Grados_inc)
+#        print(i)
+#        print(Vector_Entrada[i][0])
+        if Vector_Entrada[i][0]==1:
+            canvas=Dibujar_Cotas(canvas,1,Dimensiones_Pailas[i], Nombres_Ubicaciones[i], Altura, Grados_inc, i)
+            ruta_ladrillos='static/Vistas/Ductos/Dplana_ladrillos.png'
+            ruta_ladrillos_2='static/Vistas/Ductos/Dplana_ladrillos_2.png'
+            ruta_ladrillos_3='static/Vistas/Ductos/Dplana_ladrillos_3.png'
+        elif Vector_Entrada[i][0]==2: 
+            canvas=Dibujar_Cotas(canvas,1,Dimensiones_Pailas[i], Nombres_Ubicaciones[i], Altura, Grados_inc, i)
+            ruta_ladrillos='static/Vistas/Ductos/Dplana_ladrillos.png'
+            ruta_ladrillos_2='static/Vistas/Ductos/Dplana_ladrillos_2.png'
+            ruta_ladrillos_3='static/Vistas/Ductos/Dplana_ladrillos_3.png'
+        elif Vector_Entrada[i][0]==3:
+            canvas=Dibujar_Cotas(canvas,3,Dimensiones_Pailas[i], Nombres_Ubicaciones[i], Altura, Grados_inc, i)
+            ruta_ladrillos='static/Vistas/Ductos/Dsemiesferica_ladrillos.png' 
+            ruta_ladrillos_2='static/Vistas/Ductos/Dsemiesferica_ladrillos_2.png'
+            ruta_ladrillos_3='static/Vistas/Ductos/Dsemiesferica_ladrillos_3.png'
+        elif Vector_Entrada[i][0]==4:
+            canvas=Dibujar_Cotas(canvas,2,Dimensiones_Pailas[i], Nombres_Ubicaciones[i], Altura, Grados_inc, i)
+            ruta_ladrillos='static/Vistas/Ductos/Dsemicilindrica_ladrillos.png' 
+            ruta_ladrillos_2='static/Vistas/Ductos/Dsemicilindrica_ladrillos_2.png'
+        elif Vector_Entrada[i][0]==5:
+            canvas=Dibujar_Cotas(canvas,1,Dimensiones_Pailas[i], Nombres_Ubicaciones[i], Altura, Grados_inc, i)
+            ruta_ladrillos='static/Vistas/Ductos/Dplana_ladrillos.png'
+            ruta_ladrillos_2='static/Vistas/Ductos/Dplana_ladrillos_2.png'
+            ruta_ladrillos_3='static/Vistas/Ductos/Dplana_ladrillos_3.png'
+        elif Vector_Entrada[i][0]==6:
+            canvas=Dibujar_Cotas(canvas,1,Dimensiones_Pailas[i], Nombres_Ubicaciones[i], Altura, Grados_inc, i)
+            ruta_ladrillos='static/Vistas/Ductos/Dplana_ladrillos.png'
+            ruta_ladrillos_2='static/Vistas/Ductos/Dplana_ladrillos_2.png'
+            ruta_ladrillos_3='static/Vistas/Ductos/Dplana_ladrillos_3.png' 
+        canvas.showPage()
+        canvas.drawImage(ruta_ladrillos, 0, 0,  width=970, height=628) 
+        canvas=Dibujar_Rotulo(canvas, Nombres_Ubicaciones[i], 'Ubicación de los ladrillos')                
+        canvas.showPage()
+        canvas.drawImage(ruta_ladrillos_2, 0, 0,  width=970, height=628) 
+        canvas=Dibujar_Rotulo(canvas, Nombres_Ubicaciones[i], 'Ubicación de los ladrillos')
+        if(Vector_Entrada[i][0]!=4):
             canvas.showPage()
-            canvas.drawImage('static/Vistas/Chimeneas/Recuperador.png', 0, 0,  width=970, height=628)  
-            canvas.save()
-
-    shutil.copy("static/B1_Etapa_Planta_WEB.pdf","static/pdf01/B1_Etapa_Planta_WEB.pdf")
-    shutil.copy("static/B3_Etapa_Planta_WEB.pdf","static/pdf01/B3_Etapa_Planta_WEB.pdf")
-    shutil.copy("static/B4_Etapa_Planta_WEB.pdf","static/pdf01/B4_Etapa_Planta_WEB.pdf")
+            canvas.drawImage(ruta_ladrillos_3, 0, 0,  width=970, height=628) 
+            canvas=Dibujar_Rotulo(canvas, Nombres_Ubicaciones[i], 'Ubicación de los ladrillos')
+        canvas.save()
 
 def Dibujar_Rotulo(canvas, Nombre_Usuario, Nombre_Paila):
     canvas.setFont('Helvetica-Bold', 7)
@@ -608,6 +575,10 @@ def Dibujar_Cotas_Chimenea(canvas,Nombre_Usuario, Capacidad_hornilla, Altura_UP)
         except:
             canvas.drawString(x_i+vv, Puntero-1, str(Valores_Dim[i]))            
         canvas.line(x_i,Puntero-2,x_i+245,Puntero-2)      
+
+    df1 = pd.DataFrame([Conv,Valores_Dim])
+    df1.to_excel('static/Chimenea.xlsx', sheet_name='Chimenea')
+
     canvas.setFont('Helvetica-Bold', 9)
     canvas.drawString(x_i+95, y_i+2, 'CONVENCIONES') 
     canvas.line(x_i,y_i,x_i,Puntero-2)
@@ -732,7 +703,11 @@ def Dibujar_Cotas_Camara(canvas,Nombre_Usuario, Longitud_paila_1, Ancho_paila_1,
             canvas.drawString(x_i+170, Puntero-1, str(round(Valores_Dim[i],3)))
         except:
             canvas.drawString(x_i+155, Puntero-1, str(Valores_Dim[i]))            
-        canvas.line(x_i,Puntero-2,x_i+245,Puntero-2)      
+        canvas.line(x_i,Puntero-2,x_i+245,Puntero-2)  
+        
+    df1 = pd.DataFrame([Conv,Valores_Dim])
+    df1.to_excel('static/Camara.xlsx', sheet_name='Camara')
+    
     canvas.setFont('Helvetica-Bold', 9)
     canvas.drawString(x_i+95, y_i+2, 'CONVENCIONES') 
     canvas.line(x_i,y_i,x_i,Puntero-2)
@@ -828,7 +803,7 @@ def Dibujar_Cotas(canvas,sel_Plano,Dimensiones, Nombre_Usuario, Altura, Grados_i
     return canvas
 
 #Funcion para dibujar planos acotados
-def Crear_plano_pdf(directorio_imagen, Nombre_archivo, Nombre_Usuario, Nombre_Paila, Valores_plano, valores_eliminar, Sel_Canal):
+def Crear_plano_pdf(directorio_imagen, Nombre_archivo, Nombre_Usuario, Nombre_Paila, Valores_plano, valores_eliminar, Sel_Canal, Rec_opt):
     from reportlab.lib.pagesizes import letter
     from reportlab.pdfgen import canvas
     if(Sel_Canal==1):
@@ -877,6 +852,23 @@ def Crear_plano_pdf(directorio_imagen, Nombre_archivo, Nombre_Usuario, Nombre_Pa
         canvas.setFont('Helvetica', 9)
         canvas.drawString(900, Puntero, str(round(Valores_plano[i],3)))
         canvas.line(705,Puntero-2,950,Puntero-2)
+    
+    from openpyxl import load_workbook
+    if(Rec_opt==0):
+        rr='static/Pai_sin_rec.xlsx'
+    else:
+        rr='static/Pai_con_rec.xlsx'
+    writer = pd.ExcelWriter(rr)
+    try:
+        book = load_workbook(rr)
+        writer.book = book
+    except:
+        writer = pd.ExcelWriter(rr)   
+    
+    df1 = pd.DataFrame([Etiquetas, Conv, Valores_plano])
+    df1.to_excel(writer, sheet_name=Nombre_Paila[15:-1:1])   
+    writer.save()
+    
     canvas.setFont('Helvetica-Bold', 9)
     canvas.drawString(800, 226, 'CONVENCIONES') 
     canvas.line(705,224,705,Puntero-2)
@@ -908,9 +900,20 @@ parámetros de salida a la función para exportar a pdf<<<<----"""
     #An o A     Ancho de paila
     #Hc         Altura de casco
     #H          Altura total     
-def Dibujar_plano(Nombre_Sitio,Nombre_archivo,Tipo_paila,H_fl,H_fn,Ancho,L,Ho,Hc,N_Aletas,h_Aletas,Angulo,nT,dT,lT,lC,Cantidad_canales,Activar_Aletas):
+
+def Asignar_vector(paila, pos, count, Rec_opt):
     global Cantidad_pailas
     global Lista_de_pailas
+    global Cantidad_pailas_rec
+    global Lista_de_pailas_rec
+    if(Rec_opt==0):
+        Cantidad_pailas[pos]=Cantidad_pailas[pos]+1
+        Lista_de_pailas[pos]=paila
+    elif(Rec_opt==1):
+        Cantidad_pailas_rec[pos]=Cantidad_pailas_rec[pos]+1
+        Lista_de_pailas_rec[pos]=paila
+        
+def Dibujar_plano(Nombre_Sitio,Nombre_archivo,Tipo_paila,H_fl,H_fn,Ancho,L,Ho,Hc,N_Aletas,h_Aletas,Angulo,nT,dT,lT,lC,Cantidad_canales,Activar_Aletas, count, Rec_opt):
     global Dimensiones_Pailas
     global An_g
     global Lo_g
@@ -944,71 +947,60 @@ def Dibujar_plano(Nombre_Sitio,Nombre_archivo,Tipo_paila,H_fl,H_fn,Ancho,L,Ho,Hc
     Dimensiones_Pailas.append([round(A),round(B),round(C),round(D),round(E),50,round(I),round(F),round(H),round(J),round(K),round(L),round(M),round(N),round(O),round(P),round(Q),round(R)])
     if Tipo_paila==1:
         if Activar_Aletas==True:
-            Cantidad_pailas[0]=Cantidad_pailas[0]+1
-            Lista_de_pailas[0]='Plana'
-            Crear_plano_pdf('static/Pailas/Plana_con_aletas.png', Nombre_archivo,
-                            Nombre_Sitio, 'Diagrama de una paila plana con aletas', Valores_plano, [10,11,12,13,14,15,16,17],0)
+            Asignar_vector('Plana', 0, count, Rec_opt)
+            Crear_plano_pdf('static/Vistas/Pailas/Plana_con_aletas.png', Nombre_archivo,
+                            Nombre_Sitio, 'Diagrama de una paila plana con aletas', Valores_plano, [10,11,12,13,14,15,16,17],0,Rec_opt)
         else:
             if(Nombre_Sitio!="Paila Melotera"):
-                Cantidad_pailas[1]=Cantidad_pailas[1]+1
-            Lista_de_pailas[1]='Plana SA'
-            Crear_plano_pdf('static/Pailas/Plana_sin_aletas.png', Nombre_archivo,
-                            Nombre_Sitio, 'Diagrama de una paila plana sin aletas', Valores_plano, [7,8,9,10,11,12,13,14,15,16,17],0)
+                Asignar_vector('Plana SA', 1, count, Rec_opt)
+            Crear_plano_pdf('static/Vistas/Pailas/Plana_sin_aletas.png', Nombre_archivo,
+                            Nombre_Sitio, 'Diagrama de una paila plana sin aletas', Valores_plano, [7,8,9,10,11,12,13,14,15,16,17],0,Rec_opt)
     elif Tipo_paila==2: 
         if Activar_Aletas==True:
-            Cantidad_pailas[2]=Cantidad_pailas[2]+1
-            Lista_de_pailas[2]='Pirotubular'
-            Crear_plano_pdf('static/Pailas/Pirotubular_circular_con_aletas.png', Nombre_archivo,
-                            Nombre_Sitio, 'Diagrama de una paila pirotubular circular con aletas', Valores_plano, [10,11,14,15,16,17],0)
+            Asignar_vector('Pirotubular', 2, count, Rec_opt)
+            Crear_plano_pdf('static/Vistas/Pailas/Pirotubular_circular_con_aletas.png', Nombre_archivo,
+                            Nombre_Sitio, 'Diagrama de una paila pirotubular circular con aletas', Valores_plano, [10,11,14,15,16,17],0,Rec_opt)
         else:
-            Cantidad_pailas[3]=Cantidad_pailas[3]+1
-            Lista_de_pailas[3]='Pirotubular SA'
-            Crear_plano_pdf('static/Pailas/Pirotubular_circular_sin_aletas.png', Nombre_archivo,
-                            Nombre_Sitio, 'Diagrama de una paila pirotubular circular sin aletas', Valores_plano, [7,8,9,10,11,14,15,16,17],0)
+            Asignar_vector('Pirotubular SA', 3, count, Rec_opt)
+            Crear_plano_pdf('static/Vistas/Pailas/Pirotubular_circular_sin_aletas.png', Nombre_archivo,
+                            Nombre_Sitio, 'Diagrama de una paila pirotubular circular sin aletas', Valores_plano, [7,8,9,10,11,14,15,16,17],0,Rec_opt)
     
     elif Tipo_paila==3:
-        Cantidad_pailas[4]=Cantidad_pailas[4]+1
-        Lista_de_pailas[4]='Semiesferica'
-        Crear_plano_pdf('static/Pailas/Semiesferica.png', Nombre_archivo,
-                        Nombre_Sitio, 'Diagrama de una paila semiesférica', Valores_plano, [4,7,8,9,10,11,12,13,14,15,16,17],0)   
+        Asignar_vector('Semiesferica', 4, count, Rec_opt)
+        Crear_plano_pdf('static/Vistas/Pailas/Semiesferica.png', Nombre_archivo,
+                        Nombre_Sitio, 'Diagrama de una paila semiesférica', Valores_plano, [4,7,8,9,10,11,12,13,14,15,16,17],0,Rec_opt)   
         
     elif Tipo_paila==4:
         if Activar_Aletas==True:
-            Cantidad_pailas[5]=Cantidad_pailas[5]+1
-            Lista_de_pailas[5]='Semicilindria'
-            Crear_plano_pdf('static/Pailas/Semicilindrica_con_aletas.png', Nombre_archivo,
-                            Nombre_Sitio, 'Diagrama de una paila semicilindrica con aletas', Valores_plano, [1,12,13,14,15,16],0)
+            Asignar_vector('Semicilindria', 5, count, Rec_opt)
+            Crear_plano_pdf('static/Vistas/Pailas/Semicilindrica_con_aletas.png', Nombre_archivo,
+                            Nombre_Sitio, 'Diagrama de una paila semicilindrica con aletas', Valores_plano, [1,12,13,14,15,16],0,Rec_opt)
         else:
-            Cantidad_pailas[6]=Cantidad_pailas[6]+1
-            Lista_de_pailas[6]='Semicilindrica SA'
-            Crear_plano_pdf('static/Pailas/Semicilindrica_sin_aletas.png', Nombre_archivo,
-                            Nombre_Sitio, 'Diagrama de una paila semicilindrica sin aletas', Valores_plano, [1,7,8,9,12,13,14,15,16],0)
+            Asignar_vector('Semicilindrica SA', 6, count, Rec_opt)
+            Crear_plano_pdf('static/Vistas/Pailas/Semicilindrica_sin_aletas.png', Nombre_archivo,
+                            Nombre_Sitio, 'Diagrama de una paila semicilindrica sin aletas', Valores_plano, [1,7,8,9,12,13,14,15,16],0,Rec_opt)
 
     elif Tipo_paila==5:
         if Activar_Aletas==True:
-            Cantidad_pailas[7]=Cantidad_pailas[7]+1
-            Lista_de_pailas[7]='Pirotubular cuadrada'
-            Crear_plano_pdf('static/Pailas/Pirotubular_cuadrada_con_aletas.png', Nombre_archivo,
-                            Nombre_Sitio, 'Diagrama de una paila pirotubular cuadrada con aletas', Valores_plano, [10,11,13,15,16,17],0)
+            Asignar_vector('Pirotubular cuadrada', 7, count, Rec_opt)
+            Crear_plano_pdf('static/Vistas/Pailas/Pirotubular_cuadrada_con_aletas.png', Nombre_archivo,
+                            Nombre_Sitio, 'Diagrama de una paila pirotubular cuadrada con aletas', Valores_plano, [10,11,13,15,16,17],0,Rec_opt)
         else:
-            Cantidad_pailas[8]=Cantidad_pailas[8]+1
-            Lista_de_pailas[8]='Pirotubular cuadrada SA'
-            Crear_plano_pdf('static/Pailas/Pirotubular_cuadrada_sin_aletas.png', Nombre_archivo,
-                            Nombre_Sitio, 'Diagrama de una paila pirotubular cuadrada sin aletas', Valores_plano, [7,8,9,10,11,13,15,16,17],0)    
+            Asignar_vector('Pirotubular cuadrada SA', 8, count, Rec_opt)
+            Crear_plano_pdf('static/Vistas/Pailas/Pirotubular_cuadrada_sin_aletas.png', Nombre_archivo,
+                            Nombre_Sitio, 'Diagrama de una paila pirotubular cuadrada sin aletas', Valores_plano, [7,8,9,10,11,13,15,16,17],0,Rec_opt)    
 
     elif Tipo_paila==6:
         if Activar_Aletas==True:
-            Cantidad_pailas[9]=Cantidad_pailas[9]+1
-            Lista_de_pailas[9]='Cuadrada acanalada'
+            Asignar_vector('Cuadrada acanalada', 9, count, Rec_opt)
             #Valores_plano[1]=Valores_plano[7]
-            Crear_plano_pdf('static/Pailas/Cuadrada_acanalada_con_aletas.png', Nombre_archivo,
-                            Nombre_Sitio, 'Diagrama de una paila cuadrada acanalada con aletas', Valores_plano, [1,10,11,12,13,14,17],1)
+            Crear_plano_pdf('static/Vistas/Pailas/Cuadrada_acanalada_con_aletas.png', Nombre_archivo,
+                            Nombre_Sitio, 'Diagrama de una paila cuadrada acanalada con aletas', Valores_plano, [1,10,11,12,13,14,17],1,Rec_opt)
         else:
-            Cantidad_pailas[10]=Cantidad_pailas[10]+1
-            Lista_de_pailas[10]='Cuadrada acanalada SA'
+            Asignar_vector('Cuadrada acanalada SA', 10, count, Rec_opt)
             #Valores_plano[1]=Valores_plano[7]
-            Crear_plano_pdf('static/Pailas/Cuadrada_acanalada_sin_aletas.png', Nombre_archivo,
-                            Nombre_Sitio, 'Diagrama de una paila cuadrada acanalada sin aletas', Valores_plano, [1,7,8,9,10,11,12,13,14,17],1)     
+            Crear_plano_pdf('static/Vistas/Pailas/Cuadrada_acanalada_sin_aletas.png', Nombre_archivo,
+                            Nombre_Sitio, 'Diagrama de una paila cuadrada acanalada sin aletas', Valores_plano, [1,7,8,9,10,11,12,13,14,17],1,Rec_opt)     
 
 
 """**************************************************************************"""
@@ -1266,9 +1258,11 @@ def comprobar_individuo(Lim_inf,Lim_sup,valor_actual):
 """--------->>>Función que optimiza las dimensiones de la paila a partir de los,
 pesos<<-------------""" 
 #Dimensiones de la lamina 4*10 pies o 1.21*3.04 metros (Restricción del sistema)
-def Mostrar_pailas(Vol_aux, Etapas, Sitio, T_Hornilla, Cap_hornilla, altura_media, Diccionario):
+def Mostrar_pailas(Vol_aux, Etapas, Sitio, T_Hornilla, Cap_hornilla, altura_media, Diccionario, Rec_opt):
     global Cantidad_pailas
     global Lista_de_pailas
+    global Cantidad_pailas_rec
+    global Lista_de_pailas_rec
     global Dimensiones_Pailas
     global An_g
     global Lo_g
@@ -1327,12 +1321,11 @@ def Mostrar_pailas(Vol_aux, Etapas, Sitio, T_Hornilla, Cap_hornilla, altura_medi
                 Estado_Al=random.choice([True,False])
         Tipo_paila[0].append(Paila)
         Tipo_paila[1].append(Estado_Al)  
-
-#        print(Tipo_paila[0])
-#        print(float(Vol_aux[i]))
+#    print(Tipo_paila)
+#    print(Vol_aux)
                    
     """---->>>>Algoritmo de optimización (Ascenso a la colina)<<<<----"""
-    for i in range(Etapas):#(Etapas-1,-1,-1):
+    for i in range(Etapas):
         f_1=10000000
         iteraciones=0
         #Vol_aux[i]=float(Vol_aux[i])
@@ -1456,21 +1449,6 @@ def Mostrar_pailas(Vol_aux, Etapas, Sitio, T_Hornilla, Cap_hornilla, altura_medi
         #lista_par[6]>>>lT
         #lista_par[7]>>>N_Canales
         #lista_par[8]>>>lC
-    #print(Lista2)
-    
-#    Lista2.sort(key=lambda x: x[3])
-#    Lista_Temp=[]
-#    for i in range(Etapas):
-#        if (Lista2[i][0]==3):
-#            Lista_Temp.append(Lista2[i])
-#    for i in range(Etapas):
-#        if (Lista2[i][0]==4):
-#            Lista_Temp.append(Lista2[i])  
-#    for i in range(Etapas):
-#        if (Lista2[i][0]!=3 and Lista2[i][0]!=4):
-#            Lista_Temp.append(Lista2[i])
-#    Lista2=Lista_Temp
-#    Lista2[0], Lista2[1] = Lista2[1], Lista2[0]
     
     a2=max(Lista)
     for i in range(Etapas):
@@ -1479,26 +1457,31 @@ def Mostrar_pailas(Vol_aux, Etapas, Sitio, T_Hornilla, Cap_hornilla, altura_medi
     #Lista2.reverse()
     for i in range(Etapas):
         Lista_Falcas.append(Lista2[i][4])
-        
-    for i in range(Etapas):       
+    
+    if(Rec_opt==1):
+        Text_mem="static/pdf04/B2_Etapa_"
+    else:
+        Text_mem="static/pdf01/B2_Etapa_"
+    
+    for i in range(Etapas):  
         if(i<9):
-            Texto_etapa= "0"+str(i+1)
+            Texto_etapa= "0"+str(i+1)+"_A"
         else:
-            Texto_etapa= str(i+1)
+            Texto_etapa= str(i+1)+"_A"
         Nombres_Ubi.append(Sitio+" [Paila: "+Texto_etapa+"]")
-        Dibujar_plano(Sitio+" [Paila: "+Texto_etapa+"]","static/pdf01/B2_Etapa_"+Texto_etapa,Lista2[i][0],
+        Dibujar_plano(Sitio+" [Paila: "+Texto_etapa+"]",Text_mem+Texto_etapa,Lista2[i][0],
                       Lista2[i][1],Lista2[i][2],Lista2[i][3],Lista2[i][4],Lista2[i][5],Lista2[i][6],
                       Lista2[i][7],Lista2[i][8],Lista2[i][9],Lista2[i][10],Lista2[i][11],Lista2[i][12],
-                      Lista2[i][13],Lista2[i][14],Lista2[i][15])
+                      Lista2[i][13],Lista2[i][14],Lista2[i][15], i, Rec_opt)
         Pailas_Planta.append([Lista2[i][0],Lista2[i][15],An_g,Lo_g]) 
         if(i==Etapas-1):
             R_A=(Lista2[i][1]+Lista2[i][2])*1000
             R_B=(Lista2[i][3]*1000)+100
             #Melotera
-            Dibujar_plano("Paila Melotera","static/pdf01/B2_Etapa_"+"Zelotera",1,
+            Dibujar_plano("Paila Melotera",Text_mem+"Zelotera",1,
                           Lista2[i][1],Lista2[i][2],Lista2[i][3],Lista2[i][4],Lista2[i][5],Lista2[i][6],
                           Lista2[i][7],Lista2[i][8],Lista2[i][9],Lista2[i][10],Lista2[i][11],Lista2[i][12],
-                          Lista2[i][13],Lista2[i][14],False)
+                          Lista2[i][13],Lista2[i][14],False, i, Rec_opt)
         """Eliminar comentarios para probar el algoritmo de optimización"""
         #Comprobar_diseno(float(Vol_aux[Etapas-1-i]), i, Lista2[i][0], Lista2[i][1],Lista2[i][2],Lista2[i][3],Lista2[i][4],Lista2[i][5],
         #                 Lista2[i][6],Lista2[i][15])
@@ -1506,10 +1489,20 @@ def Mostrar_pailas(Vol_aux, Etapas, Sitio, T_Hornilla, Cap_hornilla, altura_medi
         #print("________>>>>>>>>>>>>>____________")
         #print(str(iteraciones))
         #print(str(f)) 
-    Dibujar_planta(Pailas_Planta,T_Hornilla, sum(Cantidad_pailas), Nombres_Ubi, Cap_hornilla, R_A, R_B, Lista_Falcas, Diccionario)    
-    df = pd.DataFrame([Lista_de_pailas, Cantidad_pailas])
-    df.to_excel('static/Temp/Temp2.xlsx')
-    Cantidad_pailas=[0,0,0,0,0,0,0,0,0,0,0]
-    Lista_de_pailas=[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ']
     
+#    print(Lista_de_pailas)
+#    print(Cantidad_pailas)
+#    print(Lista_de_pailas_rec)
+#    print(Cantidad_pailas_rec)
+    
+    if(Rec_opt==0):
+        Dibujar_planta(Pailas_Planta,T_Hornilla, sum(Cantidad_pailas), Nombres_Ubi, Cap_hornilla, R_A, R_B, Lista_Falcas, Diccionario, Rec_opt)    
+    else:
+        Dibujar_planta(Pailas_Planta,T_Hornilla, sum(Cantidad_pailas_rec), Nombres_Ubi, Cap_hornilla, R_A, R_B, Lista_Falcas, Diccionario, Rec_opt)
+        df = pd.DataFrame([Lista_de_pailas, Cantidad_pailas, Lista_de_pailas_rec, Cantidad_pailas_rec])
+        df.to_excel('static/Temp/Temp2.xlsx')
+        Cantidad_pailas=[0,0,0,0,0,0,0,0,0,0,0]
+        Lista_de_pailas=[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ']
+        Cantidad_pailas_rec=[0,0,0,0,0,0,0,0,0,0,0]
+        Lista_de_pailas_rec=[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ']
     return [Lista2, Lista_d_chimenea, Lista_d_camara, Lista_d_ductos, TACC]

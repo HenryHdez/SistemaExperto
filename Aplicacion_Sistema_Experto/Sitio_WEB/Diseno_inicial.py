@@ -70,23 +70,23 @@ def datos_entrada(Diccionario,iteracion,Valor_Algoritmo):
     #Altura del Sitio	
     
     """Nota: los valores de estas variables son supuestos (Estas son otras variables de entrada al modelo)"""
-    Porcentaje_extraccion=0.6       #60% tomar del molino
-    Bagazillo_Prelimpiador=0.02 #2%
-    Cachaza=0.04 #4%    
+    Porcentaje_extraccion=0.6           #60% tomar del molino
+    Bagazillo_Prelimpiador=0.02         #2%
+    Cachaza=0.04                        #4%    
     CSS_Jugo_Clarificado=float(Diccionario['Grados Brix de la caña (promedio)'])+5
     CSS_Jugo_Posevaporacion=float(Diccionario['Grados Brix de la caña (promedio)'])+58
-    Humedad_bagazo=0.3#15%			
-    Exceso_Aire=1.8 #lamda	
-    Extraccion=0.6#60%
-    Porcentaje_Fibra=0.14#14%
-    Temperatura_Ambiente=25#°C			
+    Humedad_bagazo=0.3                  #15%			
+    Exceso_Aire=1.8                     #lamda	
+    Extraccion=0.6                      #60%
+    Porcentaje_Fibra=0.14               #14%
+    Temperatura_Ambiente=25             #°C			
     Altura_sitio=float(Diccionario['Altura media sobre el nivel del mar'].replace(" m", ""))
     """Fin de los datos supuestos entrada"""
 #    """Cálculo de la capacidad del molino"""		
 
     """Fin de los datos supuestos entrada"""
 
-    CSS_Cana=float(Diccionario['Grados Brix de la caña (promedio)']) #*0.6
+    CSS_Cana=float(Diccionario['Grados Brix de la caña (promedio)'])                    #*0.6
     CSS_Panela=float(Diccionario['Grados Brix de la panela (promedio)'])
     Capacidad_Hornilla=float(Diccionario['Capacidad estimada de la hornilla [kg/hora]'])#Mem_Temp[0]
 
@@ -147,8 +147,6 @@ def datos_entrada(Diccionario,iteracion,Valor_Algoritmo):
     Total_Etapa_F_L=(Masa_Jugo*(Ebullicion_Concentracion-Temperatura_Ambiente)*Q_Especifico_Inicial+Masa_Agua_Evaporar*((Entalpia_Clarificacion+Entalpia_Concentracion)/2))/3600
     """>>>>>>>>>>>>>>>>Eficiencia<<<<<<<<<<<<<<<<<<<<<<<"""
     Eficiencia=(Total_Etapa/Calor_Suministrado)*100
-    #if(Eficiencia>40):
-    #    Eficiencia=random.randint(35, 41) 
     
     """Ampliación del diccionario"""
     Etiquetas=[
@@ -281,20 +279,20 @@ def datos_entrada(Diccionario,iteracion,Valor_Algoritmo):
     #Entalpia
     #Validar con las hornillas que se tienen con los datos experimentales
     df1 = pd.DataFrame([[key, Diccionario[key]] for key in Diccionario.keys()])
-    df1.to_excel('static/Reporte3.xlsx')
+    df1.to_excel('static/Reporte2.xlsx', sheet_name='Inicial')
     return Diccionario
 
 def Calculo_por_etapas(Diccionario):
     """Calculo de la hornilla por etapas"""   
     Lista_Contenido=[]
     Lista_columnas=[]
-     #Normalización de la capacidad de la hornilla
+    #Normalización de la capacidad de la hornilla
     #Mem_dias=float(Diccionario['¿Cada cuantos días quiere moler? (días)'])
     #Mem_Temp=Normalizar_Capacidad(float(Diccionario['Capacidad estimada de la hornilla']),Mem_dias)
     #print(float(Diccionario['Capacidad estimada de la hornilla']))
     #print(Mem_Temp)
+    
     Etapas=int(float(Diccionario['Etapas']))#Mem_Temp[1]
-    #Etapas=12
     #Saturador "minimo son dos etapas"
     if (Etapas>2):
         Factor_Division=Etapas-2
@@ -410,6 +408,7 @@ def Calculo_por_etapas(Diccionario):
                'Masa de Agua a Evaporar [kg]',
                'Calor Nece Calc por Etapa [kW]'
                ]
+    Etapas=int(float(Diccionario['Etapas']))
     Dict_aux=dict(zip(Etiquetas,Lista_Contenido))    
     Dict_aux_2=dict(zip(['Etapas'],[Etapas]))  
     Dict_aux.update(Dict_aux_2)

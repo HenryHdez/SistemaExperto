@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+{% block lista %}
+      <li class="nav-item">
+        <a class="nav-link disabled" href="/" aria-disabled="true">Principal</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link disabled" href="usuario" aria-disabled="true">Formulario</a>
+      </li>
+      <!--<li class="nav-item">-->
+      <!--  <a class="nav-link disabled" href="informe1" aria-disabled="true">Informe</a>-->
+      <!--</li>-->
+      <!--<li class="nav-item">-->
+      <!--<a class="nav-link disabled" href="presentar" aria-disabled="true">Mapas</a>-->
+      <!--</li>-->
+      <li class="nav-item">
+        <a class="nav-link disabled" href="contacto" aria-disabled="true">Contacto</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link disabled" href="referencias" aria-disabled="true">Bibliografía</a>
+      </li>   
+      <li class="nav-item">
+        <a class="nav-link disabled" href="acceso" aria-disabled="true">Corporativo</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link disabled" href="nosotros" aria-disabled="true">Acerca de...</a>
+      </li>
+{% endblock %}
+
+{% block content %}
+
+        <h1 onload="sinVueltaAtras();" class="display-4">INFORME</h1>
+        <hr class="hr-titulo">
+        <p align="justify" class="lead">Esta sección presenta los resultados obtenidos al procesar su requerimiento, utilice los botones del menu para navegar entre los resultados o los botones de descarga para guardar la información de interes (NOTA: si requiere generar un nuevo informe haga clic en la opción Formulario).</p>
+        <hr class="my-4">  
+        
+        <nav aria-label="..." style="background-color: #e3f2fd;"> 
+            <div>
+                  <ul class="pagination pagination-lg justify-content-center">
+                    <li class="page-item"><a class="nav-link" target="pag" href="Evaluacion">Sistema de evaluación</a></li>
+                    <li class="page-item"><a class="nav-link" target="pag" href="Modificacion">Modificación hornilla</a></li>
+                    <li class="page-item"><a class="nav-link" target="pag" href="base">Base de datos</a></li>
+                  </ul>
+            </div>
+        </nav>
+                       
+        <iframe class="m-auto shadow-sm p-3 mb-5 bg-light rounded" id="frame123" display="none" width="100%" height="900" src="Evaluacion" name="pag" marginheight="0" marginwidth="0" scrolling="yes"></iframe>
+        <br/>
+        <center>           
+            <a class="btn btn-info btn-lg" href="/" role="button" style="width:250px">Salir</a>         
+        </center>
+        
+        <script languaje="javascript">
+            window.history.forward();
+            function sinVueltaAtras(){ window.history.forward();}
+        </script>
+{% endblock %}
+
+

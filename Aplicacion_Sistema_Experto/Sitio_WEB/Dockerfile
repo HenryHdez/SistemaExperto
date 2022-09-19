@@ -61,20 +61,7 @@ RUN pip3 install -r requirements.txt
 
 #Correr python
 COPY __pycache__ /opt/app/__pycache__
-COPY static /opt/app/static 
-COPY templates /opt/app/templates 
-COPY COL_adm1.sf.rds /opt/app/COL_adm1.sf.rds 
-COPY Areas.py /opt/app/Areas.py
-COPY Costos_funcionamiento.py /opt/app/Costos_funcionamiento.py 
-COPY Diseno_inicial.py /opt/app/Diseno_inicial.py 
-COPY Doc_latex.py /opt/app/Doc_latex.py 
-COPY Gases.py /opt/app/Gases.py 
-COPY index.py /opt/app/index.py 
-COPY Modulo1.py /opt/app/Modulo1.py 
-COPY Modulo2.py /opt/app/Modulo2.py 
-COPY Modulo4.py /opt/app/Modulo4.py 
-COPY Modulo21.py /opt/app/Modulo21.py 
-COPY Pailas.py /opt/app/Pailas.py 
-COPY index.py /opt/app/index.py
+COPY .. /opt/app/ 
+
 EXPOSE 7000
 CMD ["python3", "index.py"]

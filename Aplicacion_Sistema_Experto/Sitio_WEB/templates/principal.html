@@ -29,7 +29,7 @@
 
 {% block content %}
       <h1 class="display-4">
-      <a class="btn btn-success btn-lg btn-usuario-corp" href="usuario" role="button"><img src="/static/Iconos/IconoAPP.png" width="400" height="180"></a>      
+      <a class="btn btn-success btn-lg btn-usuario-corp" href="usuario" role="button"><img src="/static/Iconos/IconoAPP.png", width="400", height="180", title="Ir al formulario"></a>      
       </h1>
       <hr class="hr-titulo">
       <p class="lead" style="text-align: justify">Es una aplicación de uso gratuito que permite al usuario sin conocimiento especializado de cálculo en 
@@ -43,11 +43,12 @@
       <div class="col-12 inicio-app-seccion">
         <a download="Manual" href="{{url_for('static', filename='/Catalogos/Manual.pdf')}}">Haga clic aqui para descargar el manual de la aplicación</a>
       </div>
+
+      <div class="col-12 inicio-app-seccion">
+        <a href="https://www.facebook.com/Hornillapp-v10-109050121737354/"><img src="/static/Iconos/Facebook.png" width="100" height="100" title="Ir a la página"/></a>
+      </div>
       
-      <!-- Contador de visitas -->
-    <center><a href="http://www.websmultimedia.com/contador-de-visitas-gratis" title="Contador De Visitas Gratis">
-    <img style="border: 0px solid; display: inline;" alt="contador de visitas" src="http://www.websmultimedia.com/contador-de-visitas.php?id=300918"></a><br>Visitas a este sitio<br></center>
-    <!-- Fin Contador de visitas -->
+      <!-- Fin Contador de visitas -->
   
 {% endblock %}
        

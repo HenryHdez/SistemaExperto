@@ -32,8 +32,8 @@
     <hr class="hr-titulo">
     <p align="justify" class="lead">Por favor, complete los siguientes campos (* indica que el campo es obligatorio).</p>
     <hr class="my-4">
-     <form class="row" action = "http://localhost:7000/informe" method = "POST">
-     <!--<form class="row" action = "http://hornillapp.agrosavia.co:7000/informe" method = "POST">-->
+     <!--<form class="row" name="Formulario_usuario" action = "http://localhost:7000/informe" method = "POST">-->
+     <form class="row" name="Formulario_usuario" action = "http://hornillapp.agrosavia.co:7000/informe" method = "POST">
      
          <div style= "width: 100%; text-align: center;">
             <hr class="my-4">
@@ -47,23 +47,23 @@
         <table class="form-row">
             <tr class="col-md-6 col-sm-12 form-group">
                <td class="col-12"> <p> <b>Nombre de usuario o entidad*:</b> </p> </td>
-               <td class="col-12"> <input id="nom" type = "text" name = "Nombre de usuario" placeholder="Ej. AGROSAVIA" maxlength="20" required/> </td>
+               <td class="col-12"> <input id="nom" type = "text" name = "Nombre de usuario" title="Ingrese nombre de usuario" placeholder="Ej. AGROSAVIA" maxlength="20" required/> </td>
             </tr>
 
             <tr class="col-md-6 col-sm-12 form-group">
                <td class="col-12"> <p> <b>Correo electrónico donde recibirá los resultados de la consulta*:</b> </p> </td>
-               <td class="col-12"> <input type = "email" name = "Correo" maxlength="200" value="@" required/> </td>
+               <td class="col-12"> <input type = "email" name = "Correo" title="Ingrese correo electrónico" maxlength="200" value="@" required/> </td>
             </tr>
 
             <tr class="col-md-6 col-sm-12 form-group">
                <td class="col-12"> <p> <b>Número de contacto*:</b> </p> </td>
-               <td class="col-12"> <input type = "number" name = "Telefono" maxlength="10" placeholder="Ej. 3121234567" required/> </td>
+               <td class="col-12"> <input type = "number" name = "Telefono"  title="Ingrese número de teléfono" maxlength="10" placeholder="Ej. 3121234567" required/> </td>
             </tr>
                                                                         
             <tr class="col-md-6 col-sm-12 form-group">
                 <td class="col-12"> <p> <b>País:</b> </p> </td>
                 <td class="col-12"> 
-                    <select id="Pais" name="Pais" onchange="Ocultar_depto();">
+                    <select id="Pais" title="Seleccione pais de origen" name="Pais" onchange="Ocultar_depto();">
                         {% for i in paises_lista %}
                             <option value= "{{i}}">{{i}}</option>"
                         {% endfor %}
@@ -74,7 +74,7 @@
             <tr class="col-md-6 col-sm-12 form-group">
                 <td class="col-12"> <p> <b>Departamento:</b> </p> </td>
                 <td class="col-12"> 
-                    <select id="Deptos" name="Departamento" onchange="SeleccionarDepto();">
+                    <select id="Deptos" name="Departamento"  title="Seleccione departamento" onchange="SeleccionarDepto();">
                         {% for i, valor in departamentos.items() %}
                             {% if i == 27 %}
                                 <option value= "{{valor}}" selected>{{valor}}</option>"
@@ -89,7 +89,7 @@
             <tr class="col-md-6 col-sm-12 form-group">
                 <td class="col-12"> <p> <b>Ciudad:</b> </p> </td>
                 <td class="col-12"> 
-                    <select id="Ciudad" name= "Ciudad" onchange="Seleccionarvariedad();">
+                    <select id="Ciudad" name= "Ciudad"  title="Seleccione ciudad de origen" onchange="Seleccionarvariedad();">
                         {% for i in provincia[27] %}
                             <option value= "{{i}}">{{i}}</option>"
                         {% endfor %}
@@ -113,23 +113,22 @@
                        
             <tr class="col-md-6 col-sm-12 form-group">
                <td class="col-12"> <p> <b>Área de caña disponible (Hectáreas):</b> </p> </td>
-               <td class="col-12"> <input id="Area_Semb" type = "number" name = "Área de caña disponible (Hectáreas)" value="18" step="0.5" min="1" max="400" onchange="Editar_Almanaque()"/> </td>
+               <td class="col-12"> <input id="Area_Semb"  title="Es la cantidad de caña disponible para procesar por molienda." type = "number" name = "Área de caña disponible (Hectáreas)" value="18" step="0.5" min="1" max="400" onchange="Editar_Almanaque()"/> </td>
             </tr>
 
             <tr class="col-md-6 col-sm-12 form-group">
-               <td class="col-12"> <p> <b>Área de caña proyectada que se espera moler en los próximos 5 años (Hectáreas):</b> </p> </td>
-               <td class="col-12"> <input id="Area_proy" type = "number" name = "Área de caña proyectada que se espera moler en los próximos 5 años (Hectáreas)" value="0" step="0.5"  min="0" max="400" onchange="Editar_Almanaque()"/> </td>
-            </tr>
 
+            </tr>
+                        
             <tr class="col-md-6 col-sm-12 form-group">
                <td class="col-12"> <p> <b>Altura del sitio (800 a 1800 metros sobre el nivel del mar):</b> </p> </td>
-               <td class="col-12"> <input id="Altura22" type = "number" name = "Altura" value="1600" step="10" min="800" max="1800" onchange="Editar_Almanaque()"/> </td>
+               <td class="col-12"> <input id="Altura22" title="Altura sobre el nivel del mar." type = "number" name = "Altura" value="1600" step="10" min="800" max="1800" onchange="Editar_Almanaque()"/> </td>
             </tr>
             
             <tr class="col-md-6 col-sm-12 form-group">
                 <td class="col-12"> <p> <b>¿Realiza corte por entresaque? (Si no conoce la respuesta seleccione NO)</b> </p> </td>
                 <td class="col-12"> 
-                    <select id="Entreza" onchange="Editar_Almanaque()">
+                    <select id="Entreza" title="El entresque se da cuando se cosecha la caña madura únicamente." onchange="Editar_Almanaque()">
                       <option value="NO" selected>NO</option>
                       <option value="SI">SI</option>
                     </select>  
@@ -139,7 +138,7 @@
             <tr class="col-md-6 col-sm-12 form-group">
                 <td class="col-12"> <p> <b>¿Conoce el periodo vegetativo de la variedad?</b> </p> </td>
                 <td class="col-12"> 
-                    <select id="Conoce_veg" onchange="Ocultar_per();">
+                    <select id="Conoce_veg" title="Es la periodicidad de cosecha de la caña." onchange="Ocultar_per();">
                       <option value="NO" >NO</option> <!-- Si aparece cuadrito para poner el valor, no aparece el manejo agronomico-->
                       <option value="SI" selected>SI</option>
                     </select>  
@@ -148,7 +147,7 @@
 
             <tr class="col-md-6 col-sm-12 form-group" id="cultivo_4">
                <td class="col-12"> <p> <b>Digite el valor del periodo vegetativo (meses):</b> </p> </td>
-               <td class="col-12"> <input id="Vegetativo" type = "number" name = "Periodo vegetativo" value="18" step="1"  min="2" max="48" onchange="Editar_Almanaque()"/> </td>
+               <td class="col-12"> <input id="Vegetativo" title="Es la periodicidad de cosecha de la caña." type = "number" name = "Periodo vegetativo" value="18" step="1"  min="2" max="48" onchange="Editar_Almanaque()"/> </td>
             </tr>
 
 
@@ -164,7 +163,7 @@
 
             <tr class="col-md-6 col-sm-12 form-group" id="cultivo_3">
                <td class="col-12"> <p> <b>Digite el valor de producción (toneladas por hectárea):</b> </p> </td>
-               <td class="col-12"> <input id="Rendi_proy" type = "number" name = "Producción de caña (toneladas por hectárea)" value="100" step="0.5"  min="40" max="200" onchange="Editar_Almanaque()"/> </td>
+               <td class="col-12"> <input id="Rendi_proy" title="Es la medida de cantidad de un cultivo cultivado." type = "number" name = "Producción de caña (toneladas por hectárea)" value="100" step="0.5"  min="40" max="200" onchange="Editar_Almanaque()"/> </td>
             </tr>
           
             <tr class="col-md-6 col-sm-12 form-group" id="cultivo_2" style="visibility:hidden;">
@@ -202,12 +201,12 @@
             <table class="form-row">         
             <tr class="col-md-6 col-sm-12 form-group">
                <td class="col-12"> <p> <b id="meses_ano_1">Meses de trabajo por año (1 a 12):</b>  </p> </td>
-               <td class="col-12"> <input id="meses_ano" type = "number" name = "Meses de trabajo por año" step="1" value="12" min="1" max="12" onchange="Editar_Almanaque()"/> </td>
+               <td class="col-12"> <input id="meses_ano" title="Meses que se va a trabajar durante el año." type = "number" name = "Meses de trabajo por año" step="1" value="12" min="1" max="12" onchange="Editar_Almanaque()"/> </td>
             </tr>
 
             <tr class="col-md-6 col-sm-12 form-group">
                <td class="col-12"> <p> <b id="horas_dia_1">Horas de trabajo por día (12 a 24):</b> </p> </td>
-               <td class="col-12"> <input id="horas_dia" type = "number" name = "Horas de trabajo de la hornilla por día" step="0.5" value="24" min="12" max="24" onchange="Editar_Almanaque()"/> </td>
+               <td class="col-12"> <input id="horas_dia" type = "number" title="Horas de trabajo aproximadas por día." name = "Horas de trabajo de la hornilla por día" step="0.5" value="24" min="12" max="24" onchange="Editar_Almanaque()"/> </td>
             </tr>
            
             <tr class="col-md-6 col-sm-12 form-group" valign="middle">              
@@ -396,83 +395,18 @@
                                     
         </table> 
         </div>     
-                  
+        
+        <!--Botón de sumit para enviar el formulario diligenciado-->
         <div id="Celdab1" style= "width: 100%; text-align: center;">
             <hr class="my-4">
                 <H4>
                         <b>Haga clic sobre el icono para generar el informe.</b> <br/>
-                        <input class="btn btn-success button-slider" src="/static/Iconos/Icono.png" type="image" style="width:150px; height:100px;"/>
+                        <input type="image" id= "boton_sumit" class="btn btn-success button-slider" src="/static/Iconos/Icono.png" style="width:150px; height:100px;" onclick="Espera_Informe()"/>
                 </H4>
             <hr class="my-4"> 
          </div>   
   
-        <table class="form-row" id="Tabla1" align="center" style="visibility:hidden;">
-      
-            <div id="Titulo" style="width: 100%; text-align: center;visibility:hidden;">
-                <H3>
-                    <b>Complete la siguiente información</b>
-                </H3>
-            </div>
-            
-            <tr class="col-md-6 col-sm-12 form-group">
-               <td class="col-12"> <b>Variedades de caña sembrada</b> </td>
-               <td class="col-12"> <input id="ECantidadCana" type = "number" name = "Variedades de caña sembrada" value="1" min="1" max="10" onchange="CantidadCana();"/> </td>
-               <td class="col-12"> <b>Área sembrada en el sitio</b> </td>
-            </tr>
-            
-            {%for i in range(1, 11)%}                       
-                <tr class="col-md-6 col-sm-12 form-group">
-                    <td class="col-12"> <b>Variedad de caña {{i}}:</b> </td>
-                    
-                    {%if i==1%}
-                    <td class="col-12"> 
-                        <select id="Cana_{{i}}" name="Variedad de Caña {{i}}" onchange="ActualizarCSS_{{i}}();">
-                            {% for u in Variedad_cana_1 %}
-                                <option value= "{{loop.index}}">"{{u}}"</option>"
-                            {% endfor %}
-                        </select>  
-                    </td>
-                    <td class="col-12"> <input id = "Hectareas_{{i}}" type = "number" value="10" step="0.5" min="0" max="100" onchange="Actualizar_ha();"/> ha </td>
-                    
-                    {%else%}
-                    <td class="col-12"> 
-                        <select id="Cana_{{i}}" name="Variedad de Caña {{i}}" onchange="ActualizarCSS_{{i}}();" disabled>
-                            {% for u in Variedad_cana_1 %}
-                                <option value= "{{loop.index}}">"{{u}}"</option>"
-                            {% endfor %}
-                        </select>  
-                    </td>                  
-                    <td class="col-12"> <input id = "Hectareas_{{i}}" type = "number" value="10" step="0.5" min="0" max="100" onchange="Actualizar_ha();" disabled/> ha </td>
-                    {%endif%}    
-                </tr>
-            {%endfor%}
-            
-            <tr class="col-md-6 col-sm-12 form-group">
-               <td class="col-12"> <b>Rendimiento de la última variedad de caña seleccionada (t/ha):</b> </td>
-               <td class="col-12"> <input id="CSS de la caña" type = "text" name = "CSS de la caña" value="193.5" disabled/> </td>
-            </tr>
-            
-            <tr class="col-md-6 col-sm-12 form-group">
-                <td class="col-12"><b>Vista previa de la última variedad de caña seleccionada:</b></td>
-                <td class="col-12">
-                    <OBJECT id="Foto">
-                        <img src="{{url_for('static', filename='/Latex/Cana/POJ2878.png')}}" width="200" height="250">
-                    </OBJECT>         
-                </td>
-            </tr>            
-            
-        </table>     
-                       
-        <div id="Titulo_1" style= "visibility:hidden; width: 100%; text-align: center;">
-            <hr class="my-4">
-                <H4>
-                        <b>Haga clic sobre el icono para generar el informe</b> <br/>
-                        <input class="btn btn-success button-slider" src="/static/Iconos/Icono.png" type="image" style="width:150px; height:100px;"/>
-                </H4>
-            <hr class="my-4"> 
-         </div>         
-        <!--Rotulo oculto para almacenar las ciudades y las 
-        variedades de caña temporalmente-->
+        <!--Rotulo oculto para almacenar las ciudades y las variedades de caña temporalmente-->
         <select class="form-group-lg" id="CiudadOculto" style="visibility:hidden;">
             {% for j, valor in provincia.items() %}
                 {% if j == 27 %}
@@ -482,13 +416,7 @@
                 {% endif %}
             {% endfor %}
         </select> 
-                
-        <select class="form-group-lg" id="CanaOculto" style="visibility:hidden;">
-            {% for k in Ciudad_cana_1 %}
-                <option value= {{loop.index}}>{{k}}</option>"
-            {% endfor %}
-        </select>
-         
+                        
         <input class="form-row" id="RendOculto" name = "Conoce el rendimiento de la caña" type = "text" value="SI" style="visibility:hidden;">
         <input class="form-row" id="variedadesOculto" name = "Conece las variedades de caña" type = "text" value="NO" style="visibility:hidden;">
         <input class="form-row" id="FertilizaOculto" name = "Usa fertilizante" type = "text" value="NO" style="visibility:hidden;">
@@ -528,8 +456,69 @@
         <input class="form-row" id="largo_can" name = "Largo del cañetero (mm)" type = "number" value="6400" style="visibility:hidden;"> 
 
         <input class="form-row" id="pila_bag" name = "Pilas de bagazo" type = "number" value="2" style="visibility:hidden;">
-        <!--Termina el combo oculto-->
+        
+        <!--Modal de espera-->
+        <div id="myModal" class="modalContainer">
+            <div class="modal-content">
+            <h2>INFORMACIÓN PARA EL USUARIO</h2>
+            <p style="text-align: justify;">Espere mientras el servidor procesa la información suministrada y los resultados aparecerán en el navegador, o una copia digital llegará al correo registrado en una hora aproximadamente.</p>
+            <div align="center"><img src="/static/Iconos/Engranes.gif" width="100" height="100"></div>
+            </div>
+        </div>
+
     </form>  
+    
+    <style>
+    	.modalContainer {
+			display: none; 
+			position: fixed; 
+			z-index: 1;
+			padding-top: 100px;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%; 
+			overflow: auto; 
+			background-color: rgb(0,0,0);
+			background-color: rgba(0,0,0,0.4);
+		}
+
+		.modalContainer .modal-content {
+			background-color: #fefefe;
+			margin: auto;
+			padding: 20px;
+			border: 1px solid lightgray;
+			border-top: 10px solid #58abb7;
+			width: 60%;
+		}
+
+		.modalContainer .close {
+			color: #aaaaaa;
+			float: right;
+			font-size: 28px;
+			font-weight: bold;
+		}
+
+		.modalContainer .close:hover,
+		.modalContainer .close:focus {
+			color: #000;
+			text-decoration: none;
+			cursor: pointer;
+		}
+    </style>
+    
+    <script type="text/javascript">
+        function Espera_Informe() {
+            document.getElementById("boton_sumit").disabled=true;
+			var modal = document.getElementById("myModal");
+			var body = document.getElementsByTagName("body")[0];
+			modal.style.display = "block";
+            body.style.position = "static";
+			body.style.height = "100%";
+			body.style.overflow = "hidden";
+            document.Formulario_usuario.submit();
+        }
+    </script>   
     
     <!--Forma de llamar un script desarrollado en javascript-->
     <script type="text/javascript">
@@ -557,129 +546,9 @@
               option.value = vector[k];
               option.text  = vector[k];
               sel.add(option);}   
-           sel.onchange = function() {Seleccionarvariedad()};
-           Seleccionarvariedad();
            }
          </script>        
                    
-         <script type="text/javascript">
-         function Seleccionarvariedad() {
-             var city   = document.getElementById("Ciudad");
-             var city2  = document.getElementById("CanaOculto");
-             var texto  = city.options[city.selectedIndex].value;
-             texto  = texto.replace("'", "");
-             texto  = texto.replace("'", "");
-             texto  = texto.replace(" ", "");
-             for (var m=0;m<city2.length;m++){
-                 var a=document.getElementById("CanaOculto").options.item(m).text;
-                 if(a==texto){
-                     document.getElementById("Cana").value=m+1;
-                     break;
-                 }
-                 else{
-                     document.getElementById("Cana").value=1;
-                 }   
-             }
-             ActualizarCSS();              
-             }
-        </script>     
-        
-        <script type="text/javascript">
-         function ActualizarCSS_1() {
-                 //Función para almacenar el valor de la caña seleccionado
-                 var ACSS      = document.getElementById("Cana_1");
-                 var texto     = ACSS.options[ACSS.selectedIndex].innerText;
-                 Mostrar_cana(texto);
-             }
-
-         function ActualizarCSS_2() {
-                 //Función para almacenar el valor de la caña seleccionado
-                 var ACSS      = document.getElementById("Cana_2");
-                 var texto     = ACSS.options[ACSS.selectedIndex].innerText;
-                 Mostrar_cana(texto);
-             }
-
-         function ActualizarCSS_3() {
-                 //Función para almacenar el valor de la caña seleccionado
-                 var ACSS      = document.getElementById("Cana_3");
-                 var texto     = ACSS.options[ACSS.selectedIndex].innerText;
-                 Mostrar_cana(texto);
-             }
-
-         function ActualizarCSS_4() {
-                 //Función para almacenar el valor de la caña seleccionado
-                 var ACSS      = document.getElementById("Cana_4");
-                 var texto     = ACSS.options[ACSS.selectedIndex].innerText;
-                 Mostrar_cana(texto);
-             }
-             
-         function ActualizarCSS_5() {
-                 //Función para almacenar el valor de la caña seleccionado
-                 var ACSS      = document.getElementById("Cana_5");
-                 var texto     = ACSS.options[ACSS.selectedIndex].innerText;
-                 Mostrar_cana(texto);
-             }             
-
-         function ActualizarCSS_6() {
-                 //Función para almacenar el valor de la caña seleccionado
-                 var ACSS      = document.getElementById("Cana_6");
-                 var texto     = ACSS.options[ACSS.selectedIndex].innerText;
-                 Mostrar_cana(texto);
-             }
-
-         function ActualizarCSS_7() {
-                 //Función para almacenar el valor de la caña seleccionado
-                 var ACSS      = document.getElementById("Cana_7");
-                 var texto     = ACSS.options[ACSS.selectedIndex].innerText;
-                 Mostrar_cana(texto);
-             }
-
-         function ActualizarCSS_8() {
-                 //Función para almacenar el valor de la caña seleccionado
-                 var ACSS      = document.getElementById("Cana_8");
-                 var texto     = ACSS.options[ACSS.selectedIndex].innerText;
-                 Mostrar_cana(texto);
-             }
-             
-         function ActualizarCSS_9() {
-                 //Función para almacenar el valor de la caña seleccionado
-                 var ACSS      = document.getElementById("Cana_9");
-                 var texto     = ACSS.options[ACSS.selectedIndex].innerText;
-                 Mostrar_cana(texto);
-             }             
-
-         function ActualizarCSS_10() {
-                 //Función para almacenar el valor de la caña seleccionado
-                 var ACSS      = document.getElementById("Cana_10");
-                 var texto     = ACSS.options[ACSS.selectedIndex].innerText;
-                 Mostrar_cana(texto);
-             }
-
-         function Actualizar_caja() {
-                 //Función para almacenar el valor de la caña seleccionado
-                 var ACSS      = document.getElementById("Cana_1");
-                 var texto     = ACSS.options[ACSS.selectedIndex].innerText;
-                 Mostrar_cana(texto);
-             }
-                                                    
-         function Mostrar_cana(texto) {
-                 var vector1   = texto.split(",");
-                 var Var_cana  = vector1[0].substring(1);
-                 var Gr_Br1    = vector1[2].replace('\"', ''); 
-                 var vector2   = Gr_Br1.split(" ");
-                 var Gr_Br2    = vector2[2].replace(' ', ''); 
-                 
-                 var Gr_Br3    = vector1[3].split(" ");
-                 var per_veg   = Gr_Br3[3].replace('\"', ''); 
-                 
-                 var coeficiente = per_veg/Gr_Br2;
-                 document.getElementById("CSS de la caña").value=Gr_Br2; 
-                                 
-                 Estimar_Molienda(Gr_Br2, per_veg);
-                 Abririmagen(Var_cana+".png");          
-             }
-        </script> 
-
         <script type="text/javascript">
         function Ocultar_Fertiliza() {
           //Función para ocultar los elementos de la página
@@ -716,10 +585,7 @@
               else if(altura2>1600 && altura2<=2000){vegeta=20;}
               else {vegeta=24;}
               document.getElementById("Vegetativo").value = vegeta;              
-             }
-          //else{
-          //    document.getElementById("Vegetativo").value = 18;
-          //   } 
+             } 
         }
         </script>
 
@@ -1003,7 +869,7 @@
               //Cada semana de molienda
               var Crecimiento = 0;
               Crecimiento = parseFloat(document.getElementById("Area_Semb").value);
-              Crecimiento = Crecimiento+parseFloat(document.getElementById("Area_proy").value);
+              //Crecimiento = Crecimiento+parseFloat(document.getElementById("Area_proy").value);
                             
               if(Freq_t=="1 semana (2 de descanso)"){Freq=26;}
               if(Freq_t=="1 semana (1 de descanso)"){Freq=26;}
@@ -1132,7 +998,7 @@
                  }                        
               var rendi=parseFloat(Gr_Br2)*FactorCorreccion;             
               Crecimiento = parseFloat(document.getElementById("Area_Semb").value);
-              Crecimiento = Crecimiento+parseFloat(document.getElementById("Area_proy").value);
+              //Crecimiento = Crecimiento+parseFloat(document.getElementById("Area_proy").value);
               Produccion_anual_cana=(Crecimiento*12.0*rendi)/parseFloat(per_veg);
               Produccion_jugo_crudo=60.0*Produccion_anual_cana/100.0;
               Jugo_clarificado=Produccion_jugo_crudo-(Produccion_jugo_crudo*(4.0/100.0));
@@ -1160,7 +1026,7 @@
                   var molidas_ano = Math.ceil((30/(molida+semes))*meses); 
                   memoria_panela=memoria_panela-1;
                   Crecimiento = parseFloat(memoria_panela);
-                  Crecimiento = Crecimiento+parseFloat(document.getElementById("Area_proy").value);
+                  //Crecimiento = Crecimiento+parseFloat(document.getElementById("Area_proy").value);
                   Produccion_anual_cana=(Crecimiento*12.0*rendi)/parseFloat(per_veg);
                   Produccion_jugo_crudo=60.0*Produccion_anual_cana/100.0;
                   Jugo_clarificado=Produccion_jugo_crudo-(Produccion_jugo_crudo*(4.0/100.0));
@@ -1217,48 +1083,6 @@
 			}     
         </script>
                 
-        <script type="text/javascript">
-         function CantidadCana(){
-              //Función para habilitar la selección de variedades de caña
-              var valor = document.getElementById("ECantidadCana").value; 
-              valor=parseInt(valor, 10)+1;             
-              for (var n = 1; n<=valor; n++) {
-                  var nombre="Cana_"+n;
-                  var nombre2="Hectareas_"+n;
-                  document.getElementById(nombre).disabled = false; 
-                  document.getElementById(nombre2).disabled = false;    
-              }             
-              for (var n = valor; n<=11; n++) {
-                  var nombre="Cana_"+n;
-                  var nombre2="Hectareas_"+n;
-                  document.getElementById(nombre).disabled = true; 
-                  document.getElementById(nombre2).disabled = true; 
-              }                             
-			}     
-        </script>	
-
-        <script type="text/javascript">
-         function Actualizar_ha(){
-              //Función para habilitar la selección de variedades de caña
-              var valor = document.getElementById("ECantidadCana").value; 
-              var Numero=0.00;
-              var Acumulador=0.00;
-              valor=parseInt(valor, 10)+1;             
-              for (var n = 1; n<valor; n++) {
-                  var nombre="Hectareas_"+n;  
-                  var Numero=parseFloat(document.getElementById(nombre).value);
-                  Numero=Numero.toFixed(1);
-                  Acumulador=parseFloat(Numero)+parseFloat(Acumulador);
-                  Numero=0.00;
-              }
-              if(Acumulador==0){
-                  Acumulador=10.0;
-              }
-              document.getElementById("Area_Semb").value=Acumulador.toString();     
-              Actualizar_caja();                                
-			}     
-        </script>
-
         <script type="text/javascript">
          function Ocultar_depto(){
               //Función para bloquear los elementos de la página el departamento y la provincia

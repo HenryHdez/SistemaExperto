@@ -85,17 +85,15 @@ def Calcular_parrillas(Area_Calculada,Capacidad_Hornilla,i,Calor_suministrado,Ti
     return Q_Perd_Camara
 
 #Función para calcular las propiedades de los gases           
-def Propiedades(Calor_transferido, AF, PF, AL):
+def Propiedades(Calor_transferido, AF, PF, AL, Eta):
     #Valores iniciales
     global Diccionario_Entr
     global Diccionario_Pailas
-    
     Datos_simulacion=[]
     
-    
-    Q_Cedido=Q_Cedido_gas(Calor_transferido)
+    Q_Cedido=Q_Cedido_gas(Calor_transferido, Eta)
     Masa_Bagazo=float(Diccionario_Entr['Bagazo suministrado'])
-    Cantidad_Pailas=int(Diccionario_Pailas['Etapas'])   
+    Cantidad_Pailas=Eta#int(Diccionario_Pailas['Etapas'])   
     Humedad_bagazo=float(Diccionario_Entr['Humedad del bagazo'])
     Exceso_aire=float(Diccionario_Entr['Exceso de aire'])
     Temperatura_ambiente=(float(Diccionario_Entr['CSS panela'])*100.0)+273.0
@@ -296,9 +294,10 @@ def Propiedades(Calor_transferido, AF, PF, AL):
         Q_Total_paila=Q_Paredes+Q_Piso+Q_Gas
         Q_Total_paila=saturador(Q_Total_paila,1300,0)
         Q_Total_estimado.append(Q_Total_paila+Calor_conv)
-
-    df1 = pd.DataFrame([Etiquetas_salida , Datos_simulacion])
-    df1.to_excel('static/Reporte1.xlsx')
+    
+    #Estructura para enviar datos a excel
+    df1 = pd.DataFrame(list([Etiquetas_salida , Datos_simulacion]))
+    df1.to_excel('static/Reporte1.xlsx', sheet_name='Gases')
     
     return Q_Total_estimado
 
@@ -310,12 +309,12 @@ def saturador (valor_i,maximo,minimo):
     else:
         return valor_i
 '''>>>>>>>>>>>>Concentrancion y Propiedades del jugo según calor cedido por el gas<<<<<<<<<'''
-def Q_Cedido_gas(Calor_estimado):
+def Q_Cedido_gas(Calor_estimado, Eta):
     global Diccionario_Entr
     global Diccionario_Pailas
-    Cantidad_Pailas=int(Diccionario_Pailas['Etapas']) 
-    Area_lisa=np.random.random(Cantidad_Pailas)*2 #[0.614,0.99,1.8,2.176,2.9,5]
-    Espesor_lamina=np.random.random(Cantidad_Pailas)*0.01 #[0.019,0.016,0.016,0.013,0.013,0.013]
+    Etapas=Eta
+    Area_lisa=np.random.random(Etapas)*2 #[0.614,0.99,1.8,2.176,2.9,5]
+    Espesor_lamina=np.random.random(Etapas)*0.01 #[0.019,0.016,0.016,0.013,0.013,0.013]
     #Calor_estimado=[47.135,59.740,78.743,64.603,57.385,62.503,47.135,59.740,78.743,64.603,57.385,62.503]
 #    La matriz tiene la siguiente disposición 
 #    Lista_Contenido[0]=Calor Transferido desde el gas 
@@ -334,7 +333,7 @@ def Q_Cedido_gas(Calor_estimado):
 #    Lista_Contenido[13]=flux Calor Paila
 #    Lista_Contenido[14]=T Pared L Jugo
 #    Lista_Contenido[15]=T Pared L Gas
-    Etapas=int(Diccionario_Pailas['Etapas']) 
+    
     Lista_Contenido=np.zeros((16, Etapas))
     """Calculo de la hornilla por etapas"""   
     CSS_Cana=float(Diccionario_Entr['CSS del jugo de Caña'])
@@ -385,7 +384,7 @@ def Q_Cedido_gas(Calor_estimado):
         Lista_Contenido[15][i]=Modulo2.twg(Espesor_lamina[i], Lista_Contenido[13][i], Lista_Contenido[14][i])
     return Lista_Contenido
     
-def Optimizacion(Diccionario_1, Diccionario_2, L_temp):
+def Optimizacion(Diccionario_1, Diccionario_2, L_temp, Eta):
     global Diccionario_Entr
     global Diccionario_Pailas
     Diccionario_Entr=Diccionario_1
@@ -406,7 +405,7 @@ def Optimizacion(Diccionario_1, Diccionario_2, L_temp):
     while (Iteracion_actual<=100):
         Diccionario = Diseno_inicial.datos_entrada(Diccionario_Entr,Iteracion_actual,Factor_bagazo_nuevo)
         Efec=Diccionario['Eficiencia de la hornilla']
-        Calor_1=np.around(Propiedades(Calor_0, L_temp[0], L_temp[1], L_temp[2]),3)
+        Calor_1=np.around(Propiedades(Calor_0, L_temp[0], L_temp[1], L_temp[2], Eta),3)
         
         for x in np.nditer(Calor_1):
             if(x<=0 or np.isnan(x)):

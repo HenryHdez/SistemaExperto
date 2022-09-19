@@ -2,21 +2,23 @@
 # -*- coding: utf-8 -*-
 """----Definición de las librerías requeridas para la ejecución de la aplicación---"""
 from flask import Flask, request, render_template        #Interfaz gráfica WEB
-##from flask_socketio import SocketIO
 from werkzeug.utils import secure_filename               #Encriptar información archivos de pdf
 from email.mime.multipart import MIMEMultipart           #Creación del cuerpo del correo electrónico 1
 from email.mime.application import MIMEApplication       #Creación del cuerpo del correo electrónico 2            
 from email.mime.text import MIMEText                     #Creación del cuerpo del correo electrónico 3
 from shutil import rmtree                                #Gestión de directorios en el servidor
 import smtplib                                           #Conexión con el servidor de correo
-from rpy2.robjects import r                              #Interfaz entre PYTHON y R
-from rpy2.robjects import numpy2ri                       #Interfaz entre PYTHON y R
+#from rpy2.robjects import r                              #Interfaz entre PYTHON y R
+#from rpy2.robjects import numpy2ri                       #Interfaz entre PYTHON y R
 from time import sleep                                   #Suspensión temporal
+from os import remove
 import pandas as pd                                      #Gestión de archivos de texto
 import os                                                #Hereda funciones del sistema operativo para su uso en PYTHON                    
 import base64                                            #Codifica contenido en base64 para su almacenamiento en una WEB
 import pymssql                                           #Interfaz de conexión con la base de datos
-import Doc_latex                                         #Gestión de documentos en LATEX en PYTHON debe tener preinstalado MIKTEX
+import Consideraciones_generales                         #Gestión de documentos en LATEX en PYTHON debe tener preinstalado MIKTEX
+import Graficas_comportamiento
+import Tuberia_rec
 '''---Componentes y librería de elaboración propia---'''
 import Diseno_inicial                                    #Calculo preliminar de la hornilla
 import Costos_funcionamiento                             #Calculo del costo financiero de la hornilla
@@ -34,44 +36,6 @@ try:
     os.makedirs(uploads_dir, True)
 except OSError: 
     print('Directorio existente')
-
-#def Espera():
-#    global Lista_clientes
-#    global Estado_Cliente
-#    i=0
-#    while True:
-#        sleep(280)
-#        j=len(Lista_clientes)
-#        print(j)
-#        while j>0 and Estado_Cliente==False:
-#            #Limpiar directorios de uso temporal
-#            try:
-#                rmtree('static/Temp')
-#                os.mkdir('static/Temp')
-#            except:
-#                os.mkdir('static/Temp')
-#            try:  
-#                rmtree('static/pdf00')
-#                rmtree('static/pdf01')
-#                rmtree('static/pdf02')
-#                os.mkdir('static/pdf00')
-#                os.mkdir('static/pdf01')
-#                os.mkdir('static/pdf02')
-#            except:
-#                os.mkdir('static/pdf00')
-#                os.mkdir('static/pdf01')
-#                os.mkdir('static/pdf02')
-#            try:
-#                generar_valores_informe(Lista_clientes[0][0])
-#                sleep(10)
-#                Lista_clientes.pop(0)
-#                sleep(10)
-#                i=i+1
-#            except:
-#                print("Error")
-#                j=0
-#        j=0
-#        i=0
    
 '''---Funciones de direccionamiento en la interfaz WEB---'''
 #Eliminar datos cargados en cache al actualizar la página.
@@ -98,46 +62,17 @@ def usua():
     global paises
     global Deptos_cana
     global Ciudad_cana
-    global Tipo_cana
-    global Grados_Bx
-    global Nivel_pH
-    global Nivel_azucar
-    global Nivel_Sacarosa
-    global Nivel_pureza
-    global Nivel_Fosforo
-    global Nivel_Calidad
-    global Nivel_brpane 
-    global Cana_ha
-    global Periodo
     df             = pd.read_json("static/Catalogos/Colombia.json")
     paises         = pd.read_excel("static/Catalogos/Paises.xlsx", engine='openpyxl') 
     cana           = pd.read_excel("static/Catalogos/Variedades.xlsx", engine='openpyxl')
     Deptos_cana    = cana['Depto'].values
     Ciudad_cana    = cana['Ciudad'].values
-    Tipo_cana      = cana['Tipo'].values
-    Grados_Bx      = cana['Br'].values
-    Nivel_pH       = cana['pH'].values
-    Nivel_azucar   = cana['Azucares'].values
-    Nivel_Sacarosa = cana['Sacarosa'].values
-    Nivel_pureza   = cana['Pureza'].values
-    Nivel_Fosforo  = cana['Forforo'].values
-    Nivel_Calidad  = cana['Calidad'].values 
-    Nivel_brpane   = cana['BrPanela'].values
-    Cana_ha        = cana['ProduccionCana'].values
-    Periodo        = cana['Periodo'].values
-    Variedad_cana  = []
-    for i in range(0, len(Deptos_cana)):
-        if(i==0):
-            Variedad_cana.append(Tipo_cana[i]+", -Valor por defecto-, rendimiento= "+str(Cana_ha[i])+ ", periodo vegetativo= "+str(Periodo[i]))
-        else:
-            Variedad_cana.append(Tipo_cana[i]+", Disponible en: "+Deptos_cana[i]+"-"+Ciudad_cana[i]+", rendimiento= "+str(Cana_ha[i])+ ", periodo vegetativo= "+str(Periodo[i]))
     
     return render_template('usuario.html', 
                            paises_lista=paises['Nombre'],
                            departamentos=df.departamento, 
                            provincia=df.ciudades,
-                           Ciudad_cana_1=Ciudad_cana,
-                           Variedad_cana_1=Variedad_cana,
+                           Ciudad_cana_1=Ciudad_cana
                            )   
 
 #Codificar los pdf en formato de texto plano
@@ -155,63 +90,128 @@ def Leer_pdf_base64(Nombre_pdf, Texto_base64):
         Archivo_deco = base64.decodebytes(PDF_Base64)
         Archivo_Normal.write(Archivo_deco)
 
-def Enviar_msn(Correo):
+def Enviar_msn(Correo, Nombre_cli, Estado):
     try:
-        # Crear el objeto mensaje
-        mensaje = MIMEMultipart()             
-        mensaje['From']     = 'hornillapp@agrosavia.co'       #Correo de prueba para enviar algo desde la página
-        mensaje['To']       = Correo                          #Correo funcionario a cargo    
-        mensaje['Subject']  = 'Informe generado con HornillAPP'                       #Correo funcionario a cargo          
-        #Cuerpo del mensaje
-        msn = ('Cordial saludo.\n En este correo encontrara el resultado generado con HornillAPP a través de un informe.\n Atentamente: Equipo técnico de AGROSAVIA.')
-        mensaje.attach(MIMEText(msn, 'plain'))
-        # Adjuntar el archivo dado por el usuario
-        # Estructura para adjuntar un archivo usando flask y HTML desde la raiz del directorio      
-        archivo_adjunto = MIMEApplication(open('static/Informe.pdf',"rb").read())
-        archivo_adjunto.add_header('Content-Disposition', 'attachment', filename='Informe.pdf')
-        mensaje.attach(archivo_adjunto)
-        # Datos de acceso a la cuenta de usuario
-        usuario   ='hornillapp@agrosavia.co'
-        contrasena='Contrasena12345@'          
-        #Interfaz de conexión con el servidor de gmail
-        servidor = smtplib.SMTP('correo.agrosavia.co:587')
-        servidor.starttls()
-        servidor.login(usuario, contrasena)
-        servidor.sendmail(mensaje['From'], mensaje['To'], mensaje.as_string())
-        servidor.quit()  
+        for i in range(0,Estado):
+            # Crear el objeto mensaje
+            mensaje = MIMEMultipart()             
+            mensaje['From']     = 'hornillapp@agrosavia.co'                                 #Correo de prueba para enviar algo desde la página
+            mensaje['To']       = Correo                                                    #Correo funcionario a cargo    
+            mensaje['Subject']  = 'Informe generado con HornillAPP'                         #Correo funcionario a cargo          
+            #Cuerpo del mensaje
+            msn = ('Cordial saludo.\n En este correo encontrara el resultado generado con HornillAPP a través de un informe (Es posible que le lleguen dos correos debido a la gran cantidad de información disponible para usted).\n Atentamente: Equipo técnico de AGROSAVIA.')
+            mensaje.attach(MIMEText(msn, 'plain'))
+            # Adjuntar el archivo dado por el usuario
+            # Estructura para adjuntar un archivo usando flask y HTML desde la raiz del directorio      
+            archivo_adjunto = MIMEApplication(open('static/Descarga/Resumen'+Nombre_cli+'.pdf',"rb").read())
+            archivo_adjunto.add_header('Content-Disposition', 'attachment', filename='Resumen.pdf')
+            mensaje.attach(archivo_adjunto)
+                       
+            if(i==0):
+                archivo_adjunto = MIMEApplication(open('static/Descarga/Financiero1'+Nombre_cli+'.pdf',"rb").read())
+                archivo_adjunto.add_header('Content-Disposition', 'attachment', filename='Analisis.pdf')
+                mensaje.attach(archivo_adjunto)
+                
+                archivo_adjunto = MIMEApplication(open('static/Descarga/Planos_WEB1'+Nombre_cli+'.pdf',"rb").read())
+                archivo_adjunto.add_header('Content-Disposition', 'attachment', filename='Planos.pdf')
+                mensaje.attach(archivo_adjunto)
+            else:
+                archivo_adjunto = MIMEApplication(open('static/Descarga/Financiero2'+Nombre_cli+'.pdf',"rb").read())
+                archivo_adjunto.add_header('Content-Disposition', 'attachment', filename='Analisis2.pdf')
+                mensaje.attach(archivo_adjunto)
+                
+                archivo_adjunto = MIMEApplication(open('static/Descarga/Planos_WEB2'+Nombre_cli+'.pdf',"rb").read())
+                archivo_adjunto.add_header('Content-Disposition', 'attachment', filename='Planos2.pdf')
+                mensaje.attach(archivo_adjunto)                
+            # Datos de acceso a la cuenta de usuario
+            usuario   ='hornillapp@agrosavia.co'
+            contrasena='Contrasena123@'          
+            #Interfaz de conexión con el servidor de gmail
+            servidor = smtplib.SMTP('correo.agrosavia.co:587')
+            servidor.starttls()
+            servidor.login(usuario, contrasena)
+            servidor.sendmail(mensaje['From'], mensaje['To'], mensaje.as_string())
+            servidor.quit()         
     except:
         print('No se pudo enviar el informe')
 
-def Diseño_Hornilla(Nombre_Rot, Ite):
+def Diseño_Hornilla(Nombre_Rot, Ite, Rec_opt):
     global Diccionario 
     global Diccionario_2
     conta=0
-    while(Ite==0 and conta<3):
+    Eta=0
+    while(Ite==0 and conta<1):
         """------------>>>>>>>>>>HORNILLA<<<<<<<<<<<<<<<<----------------"""
         """Calculo de la hornilla (Diseño inicial)"""
         Diccionario   = Diseno_inicial.datos_entrada(Diccionario,0,0)
         Diccionario_2 = Diseno_inicial.Calculo_por_etapas(Diccionario)
         Gases.diccionarios_sis(Diccionario,Diccionario_2)
         Calor_0=Diccionario_2['Calor Nece Calc por Etapa [kW]']
-        Vo=np.ones(int(Diccionario_2['Etapas']))
-        Gases.Propiedades(Calor_0,Vo,Vo,Vo)
+#        print(Calor_0)
+#        print(int(Diccionario_2['Etapas']))
+        Eta=int(Diccionario_2['Etapas'])
+        Vo=np.ones(Eta)
+        Gases.Propiedades(Calor_0,Vo,Vo,Vo, Eta)
         """Calcular volumenes iniciales"""
+        
         Dimensi_Pail = Pailas.Mostrar_pailas(Diccionario_2['Volumen de jugo [m^3/kg]'],
-                                                          #Diccionario_2['Volumen de jugo [L]'],
-                                                          int(Diccionario_2['Etapas']),
-                                                          Nombre_Rot,
-                                                          Diccionario['Tipo de cámara de combustión'],
-                                                          Diccionario['Capacidad estimada de la hornilla'],
-                                                          altura_media,
-                                                          Diccionario) 
+                                            Eta,
+                                            Nombre_Rot,
+                                            Diccionario['Tipo de cámara de combustión'],
+                                            Diccionario['Capacidad estimada de la hornilla'],
+                                            altura_media,
+                                            Diccionario,
+                                            Rec_opt) 
+#        print(Dimensi_Pail)
         """Optimizar valores"""
         L_temp = Areas.Areas_lisas(Dimensi_Pail)
-        Gases.Propiedades(Calor_0,L_temp[0],L_temp[1],L_temp[2])
-        Gases.Optimizacion(Diccionario, Diccionario_2, L_temp)       
+        Gases.Propiedades(Calor_0,L_temp[0],L_temp[1],L_temp[2], Eta)
+        Gases.Optimizacion(Diccionario, Diccionario_2, L_temp, Eta)       
         if(float(Diccionario['Bagazo suministrado'])<float(Diccionario['Bagazo seco'])):
             Ite=1
         conta=conta+1
+
+def Exportar_diseno_excel(Dic, Nombre, Opt):
+    Lista_temp1=[]
+    Lista_temp2=[]
+    for key in Dic.keys():
+        Lista_temp1.append(key)
+        if(key!='Etapas'):
+            for item in Dic[key]:
+                Lista_temp1.append(item)
+            Lista_temp2.append(Lista_temp1)
+            Lista_temp1=[]
+
+    #Estructura para enviar datos a excel
+    df1=pd.read_excel('static/Reporte1.xlsx')
+    df2=pd.read_excel('static/Reporte2.xlsx')
+    writer = pd.ExcelWriter('static/'+Nombre+'.xlsx')     
+    df1.to_excel(writer, sheet_name='Gases')
+    df2.to_excel(writer, sheet_name='Inicial')
+    df3 = pd.DataFrame(Lista_temp2)
+    df3.to_excel(writer, sheet_name='Diseno E')
+    df4=pd.read_excel('static/Camara.xlsx')
+    df4.to_excel(writer, sheet_name='Camara')
     
+    if(Opt==0):
+        df5=pd.read_excel('static/Chimenea.xlsx')
+        df5.to_excel(writer, sheet_name='Chimenea')
+        Direct='static/Pai_sin_rec.xlsx'
+    else:
+        Direct='static/Pai_con_rec.xlsx'     
+    try:
+        import openpyxl
+        wb=openpyxl.load_workbook(Direct)
+        sheets=wb.sheetnames
+        for ii in sheets:
+            df6=pd.read_excel(Direct, sheet_name=ii)
+            df6.to_excel(writer, sheet_name=ii)
+    except:
+        print('Sin pailas')
+    writer.save()
+    
+
+
 #Función para crear los diccionarios a partir de los calculos de la aplicación
 def generar_valores_informe(Cliente_actual, Nombre_cli):
     #----------->>>>>>>>>>>Variables globales<<<<<<<<<<<<<<<---------
@@ -220,51 +220,28 @@ def generar_valores_informe(Cliente_actual, Nombre_cli):
     global NivelFre
     global Formulario_1_Etiquetas
     global Formulario_1_Valores
-    global Formulario_2_Etiquetas
-    global Formulario_2_Valores
     global Formulario_2a_Etiquetas
     global Formulario_2a_Valores
     global Directorio
     global Deptos_cana
     global Ciudad_cana
-    global Tipo_cana
-    global Grados_Bx
-    global Nivel_pH
-    global Nivel_azucar
-    global Nivel_Sacarosa
-    global Nivel_pureza
-    global Nivel_Fosforo
-    global Nivel_Calidad
-    global Nivel_brpane
-    global Cana_ha
     global Diccionario 
     global Diccionario_2
     global Diccionario_3
     global Diccionario_4
+    global Result_Financie
     result=Cliente_actual
     """Creación de la primer parte del diccionario (leer del formulario de usuario)"""
     Pais_sel=result.get('Pais')
+    a=result.to_dict()
     if(Pais_sel=='Colombia'):
-        a=result.to_dict() 
-        Dept=result.get('Departamento')
-        D_aux=df.departamento
-        D_aux=D_aux.tolist()
-        amsnm=df.altura
-        amsnm=amsnm.tolist()
-        H2O=df.aguasubterranea
-        H2O=H2O.tolist()
-        altura_media=float(result.get('Altura'))#amsnm[D_aux.index(Dept)]
-        #print(altura_media)
-        #NivelFre='Minimo 4 metros'#H2O[D_aux.index(Dept)]
+        altura_media=float(result.get('Altura'))
         Nombre_Rot="Hornilla: "+a['Nombre de usuario']+" ("+a['Departamento']+'-'+a['Ciudad']+")"
     else:
-        a=result.to_dict() 
-        altura_media=200
-        #NivelFre='Minimo 4 metros'   
+        altura_media=1600  
         a['Departamento']='--'
         a['Ciudad']='--'
         Nombre_Rot="Hornilla: "+a['Nombre de usuario']+" ("+a['Pais']+")"
-    
     #---------------->>>>>>>>>"""Cálculo del periodo vegetativo"""<<<<<<<<<<<<<<<<<<<
     Formulario_1_Etiquetas=[]
     Formulario_1_Valores=[]
@@ -291,67 +268,22 @@ def generar_valores_informe(Cliente_actual, Nombre_cli):
     Formulario_1_Valores.append('Mínimo 4 metros')    
     """Creación de la segunda parte del diccionario"""
     a=result.to_dict()
-    cantidadcanas=int(a['Variedades de caña sembrada'])+1
-    Formulario_2_Etiquetas=[]
-    Formulario_2_Valores=[] 
     Formulario_2a_Etiquetas=[]
     Formulario_2a_Valores=[]
-    Directorio =[]
     G_brix_cana=0.0
     G_brix_panela=0.0
-    ha_cana_conta=0.0
-    Periodo_v=0
-    for contacana in range(1,cantidadcanas):
-        try:
-            Valor_cana_buscar='Variedad de Caña '+str(contacana)
-            index=int(a[Valor_cana_buscar])-1 
-            Formulario_2_Etiquetas.append(Valor_cana_buscar)
-            Formulario_2_Valores.append(Tipo_cana[index])    
-            Formulario_2_Etiquetas.append('Grados Brix de la caña '+str(contacana))
-            Formulario_2_Valores.append(Grados_Bx[index]) 
-            Formulario_2_Etiquetas.append('pH')
-            Formulario_2_Valores.append(Nivel_pH[index])    
-            Formulario_2_Etiquetas.append('Azúcares reductores (%)')
-            Formulario_2_Valores.append(Nivel_azucar[index]) 
-            Formulario_2_Etiquetas.append('Sacarosa (%)')
-            Formulario_2_Valores.append(Nivel_Sacarosa[index])    
-            Formulario_2_Etiquetas.append('Pureza (%)')
-            Formulario_2_Valores.append(Nivel_pureza[index])  
-            Formulario_2_Etiquetas.append('Fósforo (ppm)')
-            Formulario_2_Valores.append(Nivel_Fosforo[index])    
-            #Formulario_2_Etiquetas.append('Grados Brix de la panela '+str(contacana))
-            #Formulario_2_Valores.append(Nivel_brpane[index])
-            Formulario_2_Etiquetas.append('>---------------------------------<')
-            Formulario_2_Valores.append('>---------------------------------<')
-            G_brix_cana=G_brix_cana+float(Grados_Bx[index])
-            G_brix_panela=G_brix_panela+float(Nivel_brpane[index])
-            Directorio.append('Cana/'+Tipo_cana[index]+'.png')
-            ha_cana_conta=ha_cana_conta+float(Cana_ha[index])
-            Periodo_v=float(Periodo[index])+Periodo_v
-        except:
-            print("Variedad no disponible")
-        ha_cana_conta_p=ha_cana_conta/(cantidadcanas-1)
-        Periodo_v=Periodo_v/(cantidadcanas-1)
       
-    #FORMULARIO 2
-    #Exportar variedades de caña seleccionadas
-    datos_temp=[Formulario_2_Etiquetas,Formulario_2_Valores]
-    df1 = pd.DataFrame(datos_temp)
-    df1.to_excel('static/Temp/Temp4.xlsx')   
-    datos_temp=[Directorio]
-    df1 = pd.DataFrame(datos_temp)
-    df1.to_excel('static/Temp/Temp5.xlsx')  
-    #Grados brix promedio para publicar en el informe
-    G_brix_cana=17#round(G_brix_cana/len(Directorio),3)       
-    G_brix_panela=94#round(G_brix_panela/len(Directorio),3)
+    #FORMULARIO 2a
+    G_brix_cana=17     
+    G_brix_panela=96
     Formulario_2a_Etiquetas.append('Grados Brix de la caña (promedio)')
     Formulario_2a_Valores.append(G_brix_cana)
     Formulario_2a_Etiquetas.append('Grados Brix de la panela (promedio)')
     Formulario_2a_Valores.append(G_brix_panela)    
     
     """----------->>>>Actualización de diccionarios<<<<<<<<<<--------"""
-    Diccionario=dict(zip(Formulario_1_Etiquetas,Formulario_1_Valores))
-    Dict_aux=dict(zip(Formulario_2a_Etiquetas,Formulario_2a_Valores))
+    Diccionario=dict(zip(Formulario_1_Etiquetas, Formulario_1_Valores))
+    Dict_aux=dict(zip(Formulario_2a_Etiquetas, Formulario_2a_Valores))
     Diccionario.update(Dict_aux)  
     
     #Eliminar cosas que no se van a mostrar
@@ -366,8 +298,24 @@ def generar_valores_informe(Cliente_actual, Nombre_cli):
     Formulario_1_Etiquetas=aux_form_1
     Formulario_1_Valores=aux_form_2
 
-    """Calculo de la hornilla (Diseño inicial)"""
-    Diseño_Hornilla(Nombre_Rot, 0)
+    """Cálculo de las configuraciones de pailas de la hornilla (Diseño inicial)"""
+    #Sin recuperador
+    Diseño_Hornilla(Nombre_Rot, 0, 0) 
+    Exportar_diseno_excel(Diccionario_2, 'Calculos_sin_rec', 0)
+    Diccionario['Etapas']=str(int(float(Diccionario['Etapas']))-1)
+    #Con recuperador
+    Diseño_Hornilla(Nombre_Rot, 0, 1)
+    Exportar_diseno_excel(Diccionario_2, 'Calculos_con_rec', 1)
+    #Eliminar archivos
+    remove("static/Camara.xlsx")
+    remove("static/Chimenea.xlsx")
+    remove("static/Pai_sin_rec.xlsx")
+    remove("static/Reporte1.xlsx")
+    remove("static/Reporte2.xlsx")    
+    try:
+        remove("static/Pai_con_rec.xlsx")
+    except:
+        print("El archivo no existe")
     
     """Presentar información del molino"""
     Formulario_3_Etiquetas=['Caña molida por hora [t]', 'Capacidad del molino [kg/hora]']
@@ -376,6 +324,7 @@ def generar_valores_informe(Cliente_actual, Nombre_cli):
         Formulario_3_Valores.append(Diccionario[i])
         
     Molino=pd.read_excel('static/Temp/Temp.xlsx', engine='openpyxl',skipcolumn = 0,)
+    
     Marca=Molino['Marca'].values
     Modelo=Molino['Modelo'].values
     Kilos=Molino['kg/hora'].values
@@ -398,220 +347,81 @@ def generar_valores_informe(Cliente_actual, Nombre_cli):
                                     float(Diccionario['Moliendas al año']),
                                     float(Diccionario['Producción anual de caña [t]']),
                                     float(Diccionario['Caña molida por hora [t]']))
-    Costos_funcionamiento.costos()
+    
+    Result_Financie=Costos_funcionamiento.costos() #Sin recuperador
     
     """Generar portada"""
-    Eficiencia_hornilla="20" #Cambiar 
     Memoria_temp=' ha'
     Crecimiento=float(result.get('Área de caña disponible (Hectáreas)'))
-    Crecimiento=Crecimiento+float(result.get("Área de caña proyectada que se espera moler en los próximos 5 años (Hectáreas)"))
+    #Crecimiento=Crecimiento+float(result.get("Área de caña proyectada que se espera moler en los próximos 5 años (Hectáreas)"))
+    
     if(float(Diccionario['Capacidad estimada de la hornilla'])<250):
         Memoria_temp=' ha'
     else:
         Memoria_temp=' ha (ajustado de acuerdo con la capacidad de diseño de HornillApp)'
-    Doc_latex.Documento_Latex.portada(Diccionario,
-                                      Eficiencia_hornilla,
+        
+    Consideraciones_generales.Documento_Latex.portada(Diccionario,
                                       Diccionario['Tipo de hornilla'],
                                       Diccionario['Área de la bagacera (m^2)'],
                                       str(Crecimiento), 
                                       Memoria_temp)
-    Doc_latex.Documento_Latex.seccion1(Diccionario, Diccionario_2)
-    Doc_latex.Documento_Latex.generar_pdf()
+    Consideraciones_generales.Documento_Latex.seccion1(Diccionario, Diccionario_2)
+    Consideraciones_generales.Documento_Latex.generar_pdf()
+    
+    if(float(Diccionario['Capacidad estimada de la hornilla'])<=150):
+        Tuberia_rec.Documento_Latex.portada()
+        Tuberia_rec.Documento_Latex.Mostrar_rec()
+        Tuberia_rec.Documento_Latex.generar_pdf() 
     sleep(5)
     """Creación del pdf"""
     Pailas.Generar_reporte(Diccionario, Diccionario_2, Nombre_cli)
+    Graficas_comportamiento.Documento_Latex.reporte(Nombre_cli)
 
-    df2 = pd.DataFrame([[key, Diccionario_2[key]] for key in Diccionario_2.keys()])
-    df2.to_excel('static/Reporte2.xlsx')
-
-    """>>>>>>>>>>>>>>>>Actualizar base de datos<<<<<<<<<<<<<<"""        
-#    usuarios = (Diccionario['Nombre de usuario'],
-#                Diccionario['Correo'],
-#                int(float(Diccionario['Telefono'])),
-#                Diccionario['Pais'], 
-#                Diccionario['Departamento'],
-#                Diccionario['Ciudad'], 
-#                Crear_archivo_base_64('static/Reporte1.xlsx'), 
-#                Crear_archivo_base_64('static/Reporte2.xlsx'), 
-#                Crear_archivo_base_64('static/Reporte3.xlsx'), 
-#                Crear_archivo_base_64("static/Informe.pdf")
-#                )
-#    Operaciones_db(2,tuple(usuarios))        #Usar base de datos
-#    sleep(1)
-#    Enviar_msn(str(Diccionario['Correo']))
+    """>>>>>>>>>>>>>>>>Actualizar base de datos<<<<<<<<<<<<<<""" 
+    Archivo1=Crear_archivo_base_64('static/Calculos_sin_rec.xlsx')
+    Archivo2=Crear_archivo_base_64("static/Descarga/Planos_WEB1"+Nombre_cli+".pdf")
+    Archivo3=' '
+    Archivo4=' '
+    bandera_correo=2
+    if(float(Diccionario['Capacidad estimada de la hornilla'])<=150):
+        bandera_correo=2
+        Archivo3=Crear_archivo_base_64('static/Calculos_con_rec.xlsx')
+        Archivo4=Crear_archivo_base_64("static/Descarga/Planos_WEB2"+Nombre_cli+".pdf")
+    else:
+        bandera_correo=1
+        Archivo3=' '
+        Archivo4=' '
+    usuarios = (Diccionario['Nombre de usuario'],
+                Diccionario['Correo'],
+                int(float(Diccionario['Telefono'])),
+                Diccionario['Pais'], 
+                Diccionario['Departamento'],
+                Diccionario['Ciudad'], 
+                Archivo1, 
+                Archivo2, 
+                Archivo3, 
+                Archivo4
+                )
+    Operaciones_db(2,tuple(usuarios))        #Usar base de datos
+    sleep(1)
     
-#Filtrar caracteres desconocidos de las cadenas de texto de los archivos temporales
-def Convertir(string): 
-    li = list(string.split(",")) 
-    lista_vacia=[]
-    for i in li:
-        i=i.strip(' ')
-        i=i.strip('[')
-        i=i.strip(']')
-        i=i.strip('\'')
-        lista_vacia.append(i)
-    return lista_vacia 
+    Enviar_msn(str(Diccionario['Correo']),Nombre_cli, bandera_correo)
 
-#Función para poner formato de moneda en pesos a un número
-def Convertir_lista(li,ini):
-    for i in range(ini,len(li)):
-        try:
-            li[i]=Costos_funcionamiento.Formato_Moneda(float(li[i]), "$", 2)
-        except:
-            li[i]
-    return(li)
-    
-#>>>>>>>>>>>------------Enlaces para la generación del informe económico------<<<<<<<<<<
-
-#Segmento 4 del informe (presentación de la vista previa del informe financiero)
-@app.route('/Economico4')
-def Eco4():
-    Valores_Informe=pd.read_excel('static/Graficas/Temp6.xlsx',skipcolumn = 0,)
-    Consolidado = Valores_Informe.iloc[0].values
-    l1=Convertir(Consolidado[1])
-    l2=Convertir(Consolidado[2])
-    Funcionamie = Valores_Informe.iloc[1].values
-    l5=Convertir(Funcionamie[1])
-    l6=Convertir(Funcionamie[2])
-    l6a=l6[0::2]
-    l6b=l6[1::2]
-    Depreciacio = Valores_Informe.iloc[2].values
-    l3=Convertir(Depreciacio[1])
-    l4=Convertir(Depreciacio[2])
-    l4a=l4[0::2]
-    l4b=l4[1::2]
-    l2=Convertir_lista(l2,1)
-    l4a[1:7]=Convertir_lista(l4a[1:7],3)
-    l4b[1:7]=Convertir_lista(l4b[1:7],3)
-    l4a[8:11]=Convertir_lista(l4a[8:11],1)
-    l4b[8:11]=Convertir_lista(l4b[8:11],1)
-    l6a=Convertir_lista(l6a,2)
-    l6b=Convertir_lista(l6b,2)
-    return render_template('Economico4.html',eti1=l1,eti2=l2,L1=len(l1),
-                                           eti3=l3,eti4=l4a,eti5=l4b,L2=len(l3),
-                                           eti6=l5,eti7=l6a,eti8=l6b,L3=len(l5)) 
-    
-#Segmento 3 del informe (presentación de los modelos de molino)
-@app.route('/Economico3')
-def Eco3():
-    global Diccionario_3
-    global Diccionario_4
-    return render_template('Economico3.html',result=Diccionario_3, Molinos=Diccionario_4) 
-
-#Segmento 2 del informe (presentación de las caracteristicas de la caña)
-@app.route('/Economico2')
-def Eco2():
-    global Formulario_2_Etiquetas
-    global Formulario_2_Valores
-    global Directorio
-    return render_template('Economico2.html', 
-                           Etiquetas = Formulario_2_Etiquetas, 
-                           Valores = Formulario_2_Valores,
-                           Dir = Directorio,
-                           Cant_fotos=len(Directorio))  
-
+       
+#>>>>>>>>>>>------------Enlace para la generación del informe económico------<<<<<<<<<<
 #Segmento 2 del informe (presentación de las caracteristicas de la caña)
 @app.route('/Economico1')
 def Eco1():
-    Valores_Informe=pd.read_excel('static/Graficas/Temp6.xlsx',skipcolumn = 0,)
-    Consolidado = Valores_Informe.iloc[0].values
-    l1=Convertir(Consolidado[1])
-    l2=Convertir(Consolidado[2])
-    Funcionamie = Valores_Informe.iloc[1].values
-    l5=Convertir(Funcionamie[1])
-    l6=Convertir(Funcionamie[2])
-    
-    lon=len(l1)
-    a=l2[lon-1]
-    b=l2[lon-2]
-    #[l1[lon-1], l1[lon-2]]
-    #b=[l2[lon-1], l2[lon-2]]
-
-    return render_template('Economico1.html',
-                           a=a ,b=b
-                           ) 
-
-#>>>>>>>>>>>------------Enlaces para la generación del informe------<<<<<<<<<<
-#Segmento 5 del informe (presentación de la vista previa del pdf)
-@app.route('/informe5')
-def infor5():
-    return render_template('informe5.html')
-
-#Segmento 4 del informe (presentación de la vista previa del informe financiero)
-@app.route('/informe4')
-def infor4():
-    Valores_Informe=pd.read_excel('static/Graficas/Temp6.xlsx',skipcolumn = 0,)
-    Consolidado = Valores_Informe.iloc[0].values
-    l1=Convertir(Consolidado[1])
-    l2=Convertir(Consolidado[2])
-    Funcionamie = Valores_Informe.iloc[1].values
-    l5=Convertir(Funcionamie[1])
-    l6=Convertir(Funcionamie[2])
-    l6a=l6[0::2]
-    l6b=l6[1::2]
-    Depreciacio = Valores_Informe.iloc[2].values
-    l3=Convertir(Depreciacio[1])
-    l4=Convertir(Depreciacio[2])
-    l4a=l4[0::2]
-    l4b=l4[1::2]
-    l2=Convertir_lista(l2,1)
-    l4a[1:7]=Convertir_lista(l4a[1:7],3)
-    l4b[1:7]=Convertir_lista(l4b[1:7],3)
-    l4a[8:11]=Convertir_lista(l4a[8:11],1)
-    l4b[8:11]=Convertir_lista(l4b[8:11],1)
-    l6a=Convertir_lista(l6a,2)
-    l6b=Convertir_lista(l6b,2)
-    return render_template('informe4.html',eti1=l1,eti2=l2,L1=len(l1),
-                                           eti3=l3,eti4=l4a,eti5=l4b,L2=len(l3),
-                                           eti6=l5,eti7=l6a,eti8=l6b,L3=len(l5)) 
-    
-#Segmento 3 del informe (presentación de los modelos de molino)
-@app.route('/informe3')
-def infor3():
-    global Diccionario_3
-    global Diccionario_4
-    return render_template('informe3.html',result=Diccionario_3, Molinos=Diccionario_4) 
-
-#Segmento 2 del informe (presentación de las caracteristicas de la caña)
-@app.route('/informe2')
-def infor2():
-    global Formulario_2_Etiquetas
-    global Formulario_2_Valores
-    global Directorio
-    return render_template('informe2.html', 
-                           Etiquetas = Formulario_2_Etiquetas, 
-                           Valores = Formulario_2_Valores,
-                           Dir = Directorio,
-                           Cant_fotos=len(Directorio))  
-
-#Segmento 2 del informe (presentación de las caracteristicas de la caña)
-@app.route('/informe1')
-def infor1():
-    global Formulario_1_Etiquetas
-    global Formulario_1_Valores
-    #rutina para filtrar y eliminar la palabra variedad de caña
-    lista_etiquetas_filtradas=[]
-    lista_valores_filtrados=[]
-    
-    for ind,i in enumerate(Formulario_1_Etiquetas):      
-        if(i!='Área de la bagacera (m^2)' and i!='x' and i!='y' and i!='Variedad de Caña'
-           and i!='Usa fertilizante' and i!='--' and i!='Conoce el rendimiento de la caña'
-           and i!='Cachaza por año [t]' and i!='Melote por año [t]' and i!='Variedad de Caña 1'
-           and i!='Conece las variedades de caña' and i!='Panela producida por molienda [t]'
-           and i!='Ancho de la bagacera (mm)' and i!='Largo de la bagacera (mm)'
-           and i!='Ancho de la zona de moldeo (mm)' and i!='Largo de la zona de moldeo (mm)' 
-           and i!='Ancho de la zona de empaque (mm)' and i!='Largo de la zona de empaque (mm)'
-           and i!='Ancho de la zona de bodega (mm)' and i!='Largo de la zona de bodega (mm)'
-           and i!='Área del cañetero (mm^2)' and i!='Ancho del cañetero (mm)'
-           and i!='Ancho del cañetero (mm)' and i!='Largo del cañetero (mm)' and i!='Pilas de bagazo'):
-            
-            lista_etiquetas_filtradas.append(Formulario_1_Etiquetas[ind])
-            lista_valores_filtrados.append(Formulario_1_Valores[ind])
-
-    return render_template('informe1.html', 
-                           Etiquetas = lista_etiquetas_filtradas, 
-                           Valores = lista_valores_filtrados)     
-
+    global Result_Financie
+    global Diccionario 
+    if(float(Diccionario['Capacidad estimada de la hornilla'])<=150):
+        Bande=0
+    else:
+        Bande=1    
+    return render_template('Economico1.html', 
+                           a=Result_Financie[0],
+                           b=Result_Financie[1],
+                           Activa=Bande) 
 
 def Arch_hilo():
     try:
@@ -634,15 +444,26 @@ def Arch_hilo():
         os.mkdir('static/pdf02')
     except:
         os.mkdir('static/pdf02')
-    
-#Segmento 1 del informe (presentación de los datos del usuario)    
-@app.route('/informe', methods = ['POST','GET'])
+    try:  
+        rmtree('static/pdf03')
+        os.mkdir('static/pdf03')
+    except:
+        os.mkdir('static/pdf03')
+    try:  
+        rmtree('static/pdf04')
+        os.mkdir('static/pdf04')
+    except:
+        os.mkdir('static/pdf04')
+
+#Presentación del informe al usuario  
+@app.route('/informe', methods = ['GET', 'POST'])
 def infor():
     global cliente
     global cuenta_cliente
     global result
     global Lista_clientes
     global Estado_Cliente
+    global Diccionario 
     #Limpiar directorios de uso temporal
     #Continuar ejecución
     if request.method == 'POST':
@@ -651,7 +472,7 @@ def infor():
         temp_cli="c"+str(cliente)
         cuenta_cliente.append(temp_cli)
         Lista_clientes.append(result)
-        
+        Bande=0
         if(cliente>1):
             globals()[temp_cli]=True
         else:
@@ -675,46 +496,21 @@ def infor():
             print("Cliente no disponible")   
         cliente=cliente-1
         
+        if(float(Diccionario['Capacidad estimada de la hornilla'])<=150):
+            Bande=0
+        else:
+            Bande=1
+            
         return render_template('informe.html', 
-                               Nom1="/static/Descarga/Financiero"+Nombre_cli+".pdf",
-                               Nom2="/static/Descarga/Resumen"+Nombre_cli+".pdf",
-                               Nom3="/static/Descarga/Planos_WEB"+Nombre_cli+".pdf"
+                               Nom1="/static/Descarga/Financiero1"+Nombre_cli+".pdf",
+                               Nom2="/static/Descarga/Financiero2"+Nombre_cli+".pdf",
+                               Nom3="/static/Descarga/Resumen"+Nombre_cli+".pdf",
+                               Nom4="/static/Descarga/Planos_WEB1"+Nombre_cli+".pdf",
+                               Nom5="/static/Descarga/Planos_WEB2"+Nombre_cli+".pdf",
+                               Nom6="static/Descarga/Graf"+Nombre_cli+".pdf",
+                               Activa=Bande
                                )
-#        Lista_clientes.append([result])
-#        if(len(Lista_clientes)<=1):
-#            try:
-#                rmtree('static/Temp')
-#                os.mkdir('static/Temp')
-#            except:
-#                os.mkdir('static/Temp')
-#            try:  
-#                rmtree('static/pdf00')
-#                os.mkdir('static/pdf00')
-#            except:
-#                os.mkdir('static/pdf00')
-#            try:  
-#                rmtree('static/pdf01')
-#                os.mkdir('static/pdf01')
-#            except:
-#                os.mkdir('static/pdf01')
-#            try:  
-#                rmtree('static/pdf02')
-#                os.mkdir('static/pdf02')
-#            except:
-#                os.mkdir('static/pdf02')
-#                
-#            Estado_Cliente=True
-#            generar_valores_informe(Lista_clientes[0][0])
-#            sleep(5)
-#            Lista_clientes.pop(0)
-#            sleep(5)
-#            Estado_Cliente=False
-#            return render_template('informe.html') 
-#        else:
-#            return render_template('respuesta.html', rta="El informe generado con HornillAPP llegará a su correo electrónico en una hora aproximadamente.")
-        
-        
-
+       
 #------->>>>>>>>Operaciones básicas con la base de datos<<<<<<<<--------
 def Operaciones_db(Operacion, usuarios):
     db_1=[]
@@ -770,111 +566,91 @@ def borrar_base_2():
         Operaciones_db(3,Eliminar)
     return render_template('principal.html')
 
-#---------->>>>>>>>>Formularios para la presentación de mapas<<<<<<---------
-#Calculo de la estadistica para presentar los mapas
-@app.route('/presentar')
-def mineria():   
-    numpy2ri.activate()
-    x = "c(1,2,3,3,3,2,2,2,2,1,3,3,3,3,3,3,3,3,2,2,3,3,2,2,1,4,4,2,3,1,2,2)"
-    r('''      
-        rm(list = ls())        
-        library(ggplot2) 
-        library(sf)
-        library(GADMTools)
-        library(mapview)
-        COL <- gadm_sf_loadCountries("COL", level=1 )'''+"\n"+
-        'COL[["sf"]][["Cantidad de hornillas"]]<-'+x+"\n"+
-     '''
-        m1=COL$sf %>% mapview(zcol = "Cantidad de hornillas", legend = TRUE, col.regions = COL[["sf"]][["Cantidad de hornillas"]])
-        mapshot(m1, url = paste0(getwd(), "/static/mapas/map1A.html"))
-     '''
-    )
-    return render_template('presentar.html')
-
-#Mapa de cantidad de hornillas por departamento
-@app.route('/presentar1')
-def mineria1():
-    return render_template('presentar1.html')
-
-#Variedades de caña conocidas por departamento
-@app.route('/presentar2')
-def mineria2():   
-   return render_template('presentar2.html')
-
-#Productores por departamento
-@app.route('/presentar3')
-def mineria3():   
-   return render_template('presentar3.html')
 
 #Formulario de bienvenida para el acceso a la base de datos
-@app.route('/acceso')
+@app.route('/acceso', methods = ['POST','GET'])
 def acceso_base():
    return render_template('acceso.html', aviso="Por favor, complete los siguientes campos.")
 
-#Formulario de respuesta al acceder a la base de datos
-@app.route('/base', methods = ['POST','GET'])
-def base_batos():
+@app.route('/Evaluacion')
+def Eva_horni():
+   return render_template('Construccion.html', aviso="En construcción.")
+
+@app.route('/Modificacion')
+def Mod_horni():
+   return render_template('Construccion.html', aviso="En construcción.")
+
+@app.route('/Menubase', methods = ['POST','GET'])
+def Acceso_Menu():
     if request.method == 'POST':
         datos_usuario = request.form
         Nombre_Usuario=datos_usuario.get('Documentoa')
         Clave_Usuario=datos_usuario.get('Clavea')
         if(Nombre_Usuario=="1234567" and Clave_Usuario=="112233"):
-            #Listas para almacenamiento temporal de los datos de usuario
-            Etiquetas_ID=[]
-            Etiquetas_Nombres=[]
-            Etiquetas_Correo=[]
-            Etiquetas_Telefono=[]
-            Etiquetas_Pais=[]
-            Etiquetas_Departamento=[]
-            Etiquetas_Ciudad=[]
-            Etiquetas_U=[]
-            Etiquetas_P=[]
-            Etiquetas_R=[]
-            Etiquetas_C=[]
-            Cantidad_Clientes=0
-            try:
-                os.mkdir('static/pdf2')
-            except OSError: 
-                print('Directorio existente') 
-            #Consulta de la base de datos
-            db=Operaciones_db(0,0)
-            #Creación de listas con los datos de usuario
-            for listas_1 in db:
-                Etiquetas_ID.append(listas_1[0])
-                Etiquetas_Nombres.append(listas_1[1])
-                Etiquetas_Correo.append(listas_1[2])
-                Etiquetas_Telefono.append(listas_1[3])
-                Etiquetas_Pais.append(listas_1[4])
-                Etiquetas_Departamento.append(listas_1[5])
-                Etiquetas_Ciudad.append(listas_1[6])
-                Etiquetas_U.append("pdf2/U_"+str(Cantidad_Clientes)+".xlsx")
-                Etiquetas_P.append("pdf2/P_"+str(Cantidad_Clientes)+".xlsx")
-                Etiquetas_R.append("pdf2/R_"+str(Cantidad_Clientes)+".xlsx")
-                Etiquetas_C.append("pdf2/C_"+str(Cantidad_Clientes)+".pdf")
-                try:
-                    Leer_pdf_base64("static/pdf2/U_"+str(Cantidad_Clientes)+".xlsx", listas_1[7])
-                    Leer_pdf_base64("static/pdf2/P_"+str(Cantidad_Clientes)+".xlsx", listas_1[8])
-                    Leer_pdf_base64("static/pdf2/R_"+str(Cantidad_Clientes)+".xlsx", listas_1[9])
-                    Leer_pdf_base64("static/pdf2/C_"+str(Cantidad_Clientes)+".pdf", listas_1[10])         
-                except:
-                    print('Error archivo')
-                Cantidad_Clientes=Cantidad_Clientes+1
-            return render_template('base.html',
-                                   Eti0=Etiquetas_ID,
-                                   Eti1=Etiquetas_Nombres,
-                                   Eti2=Etiquetas_Correo,
-                                   Eti3=Etiquetas_Telefono,
-                                   Eti3a=Etiquetas_Pais,
-                                   Eti4=Etiquetas_Departamento,
-                                   Eti5=Etiquetas_Ciudad,
-                                   Eti6=Etiquetas_U,
-                                   Eti7=Etiquetas_P,
-                                   Eti8=Etiquetas_R,
-                                   Eti9=Etiquetas_C,
-                                   Cant=Cantidad_Clientes)
+            return render_template('Accesomenu.html')
         else:
             return render_template('acceso.html', aviso="Verifique su nombre de usuario o contraseña.")
         
+#Formulario de respuesta al acceder a la base de datos
+@app.route('/base')
+def base_batos():
+    #Listas para almacenamiento temporal de los datos de usuario
+    Etiquetas_ID=[]
+    Etiquetas_Nombres=[]
+    Etiquetas_Correo=[]
+    Etiquetas_Telefono=[]
+    Etiquetas_Pais=[]
+    Etiquetas_Departamento=[]
+    Etiquetas_Ciudad=[]
+    Etiquetas_U=[]
+    Etiquetas_P=[]
+    Etiquetas_R=[]
+    Etiquetas_C=[]
+    Cantidad_Clientes=0
+    print("clientes1")
+    try:
+        os.mkdir('static/pdf2')
+    except OSError: 
+        print('Directorio existente') 
+    #Consulta de la base de datos
+    db=Operaciones_db(0,0)
+    print("clientes2")
+    #Creación de listas con los datos de usuario
+    for listas_1 in db:
+        Etiquetas_ID.append(listas_1[0])
+        Etiquetas_Nombres.append(listas_1[1])
+        Etiquetas_Correo.append(listas_1[2])
+        Etiquetas_Telefono.append(listas_1[3])
+        Etiquetas_Pais.append(listas_1[4])
+        Etiquetas_Departamento.append(listas_1[5])
+        Etiquetas_Ciudad.append(listas_1[6])
+        Etiquetas_U.append("pdf2/U_"+str(Cantidad_Clientes)+".xlsx")
+        Etiquetas_P.append("pdf2/P_"+str(Cantidad_Clientes)+".pdf")
+        Etiquetas_R.append("pdf2/R_"+str(Cantidad_Clientes)+".xlsx")
+        Etiquetas_C.append("pdf2/C_"+str(Cantidad_Clientes)+".pdf")
+        try:
+            Leer_pdf_base64("static/pdf2/U_"+str(Cantidad_Clientes)+".xlsx", listas_1[7])
+            Leer_pdf_base64("static/pdf2/P_"+str(Cantidad_Clientes)+".pdf", listas_1[8])
+            Leer_pdf_base64("static/pdf2/R_"+str(Cantidad_Clientes)+".xlsx", listas_1[9])
+            Leer_pdf_base64("static/pdf2/C_"+str(Cantidad_Clientes)+".pdf", listas_1[10])         
+        except:
+            print('Error archivo')
+        Cantidad_Clientes=Cantidad_Clientes+1
+    print("clientes3")
+    return render_template('base.html',
+                           Eti0=Etiquetas_ID,
+                           Eti1=Etiquetas_Nombres,
+                           Eti2=Etiquetas_Correo,
+                           Eti3=Etiquetas_Telefono,
+                           Eti3a=Etiquetas_Pais,
+                           Eti4=Etiquetas_Departamento,
+                           Eti5=Etiquetas_Ciudad,
+                           Eti6=Etiquetas_U,
+                           Eti7=Etiquetas_P,
+                           Eti8=Etiquetas_R,
+                           Eti9=Etiquetas_C,
+                           Cant=Cantidad_Clientes)
+ 
 #Enlaces para las otras páginas referencias, nosotros, presentación, etc.        
 @app.route('/referencias')
 def refe():
@@ -919,7 +695,7 @@ def contac_rta():
                 os.remove(nombre_archivo_pdf)
             # Datos de acceso a la cuenta de usuario
             usuario   ='hornillapp@agrosavia.co'
-            contrasena='Contrasena12345@'          
+            contrasena='Contrasena123@'          
             #Interfaz de conexión con el servidor de gmail
             servidor = smtplib.SMTP('correo.agrosavia.co:587')
             servidor.starttls()
@@ -939,10 +715,4 @@ if __name__ == '__main__':
     cliente = 0
     cuenta_cliente = []
     Lista_clientes=[]
-    
-#    global Estado_Cliente
-#    Estado_Cliente=False
-
-#    t = threading.Thread(target=Espera)
-#    t.start()
     app.run(host='0.0.0.0', port='7000')
