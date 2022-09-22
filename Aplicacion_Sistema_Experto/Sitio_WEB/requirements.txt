@@ -18,7 +18,7 @@ cryptography-vectors==2.3.1
 cycler==0.10.0
 decorator==4.4.2
 defusedxml==0.6.0
-Django==3.0.3
+Django==3.1.14
 docutils==0.16
 entrypoints==0.3
 et-xmlfile==1.0.1
