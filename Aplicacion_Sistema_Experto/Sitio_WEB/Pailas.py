@@ -61,7 +61,7 @@ def Unir_Informe(nombre, ruta_carp, borrar_F):
     """Borrar datos cargados temporalmente"""
     if(borrar_F==1):
         try:
-            print('Sistema ocupado2')
+            print('Creando carpetas...')
             rmtree('static/Temp')
             rmtree('static/pdf00')
             rmtree('static/pdf01')

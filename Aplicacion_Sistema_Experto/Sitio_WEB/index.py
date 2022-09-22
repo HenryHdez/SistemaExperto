@@ -25,6 +25,7 @@ import Costos_funcionamiento                             #Calculo del costo fina
 import Pailas                                            #Calculo de las dimensiones de las pailas
 import Gases                                             #Calculo de las propiedades de los gases
 import Areas                                             #Calcular Areas
+import EvaluacionHornilla                                #Calcular Areas
 import random
 import numpy as np
 
@@ -391,9 +392,13 @@ def generar_valores_informe(Cliente_actual, Nombre_cli):
         bandera_correo=1
         Archivo3=' '
         Archivo4=' '
+    try:
+        Telef=int(float(Diccionario['Telefono']))
+    except:
+        Telef=0  
     usuarios = (Diccionario['Nombre de usuario'],
                 Diccionario['Correo'],
-                int(float(Diccionario['Telefono'])),
+                Telef,
                 Diccionario['Pais'], 
                 Diccionario['Departamento'],
                 Diccionario['Ciudad'], 
@@ -537,17 +542,21 @@ def Operaciones_db(Operacion, usuarios):
         elif(Operacion==3):
             cursor.execute("SELECT * FROM Clientes")
             for i,tdb in enumerate(cursor, start=0):
+                #print(tdb[0])
                 try:
                     if(usuarios.get('CH_'+str(tdb[0]))=='on'):
-                        r_b.append(str(tdb[0]))
+                        #r_b.append(str(tdb[0]))
+                        T1=str(tdb[0]).replace("[","(")
+                        T1=T1.replace("]",")")
+                        Cadena_sql=Cadena_sql+"("+T1+")"
+                        cursor.execute(Cadena_sql)
                 except:
                     print('No existe')
-            T1=str(r_b).replace("[","(")
-            T1=T1.replace("]",")")
-            Cadena_sql=Cadena_sql+T1
-            cursor.execute(Cadena_sql)
-        cnxn.commit()
-        cnxn.close()
+        try:
+            cnxn.commit()
+            cnxn.close()
+        except:
+            print('Error db')         
         return db_1
     except:
         print('Error db') 
@@ -564,7 +573,8 @@ def borrar_base_2():
     if request.method == 'POST':
         Eliminar = request.form    
         Operaciones_db(3,Eliminar)
-    return render_template('principal.html')
+    
+    return render_template('Construccion.html', aviso="Operación finalizada.")
 
 
 #Formulario de bienvenida para el acceso a la base de datos
@@ -574,12 +584,26 @@ def acceso_base():
 
 @app.route('/Evaluacion')
 def Eva_horni():
-   return render_template('Construccion.html', aviso="En construcción.")
+   return render_template('Evaluacion.html', entrada=0)
+
+@app.route('/EvaRta', methods = ['POST','GET'])
+def Eva_horni2():
+    try:
+        if(request.files['adjunto'].filename!=''):
+            archivo = request.files['adjunto']
+            nombre_archivo_xls=os.path.join(uploads_dir, secure_filename(archivo.filename))
+            archivo.save(nombre_archivo_xls)
+            print(nombre_archivo_xls)
+            EvaluacionHornilla.EvaluacionPar(nombre_archivo_xls)
+            return render_template('Evaluacion.html', entrada=1)
+    except:
+        return render_template('Evaluacion.html', entrada=0)
 
 @app.route('/Modificacion')
 def Mod_horni():
    return render_template('Construccion.html', aviso="En construcción.")
 
+                
 @app.route('/Menubase', methods = ['POST','GET'])
 def Acceso_Menu():
     if request.method == 'POST':
@@ -629,12 +653,13 @@ def base_batos():
         Etiquetas_R.append("pdf2/R_"+str(Cantidad_Clientes)+".xlsx")
         Etiquetas_C.append("pdf2/C_"+str(Cantidad_Clientes)+".pdf")
         try:
+            print('Error aceptado: '+str(Cantidad_Clientes))
             Leer_pdf_base64("static/pdf2/U_"+str(Cantidad_Clientes)+".xlsx", listas_1[7])
             Leer_pdf_base64("static/pdf2/P_"+str(Cantidad_Clientes)+".pdf", listas_1[8])
             Leer_pdf_base64("static/pdf2/R_"+str(Cantidad_Clientes)+".xlsx", listas_1[9])
             Leer_pdf_base64("static/pdf2/C_"+str(Cantidad_Clientes)+".pdf", listas_1[10])         
         except:
-            print('Error archivo')
+            print('Error cliente: '+str(Cantidad_Clientes))
         Cantidad_Clientes=Cantidad_Clientes+1
     print("clientes3")
     return render_template('base.html',

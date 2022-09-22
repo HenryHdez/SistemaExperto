@@ -1,0 +1,74 @@
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+    <div class="jumbotron">
+        <form class="row" action = "http://hornillapp.agrosavia.co:7000/EvaRta" method = "POST" enctype="multipart/form-data">
+        <!--<form class="row" action = "http://localhost:7000//contacto" method = "POST" enctype="multipart/form-data">-->
+            <h1 class="display-4">Sistema de evaluación</h1>
+            <table align="center" class="form-row">
+                    <tr class="form-group col-6">
+                        <td> 
+                          <b> 
+                            <label>Nombre:</label> 
+                          </b> 
+                        </td>
+                        <td> 
+                          <input class="form-control" type="text" name="nombre" size="30" maxlength="200"> 
+                        </td>
+                    </tr>
+                    <tr class="form-group col-6">
+                        <td> 
+                          <b> 
+                            <label>
+                              Correo electrónico (corporativo):
+                            </label> 
+                          </b> 
+                        </td>
+                        <td> 
+                          <input class="form-control" type="email" name="correo_electronico" maxlength="200" value="@"> 
+                        </td>
+                    </tr>
+
+                    <tr class="form-group col-12">
+                        <td> </td>
+                        <td> </td>
+                    </tr>  
+
+                    <tr class="form-group col-12">
+                        <td> 
+                          <b> 
+                            <label>Seleccione el archivo con los resultados de la evaluación <a download="EjemploEva" href="{{url_for('static', filename='/Catalogos/Ejemplo.xlsx')}}">(Haga clic aqui para descargar un ejemplo.)</a></label> 
+                          </b> 
+                        </td>
+                    </tr>
+                    
+                    <tr class="form-group col-12">
+                    
+                        <td class="custom-file">
+                              <input class="btn btn-success btn-lg btn-usuario-corp" type="file" name="adjunto" accept=".xls, .xlsx"> 
+                        </td>
+                        
+                        <td> 
+                            <input class="btn btn-info btn-lg" type="submit" value="Enviar"> 
+                        </td>
+                    </tr>
+                                        
+                    <tr class="form-group col-12">
+                        <td> </td>
+                        <td> </td>
+                    </tr>
+                    
+                    {% if(entrada==1) %}
+                    <tr class="form-group col-12">
+                        <td> 
+                            <a class="btn btn-info btn-lg" download="Resultados" href="/static/Salida.xlsx">Descargar</a> 
+                        </td>
+                    </tr>
+                    {% endif %}                     
+            </table>  
+        </form>        
+
+    </div>
+
+
+
