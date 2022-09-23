@@ -128,7 +128,7 @@ def Enviar_msn(Correo, Nombre_cli, Estado):
             usuario   ='hornillapp@agrosavia.co'
             contrasena='Contrasena123@'          
             #Interfaz de conexión con el servidor de gmail
-            servidor = smtplib.SMTP('correo.agrosavia.co:587')
+            servidor = smtplib.SMTP('correoapp.agrosavia.co:587')
             servidor.starttls()
             servidor.login(usuario, contrasena)
             servidor.sendmail(mensaje['From'], mensaje['To'], mensaje.as_string())
@@ -522,10 +522,14 @@ def Operaciones_db(Operacion, usuarios):
     r_b=[]
     Cadena_sql= "DELETE FROM Clientes WHERE ID IN "
     try:
-        cnxn = pymssql.connect(host='172.16.11.44\MSSQL2016DSC', 
-                               database='SistemaExpertoPanela', 
-                               user='WebSisExpPanela', 
-                               password='sIuusnOsE9bLlx7g60Mz') 
+        cnxn = pymssql.connect(host='COMOSPSQL02/MSSQL2016',
+                               database='DbSistemaExpertoPanela',
+                               user='SistemaExpertoPanela',
+                               password='LoGhofIrUmb3oeDET8RW')
+                               #host='172.16.11.44\MSSQL2016DSC', 
+                               #database='SistemaExpertoPanela', 
+                               #user='WebSisExpPanela', 
+                               #password='sIuusnOsE9bLlx7g60Mz') 
         cursor = cnxn.cursor()
         #Consulta
         if(Operacion==0):             
@@ -722,7 +726,7 @@ def contac_rta():
             usuario   ='hornillapp@agrosavia.co'
             contrasena='Contrasena123@'          
             #Interfaz de conexión con el servidor de gmail
-            servidor = smtplib.SMTP('correo.agrosavia.co:587')
+            servidor = smtplib.SMTP('correoapp.agrosavia.co:587')
             servidor.starttls()
             servidor.login(usuario, contrasena)
             
