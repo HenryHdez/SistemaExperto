@@ -8,8 +8,6 @@ from email.mime.application import MIMEApplication       #Creación del cuerpo d
 from email.mime.text import MIMEText                     #Creación del cuerpo del correo electrónico 3
 from shutil import rmtree                                #Gestión de directorios en el servidor
 import smtplib                                           #Conexión con el servidor de correo
-#from rpy2.robjects import r                              #Interfaz entre PYTHON y R
-#from rpy2.robjects import numpy2ri                       #Interfaz entre PYTHON y R
 from time import sleep                                   #Suspensión temporal
 from os import remove
 import pandas as pd                                      #Gestión de archivos de texto
@@ -522,9 +520,9 @@ def Operaciones_db(Operacion, usuarios):
     r_b=[]
     Cadena_sql= "DELETE FROM Clientes WHERE ID IN "
     try:
-        cnxn = pymssql.connect(host='COMOSPSQL02/MSSQL2016',
+        cnxn = pymssql.connect(host='172.16.0.62\MSSQL2016',
                                database='DbSistemaExpertoPanela',
-                               user='SistemaExpertoPanela',
+                               user='WebSisExpPanela',
                                password='LoGhofIrUmb3oeDET8RW')
                                #host='172.16.11.44\MSSQL2016DSC', 
                                #database='SistemaExpertoPanela', 
