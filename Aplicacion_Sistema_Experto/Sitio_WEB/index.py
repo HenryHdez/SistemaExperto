@@ -139,7 +139,7 @@ def Diseño_Hornilla(Nombre_Rot, Ite, Rec_opt):
     global Diccionario_2
     conta=0
     Eta=0
-    while(Ite==0 and conta<1):
+    while(Ite==0 and conta<0):
         """------------>>>>>>>>>>HORNILLA<<<<<<<<<<<<<<<<----------------"""
         """Calculo de la hornilla (Diseño inicial)"""
         Diccionario   = Diseno_inicial.datos_entrada(Diccionario,0,0)
@@ -405,10 +405,10 @@ def generar_valores_informe(Cliente_actual, Nombre_cli):
                 Archivo3, 
                 Archivo4
                 )
-    Operaciones_db(2,tuple(usuarios))        #Usar base de datos
-    sleep(1)
+    #Operaciones_db(2,tuple(usuarios))        #Usar base de datos
+    #sleep(1)
     
-    Enviar_msn(str(Diccionario['Correo']),Nombre_cli, bandera_correo)
+    #Enviar_msn(str(Diccionario['Correo']),Nombre_cli, bandera_correo)
 
        
 #>>>>>>>>>>>------------Enlace para la generación del informe económico------<<<<<<<<<<
