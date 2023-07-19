@@ -66,7 +66,6 @@ def usua():
     cana           = pd.read_excel("static/Catalogos/Variedades.xlsx", engine='openpyxl')
     Deptos_cana    = cana['Depto'].values
     Ciudad_cana    = cana['Ciudad'].values
-    
     return render_template('usuario.html', 
                            paises_lista=paises['Nombre'],
                            departamentos=df.departamento, 
@@ -139,7 +138,7 @@ def Diseño_Hornilla(Nombre_Rot, Ite, Rec_opt):
     global Diccionario_2
     conta=0
     Eta=0
-    while(Ite==0 and conta<0):
+    while(Ite==0 and conta<1):
         """------------>>>>>>>>>>HORNILLA<<<<<<<<<<<<<<<<----------------"""
         """Calculo de la hornilla (Diseño inicial)"""
         Diccionario   = Diseno_inicial.datos_entrada(Diccionario,0,0)
@@ -152,7 +151,6 @@ def Diseño_Hornilla(Nombre_Rot, Ite, Rec_opt):
         Vo=np.ones(Eta)
         Gases.Propiedades(Calor_0,Vo,Vo,Vo, Eta)
         """Calcular volumenes iniciales"""
-        
         Dimensi_Pail = Pailas.Mostrar_pailas(Diccionario_2['Volumen de jugo [m^3/kg]'],
                                             Eta,
                                             Nombre_Rot,
@@ -209,19 +207,17 @@ def Exportar_diseno_excel(Dic, Nombre, Opt):
         print('Sin pailas')
     writer.save()
     
-
-
 #Función para crear los diccionarios a partir de los calculos de la aplicación
 def generar_valores_informe(Cliente_actual, Nombre_cli):
     #----------->>>>>>>>>>>Variables globales<<<<<<<<<<<<<<<---------
     global df
     global altura_media
-    global NivelFre
+    #global NivelFre
     global Formulario_1_Etiquetas
     global Formulario_1_Valores
     global Formulario_2a_Etiquetas
     global Formulario_2a_Valores
-    global Directorio
+    #global Directorio
     global Deptos_cana
     global Ciudad_cana
     global Diccionario 
@@ -245,7 +241,6 @@ def generar_valores_informe(Cliente_actual, Nombre_cli):
     Formulario_1_Etiquetas=[]
     Formulario_1_Valores=[]
     aux_i=' '      
-
     for i in a:
         if(i!='x' and i!='y' and i!='Panela producida por hora [kg/hora]' 
            and i!='Variedades de caña sembrada' and i!='Conoce el rendimiento de la caña' 
@@ -378,18 +373,20 @@ def generar_valores_informe(Cliente_actual, Nombre_cli):
 
     """>>>>>>>>>>>>>>>>Actualizar base de datos<<<<<<<<<<<<<<""" 
     Archivo1=Crear_archivo_base_64('static/Calculos_sin_rec.xlsx')
-    Archivo2=Crear_archivo_base_64("static/Descarga/Planos_WEB1"+Nombre_cli+".pdf")
+    Archivo2=' '
+    #Archivo2=Crear_archivo_base_64("static/Descarga/Planos_WEB1"+Nombre_cli+".pdf")
     Archivo3=' '
     Archivo4=' '
     bandera_correo=2
     if(float(Diccionario['Capacidad estimada de la hornilla'])<=150):
         bandera_correo=2
         Archivo3=Crear_archivo_base_64('static/Calculos_con_rec.xlsx')
-        Archivo4=Crear_archivo_base_64("static/Descarga/Planos_WEB2"+Nombre_cli+".pdf")
+        #Archivo4=Crear_archivo_base_64("static/Descarga/Planos_WEB2"+Nombre_cli+".pdf")
     else:
         bandera_correo=1
         Archivo3=' '
         Archivo4=' '
+    
     try:
         Telef=int(float(Diccionario['Telefono']))
     except:
@@ -405,10 +402,9 @@ def generar_valores_informe(Cliente_actual, Nombre_cli):
                 Archivo3, 
                 Archivo4
                 )
-    #Operaciones_db(2,tuple(usuarios))        #Usar base de datos
+    Operaciones_db(2, tuple(usuarios))        #Usar base de datos
     #sleep(1)
-    
-    #Enviar_msn(str(Diccionario['Correo']),Nombre_cli, bandera_correo)
+    Enviar_msn(str(Diccionario['Correo']),Nombre_cli, bandera_correo)
 
        
 #>>>>>>>>>>>------------Enlace para la generación del informe económico------<<<<<<<<<<
@@ -462,35 +458,48 @@ def Arch_hilo():
 @app.route('/informe', methods = ['GET', 'POST'])
 def infor():
     global cliente
+    global informes_gen
     global cuenta_cliente
     global result
     global Lista_clientes
-    global Estado_Cliente
     global Diccionario 
     #Limpiar directorios de uso temporal
     #Continuar ejecución
     if request.method == 'POST':
-        result = request.form
-        cliente=cliente+1
-        temp_cli="c"+str(cliente)
-        cuenta_cliente.append(temp_cli)
-        Lista_clientes.append(result)
-        Bande=0
-        if(cliente>1):
-            globals()[temp_cli]=True
-        else:
-            globals()[temp_cli]=False
-            
-        while(globals()[temp_cli]==True):
-            print("Espere: "+temp_cli+"Estado="+str(globals()[temp_cli]))
-            print(cliente)
-            print(cuenta_cliente)
-            sleep(1)
-        
-        Nombre_cli="cli_"+str(random.randint(0, 100))
-        Arch_hilo()
-        generar_valores_informe(Lista_clientes[0], Nombre_cli)
-        
+        try:
+            result = request.form
+            cliente= cliente+1
+            temp_cli="c"+str(cliente)
+            cuenta_cliente.append(temp_cli)
+            Lista_clientes.append(result)
+            Bande=0
+            if(cliente>1):
+                globals()[temp_cli]=True
+            else:
+                globals()[temp_cli]=False
+                    
+            while(globals()[temp_cli]==True):
+                print("Espere: "+temp_cli+"Estado="+str(globals()[temp_cli]))
+                print(cliente)
+                print(cuenta_cliente)
+                sleep(1)
+                
+            Nombre_cli="cli_"+str(random.randint(0, 100))
+            Arch_hilo()
+            generar_valores_informe(Lista_clientes[0], Nombre_cli)
+            informes_gen=informes_gen+1
+            if(informes_gen>70):
+                sleep(150)
+                rmtree('static/Descarga')
+                os.mkdir('static/Descarga')
+                informes_gen=0
+                print('Borrado')
+        except:
+            cliente=0
+            Lista_clientes = []
+            cuenta_cliente = []
+            return render_template('respuesta.html', rta="Disculpe las molestias, el servidor está ocupado en este momento. Le agradeceríamos que intente generar el informe nuevamente más tarde.")
+
         try:
             Lista_clientes.pop(0)
             cuenta_cliente.pop(0)
@@ -499,11 +508,14 @@ def infor():
             print("Cliente no disponible")   
         cliente=cliente-1
         
-        if(float(Diccionario['Capacidad estimada de la hornilla'])<=150):
-            Bande=0
-        else:
-            Bande=1
-            
+        try:
+            if(float(Diccionario['Capacidad estimada de la hornilla'])<=150):
+                Bande=0
+            else:
+                Bande=1
+        except:
+            print("Bandera inactiva")   
+
         return render_template('informe.html', 
                                Nom1="/static/Descarga/Financiero1"+Nombre_cli+".pdf",
                                Nom2="/static/Descarga/Financiero2"+Nombre_cli+".pdf",
@@ -513,6 +525,9 @@ def infor():
                                Nom6="static/Descarga/Graf"+Nombre_cli+".pdf",
                                Activa=Bande
                                )
+    else:
+        return render_template('Construccion.html', aviso="Error al crear el informe.")
+
        
 #------->>>>>>>>Operaciones básicas con la base de datos<<<<<<<<--------
 def Operaciones_db(Operacion, usuarios):
@@ -520,14 +535,14 @@ def Operaciones_db(Operacion, usuarios):
     r_b=[]
     Cadena_sql= "DELETE FROM Clientes WHERE ID IN "
     try:
-        cnxn = pymssql.connect(host='172.16.0.62\MSSQL2016',
-                               database='DbSistemaExpertoPanela',
-                               user='WebSisExpPanela',
-                               password='LoGhofIrUmb3oeDET8RW')
-                               #host='172.16.11.44\MSSQL2016DSC', 
-                               #database='SistemaExpertoPanela', 
-                               #user='WebSisExpPanela', 
-                               #password='sIuusnOsE9bLlx7g60Mz') 
+        cnxn = pymssql.connect(#host='172.16.0.62\MSSQL2016',
+                               #database='DbSistemaExpertoPanela',
+                               #user='WebSisExpPanela',
+                               #password='LoGhofIrUmb3oeDET8RW')
+                               host='172.16.11.44\MSSQL2016DSC', 
+                               database='SistemaExpertoPanela', 
+                               user='WebSisExpPanela', 
+                               password='sIuusnOsE9bLlx7g60Mz') 
         cursor = cnxn.cursor()
         #Consulta
         if(Operacion==0):             
@@ -558,10 +573,10 @@ def Operaciones_db(Operacion, usuarios):
             cnxn.commit()
             cnxn.close()
         except:
-            print('Error db')         
+            print('Error db1')         
         return db_1
     except:
-        print('Error db') 
+        print('Error db2') 
 
 #Formulario para borrar usuarios completamente
 @app.route('/borrar')
@@ -737,9 +752,11 @@ def contac_rta():
 #Función principal    
 if __name__ == '__main__':
     global cliente
+    global informes_gen
     global cuenta_cliente
     global Lista_clientes
     cliente = 0
+    informes_gen = 0
     cuenta_cliente = []
     Lista_clientes=[]
     app.run(host='0.0.0.0', port='7000')
