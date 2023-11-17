@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+    reverseproxy:
+        build: nginx_conf/.
+        ports:
+            - 8080:8080
+            - 8082:8082
+        restart: always
+        networks:
+            - my_red
+
+    nginx:
+        image: nginx:alpine
+        restart: always
+        networks:
+            - my_red
+
+    web:
+        image: pagina
+        ports:
+            - 7000:7000
+        networks:
+            - my_red
+
+networks:
+    my_red:

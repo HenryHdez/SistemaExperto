@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+{% block lista %}
+      <li class="nav-item active">
+        <a class="nav-link" href="/">Principal<span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="usuario">Formulario</a>
+      </li>
+      <!--<li class="nav-item">-->
+      <!--  <a class="nav-link disabled" href="informe1" aria-disabled="true">Informe</a>-->
+      <!--</li>-->
+      <!--<li class="nav-item">-->
+      <!--<a class="nav-link disabled" href="presentar" aria-disabled="true">Mapas</a>-->
+      <!--</li>-->
+      <li class="nav-item">
+        <a class="nav-link" href="contacto">Contacto</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="referencias">Bibliografía</a>
+      </li>   
+      <!--<li class="nav-item">-->
+      <!--  <a class="nav-link" href="acceso">Corporativo</a>-->
+      <!--</li>-->  
+      <li class="nav-item">
+        <a class="nav-link" href="nosotros">Acerca de...</a>
+      </li>
+      <li class="nav-item">
+         <a class="nav-link" href="https://www.agrosavia.co/atenci%C3%B3n-al-usuario">Atención al usuario</a>
+      </li>      
+{% endblock %}
+
+{% block content %}
+      <h1 class="display-4">
+      <a class="btn btn-success btn-lg btn-usuario-corp" href="usuario" role="button"><img src="/static/Iconos/IconoAPP.png", width="400", height="180", title="Ir al formulario"></a>      
+      </h1>
+      <hr class="hr-titulo">
+      <p class="lead" style="text-align: justify">Es una aplicación de uso gratuito que permite al usuario sin conocimiento especializado de cálculo en 
+      ingeniería para el dimensionamiento de hornillas paneleras térmicamente eficientes, obtener un diseño sugerido con su respectivo análisis económico a partir de datos básicos su cultivo</p>
+      <hr class="my-4">
+
+      <div class="col-12 inicio-app-seccion">
+        <a class="btn btn-success btn-lg btn-usuario-corp" href="{{url_for('static', filename='/Catalogos/Manual.pdf')}}" role="button" style="width:250px"><img src="/static/Iconos/Manual.png" width="100" height="100"></a>
+      </div>
+      
+      <div class="col-12 inicio-app-seccion">
+        <a download="Manual" href="{{url_for('static', filename='/Catalogos/Manual.pdf')}}">Haga clic aqui para descargar el manual de la aplicación</a>
+      </div>
+ 
+{% endblock %}
+       
+
+

@@ -806,6 +806,7 @@ def Dibujar_Cotas(canvas,sel_Plano,Dimensiones, Nombre_Usuario, Altura, Grados_i
 def Crear_plano_pdf(directorio_imagen, Nombre_archivo, Nombre_Usuario, Nombre_Paila, Valores_plano, valores_eliminar, Sel_Canal, Rec_opt):
     from reportlab.lib.pagesizes import letter
     from reportlab.pdfgen import canvas
+    
     if(Sel_Canal==1):
         Canal_T='Separación entre canales'
         Altura_T='Altura Canal'
@@ -837,6 +838,7 @@ def Crear_plano_pdf(directorio_imagen, Nombre_archivo, Nombre_Usuario, Nombre_Pa
         Valores_plano.pop(valores_eliminar[i])
         Etiquetas.pop(valores_eliminar[i])
         Conv.pop(valores_eliminar[i])
+    
     canvas = canvas.Canvas(Nombre_archivo+".pdf", pagesize=letter)
     canvas.setPageSize((970,628))
     canvas.drawImage(directorio_imagen, 0, 0, width=970, height=628)
@@ -868,7 +870,6 @@ def Crear_plano_pdf(directorio_imagen, Nombre_archivo, Nombre_Usuario, Nombre_Pa
     df1 = pd.DataFrame([Etiquetas, Conv, Valores_plano])
     df1.to_excel(writer, sheet_name=Nombre_Paila[15:-1:1])   
     writer.save()
-    
     canvas.setFont('Helvetica-Bold', 9)
     canvas.drawString(800, 226, 'CONVENCIONES') 
     canvas.line(705,224,705,Puntero-2)
@@ -876,6 +877,7 @@ def Crear_plano_pdf(directorio_imagen, Nombre_archivo, Nombre_Usuario, Nombre_Pa
     canvas.line(870,224,870,Puntero-2)
     canvas.line(950,224,950,Puntero-2)
     #Rotulo
+    #print("dibujar")
     Dibujar_Rotulo(canvas, Nombre_Usuario, Nombre_Paila)
     canvas.showPage() #Salto de página  
     canvas.setPageSize((970,628))
@@ -891,6 +893,7 @@ def Crear_plano_pdf(directorio_imagen, Nombre_archivo, Nombre_Usuario, Nombre_Pa
     tiempo = time.asctime(time.localtime(time.time()))
     canvas.drawString(720,16,str(tiempo))
     canvas.save()
+    
 
 """--->>>Está función convierte en milimetros las dimensiones y envia los 
 parámetros de salida a la función para exportar a pdf<<<<----"""   
@@ -945,6 +948,7 @@ def Dibujar_plano(Nombre_Sitio,Nombre_archivo,Tipo_paila,H_fl,H_fn,Ancho,L,Ho,Hc
     Lo_g = E
     Valores_plano=[round(A),round(B),round(C),round(D),round(E),50,round(I),round(F),round(H),round(J),round(K),round(L),round(M),round(N),round(O),round(P),round(Q),round(R)]
     Dimensiones_Pailas.append([round(A),round(B),round(C),round(D),round(E),50,round(I),round(F),round(H),round(J),round(K),round(L),round(M),round(N),round(O),round(P),round(Q),round(R)])
+    
     if Tipo_paila==1:
         if Activar_Aletas==True:
             Asignar_vector('Plana', 0, count, Rec_opt)
@@ -1376,7 +1380,7 @@ def Mostrar_pailas(Vol_aux, Etapas, Sitio, T_Hornilla, Cap_hornilla, altura_medi
         H_1    = 0
         Hc_1   = 0        
         primer_ite=False
-        while ((0.1<f)and(iteraciones<200000)):
+        while ((0.5<f)and(iteraciones<5000)):
             if(f_1<f):
                 H_fl  = H_fl_1
                 H_fn  = H_fn_1
@@ -1432,6 +1436,7 @@ def Mostrar_pailas(Vol_aux, Etapas, Sitio, T_Hornilla, Cap_hornilla, altura_medi
                 a16=bool(Tipo_paila[1][i])   
             iteraciones=iteraciones+1
         #print(f)
+        #print(iteraciones)
         #print(f_1)
         #print(Volumen)
         #print(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13,a14,a15,a16)
@@ -1473,6 +1478,7 @@ def Mostrar_pailas(Vol_aux, Etapas, Sitio, T_Hornilla, Cap_hornilla, altura_medi
                       Lista2[i][1],Lista2[i][2],Lista2[i][3],Lista2[i][4],Lista2[i][5],Lista2[i][6],
                       Lista2[i][7],Lista2[i][8],Lista2[i][9],Lista2[i][10],Lista2[i][11],Lista2[i][12],
                       Lista2[i][13],Lista2[i][14],Lista2[i][15], i, Rec_opt)
+        
         Pailas_Planta.append([Lista2[i][0],Lista2[i][15],An_g,Lo_g]) 
         if(i==Etapas-1):
             R_A=(Lista2[i][1]+Lista2[i][2])*1000

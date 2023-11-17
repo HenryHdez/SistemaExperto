@@ -83,7 +83,7 @@ pyzmq==19.0.1
 QtAwesome==0.7.2
 qtconsole==4.7.5
 QtPy==1.9.0
-reportlab==3.5.59
+reportlab==3.6.8
 requests==2.24.0
 rope==0.17.0
 scikit-learn==0.23.1

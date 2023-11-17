@@ -1,0 +1,126 @@
+{% extends "layout.html" %}
+{% block lista %}
+      <li class="nav-item">
+        <a class="nav-link" href="/">Principal</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="usuario">Formulario</a>
+      </li>
+      <!--<li class="nav-item active">-->
+      <!--  <a class="nav-link disabled" href="informe" aria-disabled="true">Informe<span class="sr-only">(current)</span></a>-->
+      <!--</li>-->
+      <!--<li class="nav-item">-->
+      <!--<a class="nav-link disabled" href="presentar" aria-disabled="true">Mapas</a>-->
+      <!--</li>-->
+      <li class="nav-item">
+        <a class="nav-link" href="contacto">Contacto</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="referencias">Bibliografía</a>
+      </li>   
+      <!--<li class="nav-item">-->
+      <!--  <a class="nav-link" href="acceso">Corporativo</a>-->
+      <!--</li>-->  
+      <li class="nav-item">
+        <a class="nav-link" href="nosotros">Acerca de...</a>
+      </li>
+      <li class="nav-item">
+         <a class="nav-link" href="https://www.agrosavia.co/atenci%C3%B3n-al-usuario">Atención al usuario</a>
+      </li>
+{% endblock %}
+
+{% block content %}
+
+        <h1 onload="sinVueltaAtras();" class="display-4">INFORME</h1>
+        <hr class="hr-titulo">
+        <p align="justify" class="lead">Esta sección presenta los resultados obtenidos al procesar su requerimiento, utilice los botones del menu para navegar entre los resultados o los botones de descarga para guardar la información de interes (NOTA: si requiere generar un nuevo informe haga clic en la opción Formulario).</p>
+        <hr class="my-4">  
+        
+        <nav aria-label="..." style="background-color: #e3f2fd;"> 
+            <div>
+                  <ul class="pagination pagination-lg justify-content-center">
+                    <li class="page-item"><a class="nav-link" onclick="Ocultar_iframe1();" target="pag" href={{Nom3}}>Consideraciones generales</a></li>
+                    <li class="page-item"><a class="nav-link" onclick="Ocultar_iframe2();" target="pag" href="Economico1">Proyección económica</a></li>
+                    <li class="page-item"><a class="nav-link" onclick="Ocultar_iframe3();" target="pag" href={{Nom4}}>Diagramas de construcción</a></li>
+                  </ul>
+            </div>
+        </nav>
+        
+        <hr class="my-4">
+        <nav aria-label="..." style="display: none" id="Nav1" >
+          <ul class="pagination pagination-lg justify-content-center">
+            <li class="page-item"><a class="page-link" href="Economico1" target="pag">Simulador</a></li>
+            <li class="page-item"><a class="page-link" href={{Nom1}} target="pag">Hornilla</a></li>
+            {% if(Activa==0) %}
+                <li class="page-item"><a class="page-link" href={{Nom2}} target="pag">Recuperador</a></li>
+                <li class="page-item"><a class="page-link" href={{Nom6}} target="pag">Comparación</a></li>
+            {% endif %}
+            <li class="page-item"><a class="page-link" href="static/Vistas/Manual_financiamiento.pdf" target="pag">Financiamiento</a></li>
+          </ul>
+        </nav> 
+
+        <nav aria-label="..." style="display: none" id="Nav2" >
+          <ul class="pagination pagination-lg justify-content-center">
+            <li class="page-item"><a class="page-link" href={{Nom4}} target="pag">Hornilla</a></li>
+            {% if(Activa==0) %}            
+                <li class="page-item"><a class="page-link" href={{Nom5}} target="pag">Recuperador</a></li>
+            {% endif %}
+            <li class="page-item"><a class="page-link" href="static/Vistas/Ensamblaje.pdf" target="pag">Ensamblaje</a></li>
+          </ul>
+        </nav> 
+                
+        <iframe class="m-auto shadow-sm p-3 mb-5 bg-light rounded" id="frame123" display="none" width="100%" height="900" src={{Nom3}} name="pag" marginheight="0" marginwidth="0" scrolling="yes"></iframe>
+        <br/>
+        <center>
+            <p><b>IMPRIMA LA VISTA ACTUAL O DESCARGUE UNA VERSIÓN EXTENDIDA DEL DISEÑO DE LA HORNILLA CON LOS SIGUIENTES BOTONES.</b></p>
+
+            <a class="btn-usuario-corp mx-1" download="Inf_Economico" href={{Nom1}}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+              </svg>
+              Análisis económico
+            </a>
+            
+            <a class="btn-usuario-corp mx-1" download="Inf_Hornilla" href={{Nom3}}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+              </svg>
+              Descripción de la hornilla
+            </a>
+            
+            <a class="btn-usuario-corp mx-1" download="Inf_Planos" href={{Nom4}}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+              </svg>
+              Diagramas de construcción
+            </a>            
+        </center>
+                
+        <script type="text/javascript">
+               
+         function Ocultar_iframe1(){                            
+              document.getElementById("Nav1").style.display="none";
+              document.getElementById("Nav2").style.display="none"; 
+			}     
+
+         function Ocultar_iframe2(){                            
+              document.getElementById("Nav1").style.display="block";
+              document.getElementById("Nav2").style.display="none"; 
+			}     
+
+         function Ocultar_iframe3(){                            
+              document.getElementById("Nav1").style.display="none";
+              document.getElementById("Nav2").style.display="block"; 
+			}     
+        </script>
+        
+        <script languaje="javascript">
+            window.history.forward();
+            function sinVueltaAtras(){ window.history.forward();}
+        </script>
+{% endblock %}
+
+

@@ -92,7 +92,8 @@ def Enviar_msn(Correo, Nombre_cli, Estado):
     try:
         for i in range(0,Estado):
             # Crear el objeto mensaje
-            mensaje = MIMEMultipart()             
+            mensaje = MIMEMultipart()     
+            #mensaje['From']    = 'pruebaagrosaviaprueba@gmail.com'      
             mensaje['From']     = 'hornillapp@agrosavia.co'                                 #Correo de prueba para enviar algo desde la página
             mensaje['To']       = Correo                                                    #Correo funcionario a cargo    
             mensaje['Subject']  = 'Informe generado con HornillAPP'                         #Correo funcionario a cargo          
@@ -120,7 +121,11 @@ def Enviar_msn(Correo, Nombre_cli, Estado):
                 
                 archivo_adjunto = MIMEApplication(open('static/Descarga/Planos_WEB2'+Nombre_cli+'.pdf',"rb").read())
                 archivo_adjunto.add_header('Content-Disposition', 'attachment', filename='Planos2.pdf')
-                mensaje.attach(archivo_adjunto)                
+                mensaje.attach(archivo_adjunto)  
+            #usuario   ='pruebaagrosaviaprueba@gmail.com'#'hornillapp@agrosavia.co'
+            #contrasena='vrmq igst atta ntlf'#'Contrasena123@'          
+            #Interfaz de conexión con el servidor de gmail
+            #servidor = smtplib.SMTP('smtp.gmail.com',587)              
             # Datos de acceso a la cuenta de usuario
             usuario   ='hornillapp@agrosavia.co'
             contrasena='Contrasena123@'          
@@ -145,8 +150,8 @@ def Diseño_Hornilla(Nombre_Rot, Ite, Rec_opt):
         Diccionario_2 = Diseno_inicial.Calculo_por_etapas(Diccionario)
         Gases.diccionarios_sis(Diccionario,Diccionario_2)
         Calor_0=Diccionario_2['Calor Nece Calc por Etapa [kW]']
-#        print(Calor_0)
-#        print(int(Diccionario_2['Etapas']))
+        #print(Calor_0)
+        #print(int(Diccionario_2['Etapas']))
         Eta=int(Diccionario_2['Etapas'])
         Vo=np.ones(Eta)
         Gases.Propiedades(Calor_0,Vo,Vo,Vo, Eta)
@@ -159,7 +164,7 @@ def Diseño_Hornilla(Nombre_Rot, Ite, Rec_opt):
                                             altura_media,
                                             Diccionario,
                                             Rec_opt) 
-#        print(Dimensi_Pail)
+        #print(Dimensi_Pail)
         """Optimizar valores"""
         L_temp = Areas.Areas_lisas(Dimensi_Pail)
         Gases.Propiedades(Calor_0,L_temp[0],L_temp[1],L_temp[2], Eta)
@@ -266,7 +271,7 @@ def generar_valores_informe(Cliente_actual, Nombre_cli):
     Formulario_2a_Valores=[]
     G_brix_cana=0.0
     G_brix_panela=0.0
-      
+    
     #FORMULARIO 2a
     G_brix_cana=17     
     G_brix_panela=96
@@ -300,6 +305,7 @@ def generar_valores_informe(Cliente_actual, Nombre_cli):
     #Con recuperador
     Diseño_Hornilla(Nombre_Rot, 0, 1)
     Exportar_diseno_excel(Diccionario_2, 'Calculos_con_rec', 1)
+    
     #Eliminar archivos
     remove("static/Camara.xlsx")
     remove("static/Chimenea.xlsx")
@@ -315,8 +321,7 @@ def generar_valores_informe(Cliente_actual, Nombre_cli):
     Formulario_3_Etiquetas=['Caña molida por hora [t]', 'Capacidad del molino [kg/hora]']
     Formulario_3_Valores=[]
     for i in Formulario_3_Etiquetas:
-        Formulario_3_Valores.append(Diccionario[i])
-        
+        Formulario_3_Valores.append(Diccionario[i]) 
     Molino=pd.read_excel('static/Temp/Temp.xlsx', engine='openpyxl',skipcolumn = 0,)
     
     Marca=Molino['Marca'].values
@@ -466,6 +471,11 @@ def infor():
     #Limpiar directorios de uso temporal
     #Continuar ejecución
     if request.method == 'POST':
+        #result = request.form
+        #Lista_clientes.append(result)
+        #Nombre_cli="cli_"+str(random.randint(0, 100))
+        #Arch_hilo()
+        #generar_valores_informe(Lista_clientes[0], Nombre_cli)
         try:
             result = request.form
             cliente= cliente+1
@@ -716,7 +726,9 @@ def contac_rta():
             Correo       = request.form['correo_electronico']
             Mensaje_HTML = request.form['mensaje_usuario']
             # Crear el objeto mensaje
-            mensaje = MIMEMultipart()             
+            mensaje = MIMEMultipart()       
+            #mensaje['From']    = 'pruebaagrosaviaprueba@gmail.com'     
+            #mensaje['To']      = 'pruebaagrosaviaprueba@gmail.com'  
             mensaje['From']    = 'hornillapp@agrosavia.co'  #Correo de prueba para enviar algo desde la página
             mensaje['To']      = 'hornillapp@agrosavia.co'  #Correo funcionario a cargo        
             mensaje['Subject'] = 'Información clientes'     #Correo funcionario a cargo   
@@ -736,9 +748,13 @@ def contac_rta():
                 mensaje.attach(archivo_pdf) 
                 os.remove(nombre_archivo_pdf)
             # Datos de acceso a la cuenta de usuario
-            usuario   ='hornillapp@agrosavia.co'
-            contrasena='Contrasena123@'          
+            #usuario   ='pruebaagrosaviaprueba@gmail.com'#'hornillapp@agrosavia.co'
+            #contrasena='vrmq igst atta ntlf'#'Contrasena123@'          
             #Interfaz de conexión con el servidor de gmail
+            #servidor = smtplib.SMTP('smtp.gmail.com',587)
+            # Datos de acceso a la cuenta de usuario
+            usuario   ='hornillapp@agrosavia.co'
+            contrasena='Contrasena123@'
             servidor = smtplib.SMTP('correoapp.agrosavia.co:587')
             servidor.starttls()
             servidor.login(usuario, contrasena)
@@ -759,4 +775,5 @@ if __name__ == '__main__':
     informes_gen = 0
     cuenta_cliente = []
     Lista_clientes=[]
-    app.run(host='0.0.0.0', port='7000')
+    app.run(host='0.0.0.0', port='7000', debug=False)
+    #app.run(host='192.168.247.87', port='7000', debug=False)

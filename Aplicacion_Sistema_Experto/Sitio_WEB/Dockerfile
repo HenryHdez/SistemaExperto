@@ -1,12 +1,12 @@
 FROM ubuntu:18.04 as build
-WORKDIR /opt
+WORKDIR /opt/app
 
 # apt-get Utilidades del sistema
 RUN apt-get update && apt-get install -y \
     curl apt-utils apt-transport-https debconf-utils gcc build-essential g++-5\
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /opt
+WORKDIR /opt/app
 # INSTALAR PIP
 RUN apt update && apt install -y python3-pip
 
@@ -56,11 +56,13 @@ RUN apt-get install texlive-lang-spanish
 RUN apt-get install -y unixodbc-dev
 
 #INSTALACIÓN DE PAQUETES
-COPY requirements.txt /opt/requirements.txt
+WORKDIR /work
+COPY requirements.txt /work/requirements.txt
 RUN pip3 install -r requirements.txt
 
 #Correr python
-COPY .. /opt
+COPY __pycache__ /work/__pycache__
+COPY .. /work/ 
 
 EXPOSE 7000
 CMD ["python3", "index.py"]

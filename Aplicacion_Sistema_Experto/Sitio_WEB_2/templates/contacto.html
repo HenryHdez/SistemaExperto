@@ -1,0 +1,97 @@
+{% extends "layout.html" %}
+{% block lista %}
+      <li class="nav-item">
+        <a class="nav-link" href="/">Principal</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="usuario">Formulario</a>
+      </li>
+      <!--<li class="nav-item">-->
+      <!--  <a class="nav-link disabled" href="informe1" aria-disabled="true">Informe</a>-->
+      <!--</li>-->
+      <!--<li class="nav-item">-->
+      <!--<a class="nav-link disabled" href="presentar" aria-disabled="true">Mapas</a>-->
+      <!--</li>-->
+      <li class="nav-item active">
+        <a class="nav-link" href="contacto">Contacto<span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="referencias">Bibliografía</a>
+      </li>   
+      <!--<li class="nav-item">-->
+      <!--  <a class="nav-link" href="acceso">Corporativo</a>-->
+      <!--</li>-->
+      <li class="nav-item">
+        <a class="nav-link" href="nosotros">Acerca de...</a>
+      </li>         
+      <li class="nav-item">
+         <a class="nav-link" href="https://www.agrosavia.co/atenci%C3%B3n-al-usuario">Atención al usuario</a>
+      </li>
+{% endblock %}
+
+{% block content %}
+    <h1 class="display-4">CONTACTO</h1>
+    <hr class="hr-titulo">
+    <p align="justify" class="lead">Llene los siguientes campos (recibirá una respuesta a su inquietud vía correo electrónico).</p>
+    <hr class="my-4">
+    <form class="row" action = "http://hornillapp.agrosavia.co:7000/contacto" method = "POST" enctype="multipart/form-data">
+    <!--<form class="row" action = "http://localhost:7000/contacto" method = "POST" enctype="multipart/form-data">-->
+        <table align="center" class="form-row">
+                <tr class="form-group col-6">
+                    <td> 
+                      <b> 
+                        <label>Nombre:</label> 
+                      </b> 
+                    </td>
+                    <td> 
+                      <input class="form-control" type="text" name="nombre" size="30" maxlength="200"> 
+                    </td>
+                </tr>
+                <tr class="form-group col-6">
+                    <td> 
+                      <b> 
+                        <label>
+                          Correo electrónico (de contacto):
+                        </label> 
+                      </b> 
+                    </td>
+                    <td> 
+                      <input class="form-control" type="email" name="correo_electronico" maxlength="200" value="@"> 
+                    </td>
+                </tr>
+                <tr class="form-group col-12">
+                    <td> 
+                      <b> 
+                        <label>Mensaje:</label> 
+                      </b> 
+                    </td>
+                    <td> 
+                      <textarea class="form-control" id="mensaje" name="mensaje_usuario" rows="10" cols="50" maxlength="2000" placeholder="Máximo 2000 carácteres">
+
+                      </textarea> 
+                    </td>
+                </tr>
+                <tr class="form-group col-12">
+                    <td> 
+                      <b> 
+                        <label>Adjuntar archivo</label> 
+                      </b> 
+                    </td>
+                    <td class="custom-file">
+                      <input class="custom-file-input" type="file" name="adjunto" accept=".pdf, .png, .jpg, .doc, .docx" value="Seleccionar archivo"> 
+                      <label class="custom-file-label">
+                        <i>
+                          "El nombre del archivo no debe contener carácteres especiales o espacios (max. 20 MB)"
+                        </i>
+                      </label>
+                    </td>
+                </tr>
+                <tr class="botones-formulario">
+                    <td> <input class="btn btn-info btn-enviar" type="submit" value="Enviar"> </td>
+                    <td> <input class="btn btn-danger btn-resetear" type="Reset" value="Borrar formulario"> </td> 
+                </tr> 
+        </table>  
+    </form>
+{% endblock %}
+
+

@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+{% block lista %}
+      <li class="nav-item">
+       <a class="nav-link" href="/">Principal</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="usuario">Formulario</a>
+      </li>
+      <!--<li class="nav-item">-->
+      <!--  <a class="nav-link disabled" href="informe1" aria-disabled="true">Informe</a>-->
+      <!--</li>-->
+      <!--<li class="nav-item">-->
+      <!--<a class="nav-link disabled" href="presentar" aria-disabled="true">Mapas</a>-->
+      <!--</li>-->
+      <li class="nav-item">
+        <a class="nav-link" href="contacto">Contacto</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="referencias">Bibliografía</a>
+      </li>   
+      <!--<li class="nav-item">-->
+      <!--  <a class="nav-link" href="acceso">Corporativo</a>-->
+      <!--</li>-->  
+      <li class="nav-item active">
+        <a class="nav-link" href="nosotros">Acerca de...<span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+         <a class="nav-link" href="https://www.agrosavia.co/atenci%C3%B3n-al-usuario">Atención al usuario</a>
+      </li>
+{% endblock %}
+
+{% block content %}
+    <h1 class="display-4">HornillAPP</h1>
+    <hr class="hr-titulo">
+        <p class="lead">
+            <ul>
+                <li><p align="justify">Es un proyecto desarrollado de forma colaborativa por varios investigadores de AGROSAVIA; con base en resultados de investigaciones realizadas en los ultimos 35 años.</p></li>
+                <li><p align="justify">Este proyecto ofrece al sector agricola una herramienta basada en software intuitiva y abierta, con el fin de que un gran número de personas que tengan la intención de modificar, actualizar o construir una hornilla para la producción de panela lo consigan sin un conocimiento de ingeniería especializado.</p></li> 
+                <li><p align="justify">Esta página proporciona al usuario acceso a la aplicación, información acerca de su funcionamiento y soporte técnico.</p></li>    
+            </ul>
+        </p>
+        <hr class="my-4">
+        <p><b>Investigadores:</b></p>
+            <ul>
+                <li>Luz Esperanza Prada Forero.</li>
+                <li>Jader Rodríguez Cortina.</li> 
+                <li>Paula Helena Reyes Herrera.</li>
+                <li>Fabian Andres Velasquez Ayala.</li>
+                <li>John Javier Espitia.</li> 
+                <li>María Camila Rodríguez Tique.</li>   
+                <li>Henry Hernández Martínez.</li> 
+            </ul>
+        <p><b>Soporte técnico:</b></p>
+            <ul>
+                <li>DTI -Agrosavia-.</li>
+            </ul>
+            
+      <div class="col-12 inicio-app-seccion">
+        <a class="btn btn-success btn-lg btn-usuario-corp" href="usuario" role="button" style="width:250px"><img src="/static/Iconos/Icono.png" width="100" height="100"></a>
+        <!--<a class="btn btn-success btn-lg btn-usuario-corp" href="acceso" role="button" style="width:250px"><img src="/static/Iconos/Icono2.png" width="90" height="90"></a>-->
+      </div>
+              
+{% endblock %}

@@ -1,0 +1,47 @@
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <div class="jumbotron">
+        <h1 class="display-4">USUARIOS REGISTRADOS</h1>
+        <hr class="hr-titulo">
+        <p align="justify" class="lead">Está sección contiene información relacionada con los usuarios que han usado la aplicación.</p>
+        <hr class="my-4"> 
+        <!--<form class="row" action = "http://localhost:7000/borrar2" method = "POST">-->
+        <form class="row" action = "http://hornillapp.agrosavia.co:7000/borrar2" method = "POST">
+            <table align="center">
+                <tr align="center">
+                    <th style="width:450px" align="center"> <b>Nombre</b> </th>
+                    <th style="width:450px" align="center"> <b>Correo electrónico</b> </th>
+                    <th style="width:450px" align="center"> <b>Teléfono</b> </th>
+                    <th style="width:450px" align="center"> <b>Pais</b> </th>
+                    <th style="width:450px" align="center"> <b>Departamento</b> </th>
+                    <th style="width:450px" align="center"> <b>Ciudad</b> </th>
+                    <th style="width:450px" align="center"> <b>Simulador</b> </th>
+                    <th style="width:450px" align="center"> <b>Volumenes</b> </th>
+                    <th style="width:450px" align="center"> <b>Generales</b> </th>
+                    <th style="width:450px" align="center"> <b>Informe</b> </th>
+                    <th style="width:450px" align="center"> <b>Eliminar</b> </th>
+                </tr>
+    
+                {%for i in range(1,Cant)%}
+                    <tr align="center">
+                       <td style="width:450px" align="center"> {{Eti1[i]}}</td>
+                       <td style="width:450px" align="center"> {{Eti2[i]}}</td>
+                       <td style="width:450px" align="center"> {{Eti3[i]}}</td>
+                       <td style="width:450px" align="center"> {{Eti3a[i]}}</td>
+                       <td style="width:450px" align="center"> {{Eti4[i]}}</td>
+                       <td style="width:450px" align="center"> {{Eti5[i]}}</td>
+                       <td style="width:450px" align="center"> <a download="Simulador" href={{url_for('static', filename=Eti6[i])}}><img src="{{url_for('static', filename='Iconos/D1.png')}}" width="50" height="50" outline="1" border="1" style="border: 1px gray solid" border-radius= "10px"; /></a></td>
+                       <td style="width:450px" align="center"> <a download="Volumenes" href={{url_for('static', filename=Eti7[i])}}><img src="{{url_for('static', filename='Iconos/D2.png')}}" width="50" height="50" outline="1" border="1" style="border: 1px gray solid" border-radius= "10px"; /></a></td>
+                       <td style="width:450px" align="center"> <a download="Generales" href={{url_for('static', filename=Eti8[i])}}><img src="{{url_for('static', filename='Iconos/D1.png')}}" width="50" height="50" outline="1" border="1" style="border: 1px gray solid" border-radius= "10px"; /></a></td>
+                       <td style="width:450px" align="center"> <a download="Informe" href={{url_for('static', filename=Eti9[i])}}><img src="{{url_for('static', filename='Iconos/D2.png')}}" width="50" height="50" outline="1" border="1" style="border: 1px gray solid" border-radius= "10px"; /></a></td>
+                       <td style="width:450px" align="center"> <input type="checkbox" id="CH_{{Eti0[i]}}" name="CH_{{Eti0[i]}}"></td>
+                    </tr>
+                {%endfor%}
+             </table>   
+             <br>
+             <input class="btn btn-warning btn-lg" type = "submit" value = "Borrar seleccionados" style="width:250px"/>
+             <a class="btn btn-danger btn-lg" href="/borrar" role="button" style="width:250px">Borrar todo</a>
+        </form>	
+    </div>
+
+

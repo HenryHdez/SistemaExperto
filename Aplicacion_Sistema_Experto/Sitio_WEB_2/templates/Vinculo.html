@@ -1,0 +1,58 @@
+<html>
+    <head>
+        <meta charset="uft-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <title>Sistema Experto</title>
+        <!--Este link se toma tal cual de la pagina de Bootstrap getting started-->      
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}"> 
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <!--Con la doble llave se especifica el directorio  
+        <img src="{{url_for('static', filename='Agrosavia.jpg')}}", align="middle" />-->
+        <script languaje="javascript">
+            window.history.forward();
+            function sinVueltaAtras(){ window.history.forward();}
+        </script>
+        <meta http-equiv="cache-control" content="no-cache">
+        <meta http-equiv="expires" content="0">
+        <meta http-equiv="pragma" content="no-cache"> 
+        <!--Fuente Open Sans-->
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700,700i" rel="stylesheet">
+    </head>
+    
+    <body onload="sinVueltaAtras();" class="container-fluid">
+        <header>
+            <nav class="navbar navbar-expand-lg navbar-light">
+                <div class="container">
+                    <a class="navbar-brand" href="https://www.agrosavia.co/">
+                        <img src="{{url_for('static', filename='Iconos/logo.png')}}">
+                    </a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>        
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarText">
+                        <ul class="navbar-nav ml-auto" id="myTab">
+                        {% block lista %}{% endblock %}
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            
+            <div class="container">
+                <div class="jumbotron">
+                     <!--<a href="localhost:8000">haga clic aqui</a>-->
+                         <form class="row" action = "http://hornillapp.agrosavia.co:7000/informe" method = "POST">                     
+                </div>
+            </div>
+        </header>
+        <footer>
+            <div class="container">
+                <p>APP Sistema Experto</p>
+            </div>
+        </footer>
+        <!--Javascript-->
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    </body>
+</html>
